@@ -1,0 +1,42 @@
+{
+  "name": "project-project-group-2",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.93.3",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@prisma/client": "^7.3.0",
+    "@types/node": "^20.19.30",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.2.3",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "prisma": "^7.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "description": "To install all packages required for this project, run the install script:",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/26sp-CPSC-4190-Yale/project-project-group-2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/26sp-CPSC-4190-Yale/project-project-group-2/issues"
+  },
+  "homepage": "https://github.com/26sp-CPSC-4190-Yale/project-project-group-2#readme"
+}

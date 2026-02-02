@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // url       = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
+}
+
+// ------------------------------------
+// Example tables from Supabase Docs
+// ------------------------------------
+//
+// model Post {
+//   id        Int     @id @default(autoincrement())
+//   title     String
+//   content   String?
+//   published Boolean @default(false)
+//   author    User?   @relation(fields: [authorId], references: [id])
+//   authorId  Int?
+// }
+//
+// model User {
+//   id    Int     @id @default(autoincrement())
+//   email String  @unique
+//   name  String?
+//   posts Post[]
+// }
+
+// ------------------------------------
+// User
+// ------------------------------------
+
+model User {
+	id 				String		@id @default(cuid())	// cuid() creates a 30 character long collision id
+	email 		String		@unique
+	password 	String
+	name 			String?													// ? denotes an optional field
+	createdAt	DateTime	@default(now())
+	updatedAt	DateTime	@updatedAt
+
+	// Relations
+	calendars Calendar[]
+}
+
+// ------------------------------------
+// Calendar
+// ------------------------------------
+
+model Calendar {
+	id				String		@id @default(cuid())
+	title			String		@default("Calendar")
+	createdAt	DateTime	@default(now())
+	updatedAt	DateTime	@updatedAt
+
+	userId		String
+
+	// Relations
+	user			User			@relation(fields: [userId], references: [id], onDelete: Cascade)
+}
