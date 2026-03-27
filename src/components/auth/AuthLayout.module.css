@@ -1,6 +1,11 @@
 .container{
-    width: 90rem;
-    height: 64rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* width: 90rem; */
+    /* height: 64rem; */
+    min-height: 100vh;
     background: #FAF9FF;
     overflow: hidden;
 }
@@ -8,7 +13,7 @@
 .logoposition{
     left: 2.87rem;
     top: 1.13rem;
-    position: relative;
+    position: absolute;
 }
 
 .slogan{
@@ -21,13 +26,14 @@
 }
 
 .sloganposition{
-    left: 33.8rem;
+    /* left: 33.8rem;
     top: 25.12rem;
-    position: relative;
+    position: relative; */
+    margin-bottom: 1.44rem;
 }
 
-.oauthposition{
+/* .oauthposition{
     left: 33.38rem;
     top: 33.44rem;
     position: relative
-}
+} */

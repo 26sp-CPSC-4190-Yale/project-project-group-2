@@ -1,12 +1,12 @@
 .button {
-    width: 23.2rem;
-    height: 3rem;
-    border-radius: 0.5rem;
-    border: 1px solid #6c3ecc;
-    background: #fff;
     display: flex;
     justify-content: center; 
     align-items: center;
+    width: 23.2rem;
+    height: 2.9rem;
+    border-radius: 0.5rem;
+    border: 1px solid #6c3ecc;
+    background: #fff;
 }
 .text{
     color: #000;
@@ -15,4 +15,12 @@
     font-style: normal;
     font-weight: 400;
     line-height: normal;
+}
+
+.image {
+    position: relative;
+    /* top: 0rem; */
+    right: 0.5rem;
+    height: 1.25rem;
+    width: 1.25rem;
 }

@@ -17,6 +17,7 @@ export function OAuthButton({
             className={styles.button}
             onClick={onClick}
         >
+            <img src="/GoogleLogo.svg" alt="" className={styles.image}/>
             <div 
                 className={styles.text}
             >
