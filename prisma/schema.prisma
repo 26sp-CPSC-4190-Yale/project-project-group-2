@@ -3,59 +3,99 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  // url       = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
-
-// ------------------------------------
-// Example tables from Supabase Docs
-// ------------------------------------
-//
-// model Post {
-//   id        Int     @id @default(autoincrement())
-//   title     String
-//   content   String?
-//   published Boolean @default(false)
-//   author    User?   @relation(fields: [authorId], references: [id])
-//   authorId  Int?
-// }
-//
-// model User {
-//   id    Int     @id @default(autoincrement())
-//   email String  @unique
-//   name  String?
-//   posts Post[]
-// }
-
-// ------------------------------------
-// User
-// ------------------------------------
 
 model User {
-	id 				String		@id @default(cuid())	// cuid() creates a 30 character long collision id
-	email 		String		@unique
-	password 	String
-	name 			String?													// ? denotes an optional field
-	createdAt	DateTime	@default(now())
-	updatedAt	DateTime	@updatedAt
+  id        String   @id @default(cuid())
+  googleId  String?  @unique
+  email     String   @unique
+  password  String?
+  name      String
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-	// Relations
-	calendars Calendar[]
+  calendars Calendar[]
+  tasks     Task[]
 }
 
-// ------------------------------------
-// Calendar
-// ------------------------------------
-
 model Calendar {
-	id				String		@id @default(cuid())
-	title			String		@default("Calendar")
-	createdAt	DateTime	@default(now())
-	updatedAt	DateTime	@updatedAt
+  id          String   @id @default(cuid())
+  title       String   @default("Calendar")
+  color       String   @default("none")
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-	userId		String
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-	// Relations
-	user			User			@relation(fields: [userId], references: [id], onDelete: Cascade)
+  groups Group[]
+  events Event[]
+  tasks  Task[]
+}
+
+model Group {
+  id    String  @id @default(cuid())
+  name  String  @default("Group")
+  notes String?
+  color String  @default("none")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  calendarId String
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  events Event[]
+  tasks  Task[]
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  name        String    @default("New Event")
+  startAt     DateTime
+  endAt       DateTime?
+  allDay      Boolean   @default(true)
+  link        String?
+  description String?
+  notes       String?
+  location    String?
+  remindBefore Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  calendarId String
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  tasks Task[]
+}
+
+model Task {
+  id           String   @id @default(cuid())
+  name         String
+  dueAt        DateTime
+  allDay       Boolean  @default(true)
+  completed    Boolean  @default(false)
+  notes        String?
+  remindBefore Int?
+  link         String?
+  location     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  calendarId String?
+  calendar   Calendar? @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  eventId String?
+  event   Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
