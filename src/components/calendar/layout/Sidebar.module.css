@@ -1,0 +1,14 @@
+.container{
+    width: 16rem;
+    height: 45rem;
+    border-radius: 0.53313rem;
+    background: #F0EEFE;
+}
+.textHeader{
+  color: #6C3ECC;
+  font-family: "DM Sans";
+  font-size: 0.9375rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}

@@ -1,0 +1,10 @@
+.container{
+    width: 90rem;
+    height: 64rem;
+    background: #FAF9FF;
+}
+
+.logoWrapper{
+    left: 3rem;
+    top: 1rem;
+}

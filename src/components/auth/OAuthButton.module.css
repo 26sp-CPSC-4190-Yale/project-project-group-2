@@ -4,6 +4,9 @@
     border-radius: 0.5rem;
     border: 1px solid #6c3ecc;
     background: #fff;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
 }
 .text{
     color: #000;

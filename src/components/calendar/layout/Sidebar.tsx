@@ -17,8 +17,14 @@ export function Sidebar({
 
 }: SidebarProps) {
     return (
-        <div>
-            
+        <div className={styles.container}>
+            <div className={styles.textHeader}>
+                MY CALENDARS
+            </div>
+            <CalendarListItem />
+            <DropDownSecondary />
+            <CreateListItemButton/>
+            <TaskListItem />
         </div>
     );
 }

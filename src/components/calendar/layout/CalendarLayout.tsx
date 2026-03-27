@@ -7,6 +7,7 @@ import styles from "./CalendarLayout.module.css";
 import { Sidebar } from "./Sidebar";
 import { CalendarViewLayout } from "../views/CalendarViewLayout";
 import { Header } from "./Header";
+import { Logo } from "@/components/Logo";
 
 interface CalendarLayoutProps {
     
@@ -17,6 +18,9 @@ export function CalendarLayout({
 }: CalendarLayoutProps) {
     return (
         <div className={styles.container}>
+            <div className={styles.logoWrapper}>
+                <Logo/>
+            </div>
             <Header/>
             <div className={styles.main}>
                 <Sidebar/>
