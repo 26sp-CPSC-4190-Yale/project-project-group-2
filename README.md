@@ -19,7 +19,7 @@ To run the development server:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the app running. It will update when you save your files.
+Open [http://localhost:4000](http://localhost:4000) in your browser to see the app running. It will update when you save your files.
 
 ## Database
 
