@@ -1,19 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import type {
-  ApiResponse,
-  CalendarResponse,
-  IdRouteContext,
-  UpdateCalendarBody,
-} from "@/types";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
+import { jsonSuccess, jsonError } from "@/lib/api";
+import type { IdRouteContext, UpdateCalendarBody } from "@/types";
 
 /**
  * Get a single calendar by ID.
  *
- * Optionally includes related groups and/or events via the `include`
- * query parameter.
+ * Optionally includes related events via the `include` query parameter.
  *
  * @route   GET /api/calendars/[id]
- * @query   [include] — comma-separated: "groups", "events", "groups,events"
+ * @query   [include] — comma-separated: "events"
  * @returns {ApiResponse<CalendarResponse>} the calendar (with optional includes)
  * @error   401 — not authenticated
  * @error   403 — calendar does not belong to the authenticated user
@@ -22,8 +19,25 @@ import type {
 export async function GET(
   request: NextRequest,
   context: IdRouteContext,
-): Promise<NextResponse<ApiResponse<CalendarResponse>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+  const include = request.nextUrl.searchParams.get("include");
+
+  const calendar = await prisma.calendar.findUnique({
+    where: { id },
+    include: {
+      events: include?.includes("events") ?? false,
+      tasks: include?.includes("tasks") ?? false,
+    },
+  });
+
+  if (!calendar) return jsonError("Calendar not found", 404);
+  if (calendar.userId !== session.userId) return jsonError("Forbidden", 403);
+
+  return jsonSuccess(calendar);
 }
 
 /**
@@ -46,15 +60,39 @@ export async function GET(
 export async function PATCH(
   request: NextRequest,
   context: IdRouteContext,
-): Promise<NextResponse<ApiResponse<CalendarResponse>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+
+  const existing = await prisma.calendar.findUnique({ where: { id } });
+  if (!existing) return jsonError("Calendar not found", 404);
+  if (existing.userId !== session.userId) return jsonError("Forbidden", 403);
+
+  let body: UpdateCalendarBody;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonError("Invalid JSON body", 400);
+  }
+
+  const calendar = await prisma.calendar.update({
+    where: { id },
+    data: {
+      title: body.title,
+      color: body.color,
+      description: body.description,
+    },
+  });
+
+  return jsonSuccess(calendar);
 }
 
 /**
  * Delete a calendar and all its related data.
  *
- * Cascade-deletes all groups, events, and tasks that belong to this
- * calendar.
+ * Cascade-deletes all events and tasks that belong to this calendar.
  *
  * @route   DELETE /api/calendars/[id]
  * @returns {ApiResponse<{ message: string }>} confirmation message
@@ -65,6 +103,17 @@ export async function PATCH(
 export async function DELETE(
   request: NextRequest,
   context: IdRouteContext,
-): Promise<NextResponse<ApiResponse<{ message: string }>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+
+  const existing = await prisma.calendar.findUnique({ where: { id } });
+  if (!existing) return jsonError("Calendar not found", 404);
+  if (existing.userId !== session.userId) return jsonError("Forbidden", 403);
+
+  await prisma.calendar.delete({ where: { id } });
+
+  return jsonSuccess({ message: "Calendar deleted" });
 }

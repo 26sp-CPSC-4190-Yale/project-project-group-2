@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { ApiResponse } from "@/types";
+import { SESSION_COOKIE_NAME } from "@/lib/auth";
+import { jsonSuccess } from "@/lib/api";
 
 /**
  * Log the user out by clearing their session.
@@ -8,10 +9,9 @@ import type { ApiResponse } from "@/types";
  *
  * @route   POST /api/auth/logout
  * @returns {ApiResponse<{ message: string }>} confirmation message
- * @error   401 — not authenticated (no session to clear)
  */
-export async function POST(
-  request: NextRequest,
-): Promise<NextResponse<ApiResponse<{ message: string }>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  const response = jsonSuccess({ message: "Logged out" });
+  response.cookies.delete(SESSION_COOKIE_NAME);
+  return response;
 }

@@ -1,27 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
-import type {
-  ApiResponse,
-  IdRouteContext,
-  TaskResponse,
-  UpdateTaskBody,
-} from "@/types";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
+import { jsonSuccess, jsonError } from "@/lib/api";
+import type { IdRouteContext, UpdateTaskBody } from "@/types";
 
 /**
  * Get a single task by ID.
  *
- * The task must belong to the authenticated user.
+ * The task's calendar must belong to the authenticated user.
  *
  * @route   GET /api/tasks/[id]
  * @returns {ApiResponse<TaskResponse>} the task
  * @error   401 — not authenticated
- * @error   403 — task does not belong to the authenticated user
- * @error   404 — task not found
+ * @error   404 — task not found or not accessible
  */
 export async function GET(
   request: NextRequest,
   context: IdRouteContext,
-): Promise<NextResponse<ApiResponse<TaskResponse>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+
+  const task = await prisma.task.findFirst({
+    where: { id, calendar: { userId: session.userId } },
+  });
+
+  if (!task) return jsonError("Task not found", 404);
+
+  return jsonSuccess(task);
 }
 
 /**
@@ -41,20 +49,56 @@ export async function GET(
  * @body    [remindBefore] — new reminder (minutes), or null to clear
  * @body    [link]         — new URL, or null to clear
  * @body    [location]     — new location, or null to clear
- * @body    [calendarId]   — reassign calendar, or null to make standalone
- * @body    [groupId]      — reassign group, or null to remove from group
- * @body    [eventId]      — reassign event, or null to unlink from event
+ * @body    [calendarId]   — move task to a different calendar
  * @returns {ApiResponse<TaskResponse>} the updated task
  * @error   401 — not authenticated
- * @error   403 — task does not belong to the authenticated user
- * @error   404 — task not found
+ * @error   404 — task not found or not accessible
  * @error   400 — invalid body
  */
 export async function PATCH(
   request: NextRequest,
   context: IdRouteContext,
-): Promise<NextResponse<ApiResponse<TaskResponse>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+
+  const existing = await prisma.task.findFirst({
+    where: { id, calendar: { userId: session.userId } },
+  });
+  if (!existing) return jsonError("Task not found", 404);
+
+  let body: UpdateTaskBody;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonError("Invalid JSON body", 400);
+  }
+
+  if (body.calendarId) {
+    const newCalendar = await prisma.calendar.findFirst({
+      where: { id: body.calendarId, userId: session.userId },
+    });
+    if (!newCalendar) return jsonError("Target calendar not found", 404);
+  }
+
+  const task = await prisma.task.update({
+    where: { id },
+    data: {
+      name: body.name,
+      dueAt: body.dueAt ? new Date(body.dueAt) : undefined,
+      allDay: body.allDay,
+      completed: body.completed,
+      notes: body.notes,
+      remindBefore: body.remindBefore,
+      link: body.link,
+      location: body.location,
+      calendarId: body.calendarId,
+    },
+  });
+
+  return jsonSuccess(task);
 }
 
 /**
@@ -63,12 +107,23 @@ export async function PATCH(
  * @route   DELETE /api/tasks/[id]
  * @returns {ApiResponse<{ message: string }>} confirmation message
  * @error   401 — not authenticated
- * @error   403 — task does not belong to the authenticated user
- * @error   404 — task not found
+ * @error   404 — task not found or not accessible
  */
 export async function DELETE(
   request: NextRequest,
   context: IdRouteContext,
-): Promise<NextResponse<ApiResponse<{ message: string }>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+
+  const existing = await prisma.task.findFirst({
+    where: { id, calendar: { userId: session.userId } },
+  });
+  if (!existing) return jsonError("Task not found", 404);
+
+  await prisma.task.delete({ where: { id } });
+
+  return jsonSuccess({ message: "Task deleted" });
 }

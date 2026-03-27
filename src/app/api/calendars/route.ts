@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import type {
-  ApiResponse,
-  CalendarResponse,
-  CreateCalendarBody,
-} from "@/types";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
+import { jsonSuccess, jsonError } from "@/lib/api";
+import type { CreateCalendarBody } from "@/types";
 
 /**
  * List all calendars for the authenticated user.
@@ -15,10 +14,16 @@ import type {
  * @returns {ApiResponse<CalendarResponse[]>} array of the user's calendars
  * @error   401 — not authenticated
  */
-export async function GET(
-  request: NextRequest,
-): Promise<NextResponse<ApiResponse<CalendarResponse[]>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const calendars = await prisma.calendar.findMany({
+    where: { userId: session.userId },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return jsonSuccess(calendars);
 }
 
 /**
@@ -36,8 +41,25 @@ export async function GET(
  * @error   401 — not authenticated
  * @error   400 — invalid body
  */
-export async function POST(
-  request: NextRequest,
-): Promise<NextResponse<ApiResponse<CalendarResponse>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  let body: CreateCalendarBody;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonError("Invalid JSON body", 400);
+  }
+
+  const calendar = await prisma.calendar.create({
+    data: {
+      title: body.title,
+      color: body.color,
+      description: body.description,
+      userId: session.userId,
+    },
+  });
+
+  return jsonSuccess(calendar, 201);
 }

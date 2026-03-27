@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import type {
-  ApiResponse,
-  EventResponse,
-  IdRouteContext,
-  UpdateEventBody,
-} from "@/types";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
+import { jsonSuccess, jsonError } from "@/lib/api";
+import type { IdRouteContext, UpdateEventBody } from "@/types";
 
 /**
  * Get a single event by ID.
@@ -16,14 +14,28 @@ import type {
  * @query   [include] — comma-separated: "tasks"
  * @returns {ApiResponse<EventResponse>} the event (with optional includes)
  * @error   401 — not authenticated
- * @error   403 — event's calendar does not belong to the authenticated user
- * @error   404 — event not found
+ * @error   404 — event not found or not accessible
  */
 export async function GET(
   request: NextRequest,
   context: IdRouteContext,
-): Promise<NextResponse<ApiResponse<EventResponse>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+  const include = request.nextUrl.searchParams.get("include");
+
+  const event = await prisma.event.findFirst({
+    where: { id, calendar: { userId: session.userId } },
+    include: {
+      tasks: include?.includes("tasks") ?? false,
+    },
+  });
+
+  if (!event) return jsonError("Event not found", 404);
+
+  return jsonSuccess(event);
 }
 
 /**
@@ -43,19 +55,62 @@ export async function GET(
  * @body    [notes]        — new notes, or null to clear
  * @body    [location]     — new location, or null to clear
  * @body    [remindBefore] — new reminder (minutes), or null to clear
- * @body    [groupId]      — reassign group, or null to remove from group
  * @body    [calendarId]   — move event to a different calendar
  * @returns {ApiResponse<EventResponse>} the updated event
  * @error   401 — not authenticated
- * @error   403 — event's calendar does not belong to the authenticated user
- * @error   404 — event not found
- * @error   400 — invalid body or invalid dates
+ * @error   404 — event not found or not accessible
+ * @error   400 — invalid body
  */
 export async function PATCH(
   request: NextRequest,
   context: IdRouteContext,
-): Promise<NextResponse<ApiResponse<EventResponse>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+
+  const existing = await prisma.event.findFirst({
+    where: { id, calendar: { userId: session.userId } },
+  });
+  if (!existing) return jsonError("Event not found", 404);
+
+  let body: UpdateEventBody;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonError("Invalid JSON body", 400);
+  }
+
+  if (body.calendarId) {
+    const newCalendar = await prisma.calendar.findFirst({
+      where: { id: body.calendarId, userId: session.userId },
+    });
+    if (!newCalendar) return jsonError("Target calendar not found", 404);
+  }
+
+  const event = await prisma.event.update({
+    where: { id },
+    data: {
+      name: body.name,
+      startAt: body.startAt ? new Date(body.startAt) : undefined,
+      endAt:
+        body.endAt === null
+          ? null
+          : body.endAt
+            ? new Date(body.endAt)
+            : undefined,
+      allDay: body.allDay,
+      link: body.link,
+      description: body.description,
+      notes: body.notes,
+      location: body.location,
+      remindBefore: body.remindBefore,
+      calendarId: body.calendarId,
+    },
+  });
+
+  return jsonSuccess(event);
 }
 
 /**
@@ -66,12 +121,23 @@ export async function PATCH(
  * @route   DELETE /api/events/[id]
  * @returns {ApiResponse<{ message: string }>} confirmation message
  * @error   401 — not authenticated
- * @error   403 — event's calendar does not belong to the authenticated user
- * @error   404 — event not found
+ * @error   404 — event not found or not accessible
  */
 export async function DELETE(
   request: NextRequest,
   context: IdRouteContext,
-): Promise<NextResponse<ApiResponse<{ message: string }>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+
+  const existing = await prisma.event.findFirst({
+    where: { id, calendar: { userId: session.userId } },
+  });
+  if (!existing) return jsonError("Event not found", 404);
+
+  await prisma.event.delete({ where: { id } });
+
+  return jsonSuccess({ message: "Event deleted" });
 }

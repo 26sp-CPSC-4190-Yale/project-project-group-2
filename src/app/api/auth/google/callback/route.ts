@@ -1,4 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import {
+  createSessionToken,
+  SESSION_COOKIE_NAME,
+  sessionCookieOptions,
+} from "@/lib/auth";
+import { jsonError } from "@/lib/api";
 
 /**
  * Handle the Google OAuth callback.
@@ -17,5 +24,55 @@ import { NextRequest, NextResponse } from "next/server";
  * @error   500 — token exchange or profile fetch failed
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+  const code = request.nextUrl.searchParams.get("code");
+  if (!code) return jsonError("Missing authorization code", 400);
+
+  const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      grant_type: "authorization_code",
+    }),
+  });
+
+  if (!tokenRes.ok) {
+    return jsonError("Failed to exchange authorization code", 500);
+  }
+
+  const tokenData = await tokenRes.json();
+
+  const profileRes = await fetch(
+    "https://www.googleapis.com/oauth2/v2/userinfo",
+    { headers: { Authorization: `Bearer ${tokenData.access_token}` } },
+  );
+
+  if (!profileRes.ok) {
+    return jsonError("Failed to fetch Google profile", 500);
+  }
+
+  const profile = await profileRes.json();
+
+  const user = await prisma.user.upsert({
+    where: { email: profile.email },
+    update: {
+      googleId: profile.id,
+      name: profile.name,
+      avatarUrl: profile.picture,
+    },
+    create: {
+      googleId: profile.id,
+      email: profile.email,
+      name: profile.name,
+      avatarUrl: profile.picture,
+    },
+  });
+
+  const token = await createSessionToken(user.id);
+  const response = NextResponse.redirect(new URL("/", request.url));
+  response.cookies.set(SESSION_COOKIE_NAME, token, sessionCookieOptions);
+  return response;
 }

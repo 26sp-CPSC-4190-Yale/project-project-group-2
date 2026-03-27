@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { ApiResponse, UserResponse } from "@/types";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
+import { jsonSuccess, jsonError } from "@/lib/api";
 
 /**
  * Return the currently authenticated user's profile.
@@ -12,8 +14,24 @@ import type { ApiResponse, UserResponse } from "@/types";
  * @returns {ApiResponse<UserResponse>} the authenticated user's profile
  * @error   401 — not authenticated or session expired
  */
-export async function GET(
-  request: NextRequest,
-): Promise<NextResponse<ApiResponse<UserResponse>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: {
+      id: true,
+      googleId: true,
+      email: true,
+      name: true,
+      avatarUrl: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (!user) return jsonError("User not found", 404);
+
+  return jsonSuccess(user);
 }
