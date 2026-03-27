@@ -3,13 +3,13 @@
  * @component
  */
 
-interface DropDownProps {
+interface DropDownSecondaryProps {
     
 }
 
-export function DropDown({
+export function DropDownSecondary({
 
-}: DropDownProps) {
+}: DropDownSecondaryProps) {
     return (
         <div>
             

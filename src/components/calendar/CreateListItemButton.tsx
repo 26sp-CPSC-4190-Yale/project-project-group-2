@@ -3,13 +3,13 @@
  * @component
  */
 
-interface CreateCalendarListItemProps {
+interface CreateListItemButtonProps {
     
 }
 
-export function CreateCalendarListItem({
+export function CreateListItemButton({
 
-}: CreateCalendarListItemProps) {
+}: CreateListItemButtonProps) {
     return (
         <div>
             

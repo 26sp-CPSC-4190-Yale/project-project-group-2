@@ -3,16 +3,21 @@
  * @component
  */
 
+import styles from "./OAuthButton.module.css";
+
 interface OAuthButtonProps {
-    
+    onClick?: () => void;
 }
 
 export function OAuthButton({
-
+    onClick,
 }: OAuthButtonProps) {
     return (
-        <div>
-            
+        <div
+            className={styles.button}
+            onClick={onClick}
+        >
+           Login with Google 
         </div>
     );
 }
