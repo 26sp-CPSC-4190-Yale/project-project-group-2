@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./DayView.module.css";
+
 interface DayViewProps {
     
 }

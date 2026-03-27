@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./AddNewButton.module.css";
+
 interface AddNewButtonProps {
     
 }

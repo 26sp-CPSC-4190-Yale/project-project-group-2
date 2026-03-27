@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./ProfileIcon.module.css";
+
 interface ProfileIconProps {
     
 }

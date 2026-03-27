@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./WeekView.module.css";
+
 interface WeekViewProps {
     
 }

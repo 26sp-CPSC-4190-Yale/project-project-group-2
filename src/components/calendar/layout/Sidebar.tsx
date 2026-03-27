@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./Sidebar.module.css";
+
 interface SidebarProps {
     
 }

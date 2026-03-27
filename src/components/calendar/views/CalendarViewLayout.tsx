@@ -2,6 +2,8 @@
  * @component
  */
 
+import styles from "./CalendarViewLayout.module.css";
+
 interface CalendarViewLayoutProps {
     
 }
