@@ -4,6 +4,9 @@
  */
 
 import styles from "./CalendarLayout.module.css";
+import { Sidebar } from "./Sidebar";
+import { CalendarViewLayout } from "../views/CalendarViewLayout";
+import { Header } from "./Header";
 
 interface CalendarLayoutProps {
     

@@ -4,6 +4,8 @@
  */
 
 import styles from "./AddNewMenu.module.css";
+import { ButtonPrimary } from "../ButtonPrimary";
+import { ButtonSecondary } from "../ButtonSecondary";
 
 interface AddNewMenuProps {
     

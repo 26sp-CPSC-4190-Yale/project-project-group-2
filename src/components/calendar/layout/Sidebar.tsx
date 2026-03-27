@@ -4,6 +4,10 @@
  */
 
 import styles from "./Sidebar.module.css";
+import { CalendarListItem } from "../CalendarListItem";
+import { DropDownSecondary } from "@/components/DropDownSecondary";
+import { TaskListItem } from "../TaskListItem";
+import { CreateListItemButton } from "../CreateListItemButton";
 
 interface SidebarProps {
     
