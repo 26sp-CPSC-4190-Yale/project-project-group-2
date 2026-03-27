@@ -13,8 +13,9 @@ export function Logo({
 
 }: LogoProps) {
     return (
-        <div>
-            
+        <div className={styles.container}
+        >
+                Planar
         </div>
     );
 }

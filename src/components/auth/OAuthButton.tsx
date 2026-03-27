@@ -17,7 +17,11 @@ export function OAuthButton({
             className={styles.button}
             onClick={onClick}
         >
-           Login with Google 
+            <div 
+                className={styles.text}
+            >
+                Login with Google
+            </div>
         </div>
     );
 }

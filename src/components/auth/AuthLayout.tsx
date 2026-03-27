@@ -15,9 +15,18 @@ export function AuthLayout({
 
 }: AuthLayoutProps) {
     return (
-        <div>
-            <Logo />
-            <OAuthButton />
+        <div className={styles.container}>
+            <div className={styles.logoposition}>
+                <Logo />
+            </div>
+            <div className={styles.sloganposition}>
+                <div className={styles.slogan}>
+                    Slogan on planning,<br/>efficiency, blah blah.
+                </div>
+            </div>
+            <div className={styles.oauthposition}>
+                <OAuthButton />
+            </div>
         </div>
     );
 }
