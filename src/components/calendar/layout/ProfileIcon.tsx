@@ -7,14 +7,17 @@ import styles from "./ProfileIcon.module.css";
 import { ActionMenu } from "@/components/ActionMenu";
 
 interface ProfileIconProps {
-    
+    onClick?: ()=>void;
 }
 
 export function ProfileIcon({
-
+    onClick,
 }: ProfileIconProps) {
     return (
-        <div>
+        <div
+            onClick={onClick}
+            className={styles.container}
+        >
             
         </div>
     );

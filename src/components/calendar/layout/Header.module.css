@@ -1,0 +1,15 @@
+.header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  height: 4rem;
+  padding: 1rem 2rem;
+
+  border-bottom: 0.1rem solid #ddd;
+}
+
+.profileWrapper {
+  display: flex;
+  align-items: center;
+}

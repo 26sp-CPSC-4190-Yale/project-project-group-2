@@ -16,8 +16,14 @@ export function CalendarLayout({
 
 }: CalendarLayoutProps) {
     return (
-        <div>
-            
+        <div className={styles.container}>
+            <Header/>
+            <div className={styles.main}>
+                <Sidebar/>
+                <div className={styles.calendar}>
+                    <CalendarViewLayout/>
+                </div>
+            </div>
         </div>
     );
 }

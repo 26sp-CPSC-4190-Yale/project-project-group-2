@@ -3,6 +3,8 @@
  * @component
  */
 
+import { ProfileIcon } from "./ProfileIcon";
+import styles from "./Header.module.css";
 interface HeaderProps {
     
 }
@@ -11,8 +13,10 @@ export function Header({
 
 }: HeaderProps) {
     return (
-        <div>
-            
+        <div className={styles.header}>
+            <div className={styles.profileWrapper}>
+                <ProfileIcon/>
+            </div>    
         </div>
     );
 }
