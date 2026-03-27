@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./DropDownPrimary.module.css";
+
 interface DropDownPrimaryProps {
     
 }

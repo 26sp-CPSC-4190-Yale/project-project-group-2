@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./Logo.module.css";
+
 interface LogoProps {
     
 }

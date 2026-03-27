@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./ButtonSecondary.module.css";
+
 interface ButtonSecondaryProps {
     
 }

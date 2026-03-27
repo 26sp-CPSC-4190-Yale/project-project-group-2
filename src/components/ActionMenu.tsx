@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./ActionMenu.module.css";
+
 interface ActionMenuProps {
     
 }

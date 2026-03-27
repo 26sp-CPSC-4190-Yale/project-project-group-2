@@ -2,6 +2,8 @@
  * @component
  */
 
+import styles from "./EventCardEditMenu.module.css";
+
 interface EventCardEditMenuProps {
     
 }

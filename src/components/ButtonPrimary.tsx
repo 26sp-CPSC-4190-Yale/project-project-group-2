@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./ButtonPrimary.module.css";
+
 interface ButtonPrimaryProps {
     
 }

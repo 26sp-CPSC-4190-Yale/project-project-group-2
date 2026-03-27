@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./EventCard.module.css";
+
 interface EventCardProps {
     
 }
