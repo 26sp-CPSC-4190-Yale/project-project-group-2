@@ -3,6 +3,7 @@
  * @component
  */
 
+import styles from "./AuthLayout.module.css";
 import { Logo } from "@/components/Logo";
 import { OAuthButton } from "./OAuthButton";
 

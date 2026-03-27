@@ -3,6 +3,8 @@
  * @component
  */
 
+import styles from "./AddNewMenu.module.css";
+
 interface AddNewMenuProps {
     
 }
