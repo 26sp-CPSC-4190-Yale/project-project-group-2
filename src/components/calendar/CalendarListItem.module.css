@@ -1,0 +1,37 @@
+.container {
+    display: flex;
+    width: 14.5rem;
+    height: 1.75rem;
+    padding: 0.25rem 1rem;    
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.active {
+    background-color: #6c3ecc;
+}
+
+.inactive {
+    background-color: transparent;
+}
+
+.inactive:hover {
+    background-color: rgba(108, 62, 204, 0.1);
+}
+
+.text {
+    font-family: var(--font-dm-sans);
+    font-size: 0.94775rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;  
+}
+
+.activeText {
+    color: #F0EEFE;
+}
+
+.inactiveText {
+    color: #6c3ecc;
+}

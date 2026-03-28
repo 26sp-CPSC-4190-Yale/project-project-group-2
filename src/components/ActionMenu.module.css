@@ -1,0 +1,25 @@
+.menu {
+    display: flex;
+    flex-direction: column;
+    padding: 0.375rem;
+    border-radius: 0.5rem;
+    background: #F0EEFE;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    min-width: 8rem;
+}
+
+.item {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    color: #6c3ecc;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    user-select: none;
+}
+
+.item:hover {
+    background-color: #D9CFFB;
+}

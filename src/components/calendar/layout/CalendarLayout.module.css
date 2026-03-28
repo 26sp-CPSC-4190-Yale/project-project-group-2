@@ -1,10 +1,16 @@
 .container{
-    width: 90rem;
-    height: 64rem;
+    height: 100vh;
+    min-height: 100vh;
+    padding: 0rem 1.3rem 1.3rem;
     background: #FAF9FF;
+    display: flex;
+    flex-direction: column;
 }
 
-.logoWrapper{
-    left: 3rem;
-    top: 1rem;
+.main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 1.75rem;
 }

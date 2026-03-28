@@ -71,6 +71,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     },
   });
 
+  const calendarCount = await prisma.calendar.count({
+    where: { userId: user.id },
+  });
+  if (calendarCount === 0) {
+    await prisma.calendar.create({
+      data: { title: "My Calendar", userId: user.id },
+    });
+  }
+
   const token = await createSessionToken(user.id);
   const response = NextResponse.redirect(new URL("/", request.url));
   response.cookies.set(SESSION_COOKIE_NAME, token, sessionCookieOptions);

@@ -1,0 +1,22 @@
+.container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.button {
+    width: 1.6875rem;
+    height: 1.6875rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.label {
+    color: #000;
+    font-family: var(--font-dm-sans);
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    white-space: nowrap;
+}

@@ -1,5 +1,5 @@
 /**
- * A floating modal for creating a new event. Users can set all event
+ * A floating modal for creating a new task. Users can set all task
  * fields. Appears centered on screen with a dimmed backdrop.
  * @component
  */
@@ -8,72 +8,64 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./AddNewMenu.module.css";
+import styles from "./TaskCreateMenu.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
+import { DropDownSecondary } from "@/components/DropDownSecondary";
 import type { SidebarCalendar } from "./layout/Sidebar";
 
-interface AddNewMenuProps {
+interface TaskCreateMenuProps {
     calendars: SidebarCalendar[];
     defaultCalendarId?: string | null;
     onClose: () => void;
 }
 
-export function AddNewMenu({
+export function TaskCreateMenu({
     calendars,
     defaultCalendarId,
     onClose,
-}: AddNewMenuProps) {
+}: TaskCreateMenuProps) {
     const defaultCal = calendars.find((c) => c.id === defaultCalendarId) ?? calendars[0];
 
     const [name, setName] = useState("");
-    const [calendarId, setCalendarId] = useState(defaultCal?.id ?? "");
+    const [calendarTitle, setCalendarTitle] = useState(defaultCal?.title ?? "");
     const [allDay, setAllDay] = useState(true);
-    const [startDate, setStartDate] = useState("");
-    const [startTime, setStartTime] = useState("");
-    const [endDate, setEndDate] = useState("");
-    const [endTime, setEndTime] = useState("");
-    const [description, setDescription] = useState("");
+    const [dueDate, setDueDate] = useState("");
+    const [dueTime, setDueTime] = useState("");
     const [notes, setNotes] = useState("");
+    const [remindBefore, setRemindBefore] = useState("");
     const [link, setLink] = useState("");
     const [location, setLocation] = useState("");
-    const [remindBefore, setRemindBefore] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const router = useRouter();
 
     const handleCreate = async () => {
         if (submitting) return;
-        if (!startDate) return;
-        if (!calendarId) return;
+        if (!name.trim()) return;
+        if (!dueDate) return;
+
+        const calendar = calendars.find((c) => c.title === calendarTitle);
+        if (!calendar) return;
 
         setSubmitting(true);
 
-        const startAt = allDay
-            ? new Date(`${startDate}T00:00:00`).toISOString()
-            : new Date(`${startDate}T${startTime || "00:00"}`).toISOString();
-
-        let endAt: string | undefined;
-        if (endDate) {
-            endAt = allDay
-                ? new Date(`${endDate}T23:59:59`).toISOString()
-                : new Date(`${endDate}T${endTime || "23:59"}`).toISOString();
-        }
+        const dueAt = allDay
+            ? new Date(`${dueDate}T00:00:00`).toISOString()
+            : new Date(`${dueDate}T${dueTime || "00:00"}`).toISOString();
 
         try {
-            const res = await fetch("/api/events", {
+            const res = await fetch("/api/tasks", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    calendarId,
-                    name: name.trim() || undefined,
-                    startAt,
-                    endAt,
+                    name: name.trim(),
+                    dueAt,
                     allDay,
-                    description: description.trim() || undefined,
+                    calendarId: calendar.id,
                     notes: notes.trim() || undefined,
+                    remindBefore: remindBefore ? parseInt(remindBefore, 10) : undefined,
                     link: link.trim() || undefined,
                     location: location.trim() || undefined,
-                    remindBefore: remindBefore ? parseInt(remindBefore, 10) : undefined,
                 }),
             });
 
@@ -89,28 +81,27 @@ export function AddNewMenu({
     return (
         <div className={styles.backdrop} onClick={onClose}>
             <div className={styles.card} onClick={(e) => e.stopPropagation()}>
-                <h2 className={styles.heading}>New Event</h2>
+                <h2 className={styles.heading}>New Task</h2>
 
                 <label className={styles.label}>Name</label>
                 <input
                     className={styles.input}
                     type="text"
-                    placeholder="New Event"
+                    placeholder="Task name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     autoFocus
                 />
 
                 <label className={styles.label}>Calendar</label>
-                <select
-                    className={styles.input}
-                    value={calendarId}
-                    onChange={(e) => setCalendarId(e.target.value)}
-                >
-                    {calendars.map((cal) => (
-                        <option key={cal.id} value={cal.id}>{cal.title}</option>
-                    ))}
-                </select>
+                <div className={styles.dropdownRow}>
+                    <DropDownSecondary
+                        items={calendars.map((c) => c.title)}
+                        defaultValue={calendarTitle}
+                        onChange={setCalendarTitle}
+                        width="100%"
+                    />
+                </div>
 
                 <div
                     className={styles.checkboxRow}
@@ -124,58 +115,26 @@ export function AddNewMenu({
 
                 <div className={styles.row}>
                     <div className={styles.column}>
-                        <label className={styles.label}>Start Date</label>
+                        <label className={styles.label}>Due Date</label>
                         <input
                             className={styles.input}
                             type="date"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
+                            value={dueDate}
+                            onChange={(e) => setDueDate(e.target.value)}
                         />
                     </div>
                     {!allDay && (
                         <div className={styles.column}>
-                            <label className={styles.label}>Start Time</label>
+                            <label className={styles.label}>Due Time</label>
                             <input
                                 className={styles.input}
                                 type="time"
-                                value={startTime}
-                                onChange={(e) => setStartTime(e.target.value)}
+                                value={dueTime}
+                                onChange={(e) => setDueTime(e.target.value)}
                             />
                         </div>
                     )}
                 </div>
-
-                <div className={styles.row}>
-                    <div className={styles.column}>
-                        <label className={styles.label}>End Date</label>
-                        <input
-                            className={styles.input}
-                            type="date"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                        />
-                    </div>
-                    {!allDay && (
-                        <div className={styles.column}>
-                            <label className={styles.label}>End Time</label>
-                            <input
-                                className={styles.input}
-                                type="time"
-                                value={endTime}
-                                onChange={(e) => setEndTime(e.target.value)}
-                            />
-                        </div>
-                    )}
-                </div>
-
-                <label className={styles.label}>Description</label>
-                <textarea
-                    className={styles.textarea}
-                    placeholder="Optional"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    rows={2}
-                />
 
                 <label className={styles.label}>Notes</label>
                 <textarea

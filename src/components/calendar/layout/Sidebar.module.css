@@ -1,14 +1,65 @@
-.container{
-    width: 16rem;
-    height: 45rem;
-    border-radius: 0.53313rem;
-    background: #F0EEFE;
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 16rem;
+  margin-top: 2.75rem;
+  margin-left: 1.08rem;
+  padding: 1.25rem 0.75rem;
+  border-radius: 0.5rem;
+  background: #F0EEFE;
+  overflow-y: auto;
 }
-.textHeader{
+
+.headerText {
   color: #6C3ECC;
-  font-family: "DM Sans";
+  font-family: var(--font-dm-sans);
   font-size: 0.9375rem;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+}
+
+.createButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  flex: 1;
+  margin-right: 0.25rem;
+}
+
+.calendarHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.calendarList {
+  height: 8rem;
+  overflow-y: auto;
+}
+
+.separatorBar {
+  width: 12.6rem;
+  height: 0.06rem;
+  margin-top: 0.25rem;
+  margin-bottom: 1.5rem;
+  background-color: #D9CFFB;
+}
+
+.taskHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.taskList {
+  height: 8rem;
+  overflow-y: auto;
 }

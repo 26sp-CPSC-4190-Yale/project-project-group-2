@@ -5,17 +5,22 @@
 
 import { ProfileIcon } from "./ProfileIcon";
 import styles from "./Header.module.css";
+import { Logo } from "@/components/Logo";
+
 interface HeaderProps {
-    
+    avatarUrl?: string | null;
 }
 
 export function Header({
-
+    avatarUrl,
 }: HeaderProps) {
     return (
         <div className={styles.header}>
+            <div className={styles.logoWrapper}>
+                <Logo/>
+            </div>
             <div className={styles.profileWrapper}>
-                <ProfileIcon/>
+                <ProfileIcon avatarUrl={avatarUrl} />
             </div>    
         </div>
     );

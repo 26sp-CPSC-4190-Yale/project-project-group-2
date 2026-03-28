@@ -1,20 +1,30 @@
 /**
- * A general template for an item representing a calendar in the sidebar. Has a hover effect. User interaction will cause the current calendar in view to change to the calendar corresponding to the item pressed.
+ * A general template for an item representing a calendar in the sidebar.
+ * Has a hover effect. Clicking selects this calendar as the active one.
  * @component
  */
 
 import styles from "./CalendarListItem.module.css";
 
 interface CalendarListItemProps {
-    
+    calendarName?: string;
+    active?: boolean;
+    onClick?: () => void;
 }
 
 export function CalendarListItem({
-
+    calendarName,
+    active = false,
+    onClick,
 }: CalendarListItemProps) {
     return (
-        <div>
-            
+        <div
+            className={`${styles.container} ${active ? styles.active : styles.inactive}`}
+            onClick={onClick}
+        >
+            <div className={`${styles.text} ${active ? styles.activeText : styles.inactiveText}`}>
+                {calendarName}
+            </div>
         </div>
     );
 }

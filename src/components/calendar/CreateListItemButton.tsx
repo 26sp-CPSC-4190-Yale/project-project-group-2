@@ -6,15 +6,20 @@
 import styles from "./CreateListItemButton.module.css";
 
 interface CreateListItemButtonProps {
-    
+   onClick?: () => void; 
 }
 
 export function CreateListItemButton({
-
+    onClick,
 }: CreateListItemButtonProps) {
     return (
-        <div>
-            
+        <div 
+            className={styles.container}
+            onClick={onClick}
+        >
+           <div className={styles.text}>
+                +
+            </div> 
         </div>
     );
 }

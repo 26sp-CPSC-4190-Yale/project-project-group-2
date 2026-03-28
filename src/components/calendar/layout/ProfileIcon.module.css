@@ -1,13 +1,35 @@
+.wrapper {
+    position: relative;
+}
+
 .container {
-  width: 2.5rem;
-  height: 2.5rem;
+    width: 3.125rem;
+    height: 3.125rem;
+    border-radius: 50%;
+    background-color: #D9CFFB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
 
-  border-radius: 50%;
-  background-color: #ccc;
+.avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.fallback {
+    color: #6c3ecc;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
 
-  cursor: pointer;
+.menuPosition {
+    position: absolute;
+    top: 3.5rem;
+    right: 0;
+    z-index: 100;
 }

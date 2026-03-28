@@ -1,20 +1,35 @@
 /**
- * A generic menu component displayed when user clicks on an icon or component which has associated actions such as: edit, delete, sign out, etc.
+ * A generic dropdown menu with a configurable list of action items.
+ * Each item has a label and an onClick handler.
  * @component
  */
 
 import styles from "./ActionMenu.module.css";
 
-interface ActionMenuProps {
-    
+export interface ActionMenuItem {
+    label: string;
+    onClick: () => void;
 }
 
-export function ActionMenu({
+interface ActionMenuProps {
+    items: ActionMenuItem[];
+}
 
-}: ActionMenuProps) {
+export function ActionMenu({ items }: ActionMenuProps) {
     return (
-        <div>
-            
+        <div className={styles.menu}>
+            {items.map((item, i) => (
+                <div
+                    key={i}
+                    className={styles.item}
+                    onClick={item.onClick}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === "Enter") item.onClick(); }}
+                >
+                    {item.label}
+                </div>
+            ))}
         </div>
     );
 }

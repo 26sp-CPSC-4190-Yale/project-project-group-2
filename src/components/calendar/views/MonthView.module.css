@@ -1,0 +1,100 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+.monthLabel {
+    padding: 0.5rem 0.75rem;
+    color: #6c3ecc;
+    font-family: var(--font-dm-sans);
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+.headerRow {
+    display: flex;
+    border-bottom: 1px solid #D9CFFB;
+    flex-shrink: 0;
+}
+
+.dayHeader {
+    flex: 1;
+    text-align: center;
+    padding: 0.3rem 0;
+    color: #999;
+    font-family: var(--font-dm-sans);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.grid {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.weekRow {
+    display: flex;
+    flex: 1;
+    border-bottom: 1px solid #E8E0FD;
+    min-height: 0;
+}
+
+.weekRow:last-child {
+    border-bottom: none;
+}
+
+.cell {
+    flex: 1;
+    padding: 0.3rem 0.4rem;
+    border-right: 1px solid #E8E0FD;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.cell:last-child {
+    border-right: none;
+}
+
+.cellEvents {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+    min-height: 0;
+}
+
+.moreLabel {
+    color: #6c3ecc;
+    font-family: var(--font-dm-sans);
+    font-size: 0.55rem;
+    font-weight: 500;
+    padding-left: 0.2rem;
+    margin-top: 0.1rem;
+}
+
+.outOfMonth {
+    opacity: 0.35;
+}
+
+.dayNumber {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    color: #333;
+    font-family: var(--font-dm-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.today {
+    background-color: #6c3ecc;
+    color: #fff;
+}
