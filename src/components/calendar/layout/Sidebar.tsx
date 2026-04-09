@@ -9,8 +9,8 @@ import { useState, useEffect } from "react";
 import styles from "./Sidebar.module.css";
 import { CalendarListItem } from "../CalendarListItem";
 import { TaskListItem } from "../TaskListItem";
-import { DropDownSecondary } from "@/components/DropDownSecondary";
 import { CreateListItemButton } from "../CreateListItemButton";
+import { ButtonSecondary } from "@/components/ButtonSecondary";
 
 export interface SidebarCalendar {
     id: string;
@@ -103,10 +103,8 @@ export function Sidebar({
                     <CreateListItemButton onClick={onOpenCreateTask} />
                 </div>
             </div>
-            <DropDownSecondary
-                items={calendars.map((cal) => cal.title)}
-                defaultValue={defaultCalTitle}
-                onChange={setTaskCalendarTitle}
+            <ButtonSecondary
+                label="View All Tasks"
                 width="14.5rem"
             />
             <div className={styles.taskList}>
