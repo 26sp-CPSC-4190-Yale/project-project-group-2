@@ -11,6 +11,7 @@ import type { CreateTaskBody } from "@/types";
  *
  * @route   GET /api/tasks
  * @query   [calendarId] — only return tasks in this calendar
+ * @query   [groupId]    — only return tasks in this group
  * @query   [completed]  — "true" or "false" to filter by completion status
  * @query   [start]      — ISO 8601 date; tasks due on or after
  * @query   [end]        — ISO 8601 date; tasks due on or before
@@ -23,14 +24,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const { searchParams } = request.nextUrl;
   const calendarId = searchParams.get("calendarId");
+  const groupId = searchParams.get("groupId");
   const completed = searchParams.get("completed");
   const start = searchParams.get("start");
   const end = searchParams.get("end");
 
   const tasks = await prisma.task.findMany({
     where: {
-      calendar: { userId: session.userId },
-      ...(calendarId && { calendarId }),
+      userId: session.userId,
+      ...(calendarId && { group: { calendarId } }),
+      ...(groupId && { groupId }),  
       ...(completed !== null && { completed: completed === "true" }),
       ...(start && { dueAt: { gte: new Date(start) } }),
       ...(end && { dueAt: { lte: new Date(end) } }),
@@ -51,12 +54,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
  * @body    {CreateTaskBody}
  * @body    name           — task name/description (required, no default)
  * @body    dueAt          — ISO 8601 due datetime (required)
- * @body    calendarId     — the calendar this task belongs to (required)
  * @body    [allDay]       — whether this is an all-day task (default: true)
  * @body    [notes]        — additional notes
  * @body    [remindBefore] — minutes before due to send a reminder
  * @body    [link]         — URL associated with the task
  * @body    [location]     — task location
+ * @body    groupId      — the group this task belongs to (required)
+ * @body    [eventId]     — the event this task belongs to
  * @returns {ApiResponse<TaskResponse>} the newly created task
  * @error   401 — not authenticated
  * @error   400 — invalid body or missing required fields
@@ -76,12 +80,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   if (!body.name) return jsonError("name is required", 400);
   if (!body.dueAt) return jsonError("dueAt is required", 400);
-  if (!body.calendarId) return jsonError("calendarId is required", 400);
 
-  const calendar = await prisma.calendar.findFirst({
-    where: { id: body.calendarId, userId: session.userId },
-  });
-  if (!calendar) return jsonError("Calendar not found", 404);
+  // Finding groupId for task
+  let groupId: string;
+  if (body.groupId) {
+    const group = await prisma.group.findFirst({
+      where: { id: body.groupId, calendar: { userId: session.userId } },
+    });
+    if (!group) return jsonError("Group not found", 404);
+    groupId = group.id;
+  } else {
+    if (!body.calendarId) return jsonError("calendarId is required when groupId is not provided", 400);
+    const defaultGroup = await prisma.group.findFirst({
+      where: { calendarId: body.calendarId, isDefault: true },
+    });
+    if (!defaultGroup) return jsonError("Default group not found", 404);
+    groupId = defaultGroup.id;
+  }
 
   const task = await prisma.task.create({
     data: {
@@ -92,7 +107,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       remindBefore: body.remindBefore,
       link: body.link,
       location: body.location,
-      calendarId: body.calendarId,
+      groupId,
       userId: session.userId,
     },
   });

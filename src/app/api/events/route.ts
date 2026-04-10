@@ -13,9 +13,10 @@ import type { CreateEventBody } from "@/types";
  *
  * @route   GET /api/events
  * @query   [calendarId] — only return events in this calendar
+ * @query   [groupId]    — only return events in this group
  * @query   [start]      — ISO 8601 date; events starting on or after
  * @query   [end]        — ISO 8601 date; events starting on or before
- * @returns {ApiResponse<EventResponse[]>} array of events
+ * @returns {ApiResponse<EventResponse[]>} array of events, separated by group and ordered by start datetime ascending
  * @error   401 — not authenticated
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -24,17 +25,19 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const { searchParams } = request.nextUrl;
   const calendarId = searchParams.get("calendarId");
+  const groupId = searchParams.get("groupId");   
   const start = searchParams.get("start");
-  const end = searchParams.get("end");
-
+  const end = searchParams.get("end");                                   
+                                              
   const events = await prisma.event.findMany({
     where: {
-      calendar: { userId: session.userId },
-      ...(calendarId && { calendarId }),
+      group: { calendar: { userId: session.userId } },                              
+      ...(calendarId && { group: { calendarId } }),
+      ...(groupId && { groupId }),                                                  
       ...(start && { startAt: { gte: new Date(start) } }),
       ...(end && { startAt: { lte: new Date(end) } }),
     },
-    orderBy: { startAt: "asc" },
+    orderBy: { startAt: "asc" },                                                    
   });
 
   return jsonSuccess(events);
@@ -47,7 +50,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
  *
  * @route   POST /api/events
  * @body    {CreateEventBody}
- * @body    calendarId     — the calendar this event belongs to (required)
  * @body    [name]         — display name (default: "New Event")
  * @body    startAt        — ISO 8601 start datetime (required)
  * @body    [endAt]        — ISO 8601 end datetime
@@ -57,6 +59,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
  * @body    [notes]        — additional notes
  * @body    [location]     — event location
  * @body    [remindBefore] — minutes before event to send a reminder
+ * @body    [groupId]      — the group this event belongs to (default: the calendar's default group)
  * @returns {ApiResponse<EventResponse>} the newly created event
  * @error   401 — not authenticated
  * @error   403 — calendar does not belong to the authenticated user
@@ -77,14 +80,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!body.calendarId) return jsonError("calendarId is required", 400);
   if (!body.startAt) return jsonError("startAt is required", 400);
 
-  const calendar = await prisma.calendar.findFirst({
-    where: { id: body.calendarId, userId: session.userId },
-  });
-  if (!calendar) return jsonError("Calendar not found", 404);
+  // Finding groupId for event
+  let groupId: string;
+  if (body.groupId) {
+    const group = await prisma.group.findFirst({
+      where: { id: body.groupId, calendarId: body.calendarId },
+    });
+    if (!group) return jsonError("Group not found", 404);
+    groupId = group.id;
+  } else {
+    const defaultGroup = await prisma.group.findFirst({
+      where: { calendarId: body.calendarId, isDefault: true },
+    });
+    if (!defaultGroup) return jsonError("Default group not found", 404);
+    groupId = defaultGroup.id;
+  }
 
   const event = await prisma.event.create({
     data: {
-      calendarId: body.calendarId,
       name: body.name,
       startAt: new Date(body.startAt),
       endAt: body.endAt ? new Date(body.endAt) : undefined,
@@ -94,6 +107,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       notes: body.notes,
       location: body.location,
       remindBefore: body.remindBefore,
+      groupId: groupId,
     },
   });
 

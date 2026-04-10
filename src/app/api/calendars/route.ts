@@ -61,5 +61,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     },
   });
 
+  const defaultGroup = await prisma.group.create({
+    data: {
+      calendarId: calendar.id,
+      name: "Default Group",
+      color: body.color,
+      isDefault: true,
+    },
+  });
+
   return jsonSuccess(calendar, 201);
 }

@@ -44,7 +44,6 @@ export interface CalendarResponse {
   createdAt: string;
   updatedAt: string;
   groups?: GroupResponse[];
-  events?: EventResponse[];
 }
 
 export interface GroupResponse {
@@ -70,13 +69,11 @@ export interface EventResponse {
   notes: string | null;
   location: string | null;
   remindBefore: number | null;
-  calendarId: string;
-  groupId: string | null;
+  groupId: string;
   createdAt: string;
   updatedAt: string;
   tasks?: TaskResponse[];
-  calendar?: CalendarResponse;
-  group?: GroupResponse | null;
+  group?: GroupResponse;
 }
 
 export interface TaskResponse {
@@ -90,13 +87,11 @@ export interface TaskResponse {
   link: string | null;
   location: string | null;
   userId: string;
-  calendarId: string | null;
-  groupId: string | null;
+  groupId: string;
   eventId: string | null;
   createdAt: string;
   updatedAt: string;
-  calendar?: CalendarResponse | null;
-  group?: GroupResponse | null;
+  group?: GroupResponse;
   event?: EventResponse | null;
 }
 
@@ -177,7 +172,6 @@ export interface UpdateEventBody {
   location?: string | null;
   remindBefore?: number | null;
   groupId?: string | null;
-  calendarId?: string;
 }
 
 export interface UpdateTaskBody {
@@ -189,7 +183,6 @@ export interface UpdateTaskBody {
   remindBefore?: number | null;
   link?: string | null;
   location?: string | null;
-  calendarId?: string | null;
   groupId?: string | null;
   eventId?: string | null;
 }

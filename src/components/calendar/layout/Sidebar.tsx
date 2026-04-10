@@ -49,18 +49,18 @@ export function Sidebar({
     const taskCalendarId = calendars.find((c) => c.title === taskCalendarTitle)?.id;
 
     useEffect(() => {
-        if (!taskCalendarId) {
+        if (!selectedCalendarId) {
             setTasks([]);
             return;
         }
-        fetch(`/api/tasks?calendarId=${taskCalendarId}`)
+        fetch(`/api/tasks?calendarId=${selectedCalendarId}`)
             .then((res) => res.json())
             .then((data) => {
                 console.log("TASK DATA:", data);
                 if (data.data) setTasks(data.data);
             })
             .catch(() => setTasks([]));
-    }, [taskCalendarId, taskRefreshKey]);
+    }, [selectedCalendarId, taskRefreshKey]);
 
     const handleToggleTask = async (taskId: string, currentCompleted: boolean) => {
         setTasks((prev) =>

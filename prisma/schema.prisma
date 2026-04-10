@@ -32,8 +32,6 @@ model Calendar {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   groups Group[]
-  events Event[]
-  tasks  Task[]
 }
 
 model Group {
@@ -43,6 +41,7 @@ model Group {
   color String  @default("none")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDefault Boolean @default(false)
 
   calendarId String
   calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
@@ -65,11 +64,8 @@ model Event {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  calendarId String
-  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
-
-  groupId String?
-  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   tasks Task[]
 }
@@ -90,11 +86,8 @@ model Task {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  calendarId String?
-  calendar   Calendar? @relation(fields: [calendarId], references: [id], onDelete: Cascade)
-
-  groupId String?
-  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   eventId String?
   event   Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)

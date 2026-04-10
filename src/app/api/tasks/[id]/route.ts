@@ -24,7 +24,7 @@ export async function GET(
   const { id } = await context.params;
 
   const task = await prisma.task.findFirst({
-    where: { id, calendar: { userId: session.userId } },
+    where: { id, userId: session.userId },
   });
 
   if (!task) return jsonError("Task not found", 404);
@@ -65,7 +65,7 @@ export async function PATCH(
   const { id } = await context.params;
 
   const existing = await prisma.task.findFirst({
-    where: { id, calendar: { userId: session.userId } },
+    where: { id, userId: session.userId },
   });
   if (!existing) return jsonError("Task not found", 404);
 
@@ -76,11 +76,11 @@ export async function PATCH(
     return jsonError("Invalid JSON body", 400);
   }
 
-  if (body.calendarId) {
-    const newCalendar = await prisma.calendar.findFirst({
-      where: { id: body.calendarId, userId: session.userId },
+  if (body.groupId) {
+    const group = await prisma.group.findFirst({
+      where: { id: body.groupId, calendar: { userId: session.userId } },
     });
-    if (!newCalendar) return jsonError("Target calendar not found", 404);
+    if (!group) return jsonError("Target group not found", 404);
   }
 
   const task = await prisma.task.update({
@@ -94,7 +94,7 @@ export async function PATCH(
       remindBefore: body.remindBefore,
       link: body.link,
       location: body.location,
-      calendarId: body.calendarId,
+      groupId: body.groupId ?? undefined,
     },
   });
 
@@ -119,7 +119,7 @@ export async function DELETE(
   const { id } = await context.params;
 
   const existing = await prisma.task.findFirst({
-    where: { id, calendar: { userId: session.userId } },
+    where: { id, userId: session.userId },
   });
   if (!existing) return jsonError("Task not found", 404);
 
