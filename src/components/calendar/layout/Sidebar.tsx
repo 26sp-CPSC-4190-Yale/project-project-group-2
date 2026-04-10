@@ -22,6 +22,7 @@ interface SidebarTask {
     id: string;
     name: string;
     completed: boolean;
+    dueAt?: string;
 }
 
 interface SidebarProps {
@@ -55,6 +56,7 @@ export function Sidebar({
         fetch(`/api/tasks?calendarId=${taskCalendarId}`)
             .then((res) => res.json())
             .then((data) => {
+                console.log("TASK DATA:", data);
                 if (data.data) setTasks(data.data);
             })
             .catch(() => setTasks([]));
@@ -72,6 +74,40 @@ export function Sidebar({
         });
     };
 
+    const now = new Date();
+    const sevenDaysFromNow = new Date();
+    sevenDaysFromNow.setDate(now.getDate() + 7);
+
+    const filteredTasks = tasks
+        .filter((task) => {
+            if (!task.dueAt) {
+                return false;
+            }
+
+            const due = new Date(task.dueAt);
+
+            return due >= now && due <= sevenDaysFromNow;
+        })
+        .sort((a, b) => {
+            return new Date(a.dueAt!).getTime() - new Date(b.dueAt!).getTime();
+        });
+
+    function isDueSoon(dueAt?: string) {
+        if (!dueAt) return false;
+
+        const due = new Date(dueAt);
+
+        const today = new Date(now);
+        today.setHours(0, 0, 0, 0);
+
+        const dueDay = new Date(due);
+        dueDay.setHours(0, 0, 0, 0);
+
+        const diffMs = dueDay.getTime() - today.getTime();
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+        return diffDays <= 3 && diffDays >= 0;
+    }
     return (
         <div className={styles.container}>
             <div className={styles.calendarHeader}>
@@ -108,14 +144,20 @@ export function Sidebar({
                 width="14.5rem"
             />
             <div className={styles.taskList}>
-                {tasks.map((task) => (
+                {filteredTasks.map((task) => (
                     <TaskListItem
                         key={task.id}
                         taskName={task.name}
                         checked={task.completed}
                         onToggle={() => handleToggleTask(task.id, task.completed)}
+                        isDueSoon={isDueSoon(task.dueAt)}
                     />
                 ))}
+                {filteredTasks.length === 0 && (
+                    <div style={{ fontSize: "0.85rem", opacity: 0.6 }}>
+                        No upcoming tasks 🎉
+                    </div>
+                )}
             </div>
         </div>
     );

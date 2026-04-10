@@ -10,15 +10,20 @@ export interface TaskListItemProps {
     taskName: string;
     checked?: boolean;
     onToggle?: () => void;
+    isDueSoon?: boolean; 
 }
 
 export function TaskListItem({
     taskName,
     checked = false,
     onToggle,
+    isDueSoon, 
 }: TaskListItemProps) {
     return (
-        <div className={styles.container} onClick={onToggle}>
+        <div
+            className={`${styles.container} ${isDueSoon ? styles.dueSoon : ""}`}
+            onClick={onToggle}
+        >
             <div className={`${styles.checkbox} ${checked ? styles.checked : ""}`}>
                 {checked && <div className={styles.checkmark} />}
             </div>
