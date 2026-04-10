@@ -29,19 +29,33 @@ export function CalendarLayout({
     const [showCreateCalendar, setShowCreateCalendar] = useState(false);
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [taskRefreshKey, setTaskRefreshKey] = useState(0);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
     return (
         <div className={styles.container}>
             <Header avatarUrl={avatarUrl} />
             <div className={styles.main}>
-                <Sidebar
-                    calendars={calendars}
-                    selectedCalendarId={selectedCalendarId}
-                    onSelectCalendar={setSelectedCalendarId}
-                    onOpenCreateCalendar={() => setShowCreateCalendar(true)}
-                    onOpenCreateTask={() => setShowCreateTask(true)}
-                    taskRefreshKey={taskRefreshKey}
-                />
+                <div className={`${styles.sidebarWrapper} ${sidebarCollapsed ? styles.sidebarCollapsed : ""}`}>
+                    <button
+                        className={styles.collapseToggle}
+                        onClick={() => setSidebarCollapsed((v) => !v)}
+                        aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    >
+                        <svg width="25" height="18" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8.5 1 H16.5 Q19 1 19 3.5 V10.5 Q19 13 16.5 13 H8.5 Q6.5 13 5 11.5 L2 8.5 Q0 7 2 5.5 L5 2.5 Q6.5 1 8.5 1 Z" fill="currentColor" />
+                        </svg>
+                    </button>
+                    <div className={styles.sidebarContent}>
+                        <Sidebar
+                            calendars={calendars}
+                            selectedCalendarId={selectedCalendarId}
+                            onSelectCalendar={setSelectedCalendarId}
+                            onOpenCreateCalendar={() => setShowCreateCalendar(true)}
+                            onOpenCreateTask={() => setShowCreateTask(true)}
+                            taskRefreshKey={taskRefreshKey}
+                        />
+                    </div>
+                </div>
                 <CalendarViewLayout
                     selectedCalendarId={selectedCalendarId}
                     calendars={calendars}

@@ -153,11 +153,11 @@ export function Sidebar({
                         isDueSoon={isDueSoon(task.dueAt)}
                     />
                 ))}
-                {filteredTasks.length === 0 && (
+                {/* {filteredTasks.length === 0 && (
                     <div style={{ fontSize: "0.85rem", opacity: 0.6 }}>
                         No upcoming tasks 🎉
                     </div>
-                )}
+                )} */}
             </div>
         </div>
     );
