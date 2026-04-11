@@ -16,8 +16,8 @@
     flex: 1;
     min-width: 0;
     color: #6c3ecc;
-    font-family: "DM Sans", sans-serif;
-    font-size: 0.8125rem;
+    font-family: var(--font-dm-sans);
+    font-size: 0.94775rem;
     font-weight: 400;
     white-space: nowrap;
     overflow: hidden;
@@ -56,8 +56,8 @@
     border-radius: 0.25rem;
     color: #6c3ecc;
     font-family: "DM Sans", sans-serif;
-    font-size: 0.8125rem;
-    font-weight: 400;
+    font-family: var(--font-dm-sans);
+    font-size: 0.94775rem;
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;

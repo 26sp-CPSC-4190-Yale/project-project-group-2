@@ -6,28 +6,30 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./AddNewMenu.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
-import type { SidebarCalendar } from "./layout/Sidebar";
+import { DropDownSecondary } from "@/components/DropDownSecondary";
+
+interface GroupOption {
+    id: string;
+    name: string;
+}
 
 interface AddNewMenuProps {
-    calendars: SidebarCalendar[];
-    defaultCalendarId?: string | null;
+    calendarId: string;
     onClose: () => void;
 }
 
 export function AddNewMenu({
-    calendars,
-    defaultCalendarId,
+    calendarId,
     onClose,
 }: AddNewMenuProps) {
-    const defaultCal = calendars.find((c) => c.id === defaultCalendarId) ?? calendars[0];
-
     const [name, setName] = useState("");
-    const [calendarId, setCalendarId] = useState(defaultCal?.id ?? "");
+    const [groups, setGroups] = useState<GroupOption[]>([]);
+    const [selectedGroupName, setSelectedGroupName] = useState("");
     const [allDay, setAllDay] = useState(true);
     const [startDate, setStartDate] = useState("");
     const [startTime, setStartTime] = useState("");
@@ -41,10 +43,27 @@ export function AddNewMenu({
     const [submitting, setSubmitting] = useState(false);
     const router = useRouter();
 
+    useEffect(() => {
+        if (!calendarId) return;
+        fetch(`/api/groups?calendarId=${calendarId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.data) {
+                    setGroups(data.data);
+                    if (data.data.length > 0) {
+                        setSelectedGroupName(data.data[0].name);
+                    }
+                }
+            })
+            .catch(() => setGroups([]));
+    }, [calendarId]);
+
     const handleCreate = async () => {
         if (submitting) return;
         if (!startDate) return;
         if (!calendarId) return;
+
+        const selectedGroup = groups.find((g) => g.name === selectedGroupName);
 
         setSubmitting(true);
 
@@ -65,6 +84,7 @@ export function AddNewMenu({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     calendarId,
+                    groupId: selectedGroup?.id,
                     name: name.trim() || undefined,
                     startAt,
                     endAt,
@@ -101,16 +121,15 @@ export function AddNewMenu({
                     autoFocus
                 />
 
-                <label className={styles.label}>Calendar</label>
-                <select
-                    className={styles.input}
-                    value={calendarId}
-                    onChange={(e) => setCalendarId(e.target.value)}
-                >
-                    {calendars.map((cal) => (
-                        <option key={cal.id} value={cal.id}>{cal.title}</option>
-                    ))}
-                </select>
+                <label className={styles.label}>Group</label>
+                <div className={styles.dropdownRow}>
+                    <DropDownSecondary
+                        items={groups.map((g) => g.name)}
+                        defaultValue={selectedGroupName}
+                        onChange={setSelectedGroupName}
+                        width="100%"
+                    />
+                </div>
 
                 <div
                     className={styles.checkboxRow}

@@ -16,9 +16,9 @@
 }
 
 .text {
-    color: #d9cffb;
-    font-family: "DM Sans", sans-serif;
-    font-size: 0.8125rem;
+    color: white;
+    font-family: var(--font-dm-sans);
+    font-size: 0.94775rem;
     font-weight: 400;
     white-space: nowrap;
 }

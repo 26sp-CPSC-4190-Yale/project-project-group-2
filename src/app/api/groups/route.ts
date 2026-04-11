@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
+import { jsonSuccess, jsonError } from "@/lib/api";
 import type { ApiResponse, CreateGroupBody, GroupResponse } from "@/types";
 
 /**
@@ -16,7 +19,28 @@ import type { ApiResponse, CreateGroupBody, GroupResponse } from "@/types";
 export async function GET(
   request: NextRequest,
 ): Promise<NextResponse<ApiResponse<GroupResponse[]>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const calendarId = request.nextUrl.searchParams.get("calendarId");
+
+  if (calendarId) {
+    const calendar = await prisma.calendar.findUnique({
+      where: { id: calendarId },
+    });
+    if (!calendar) return jsonError("Calendar not found", 404);
+    if (calendar.userId !== session.userId) return jsonError("Forbidden", 403);
+  }
+
+  const groups = await prisma.group.findMany({
+    where: {
+      calendar: { userId: session.userId },
+      ...(calendarId && { calendarId }),
+    },
+    orderBy: { createdAt: "asc" },
+  });
+
+  return jsonSuccess(groups);
 }
 
 /**

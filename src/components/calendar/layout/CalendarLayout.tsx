@@ -58,16 +58,14 @@ export function CalendarLayout({
                 </div>
                 <CalendarViewLayout
                     selectedCalendarId={selectedCalendarId}
-                    calendars={calendars}
                 />
             </div>
             {showCreateCalendar && (
                 <CalendarCreateMenu onClose={() => setShowCreateCalendar(false)} />
             )}
-            {showCreateTask && (
+            {showCreateTask && selectedCalendarId && (
                 <TaskCreateMenu
-                    calendars={calendars}
-                    defaultCalendarId={selectedCalendarId}
+                    calendarId={selectedCalendarId}
                     onClose={() => {
                         setShowCreateTask(false);
                         setTaskRefreshKey((k) => k + 1);

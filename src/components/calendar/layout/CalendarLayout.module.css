@@ -61,7 +61,11 @@
 }
 
 .collapseToggle:hover {
-    /* background: #E4DEFA; */
+    transform: scale(1.05);
+}
+
+.sidebarCollapsed .collapseToggle:hover {
+    transform: scale(1.05) rotate(180deg);
 }
 
 .sidebarCollapsed .collapseToggle {

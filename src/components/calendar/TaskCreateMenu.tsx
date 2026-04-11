@@ -6,29 +6,30 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./TaskCreateMenu.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
 import { DropDownSecondary } from "@/components/DropDownSecondary";
-import type { SidebarCalendar } from "./layout/Sidebar";
+
+interface GroupOption {
+    id: string;
+    name: string;
+}
 
 interface TaskCreateMenuProps {
-    calendars: SidebarCalendar[];
-    defaultCalendarId?: string | null;
+    calendarId: string;
     onClose: () => void;
 }
 
 export function TaskCreateMenu({
-    calendars,
-    defaultCalendarId,
+    calendarId,
     onClose,
 }: TaskCreateMenuProps) {
-    const defaultCal = calendars.find((c) => c.id === defaultCalendarId) ?? calendars[0];
-
     const [name, setName] = useState("");
-    const [calendarTitle, setCalendarTitle] = useState(defaultCal?.title ?? "");
+    const [groups, setGroups] = useState<GroupOption[]>([]);
+    const [selectedGroupName, setSelectedGroupName] = useState("");
     const [allDay, setAllDay] = useState(true);
     const [dueDate, setDueDate] = useState("");
     const [dueTime, setDueTime] = useState("");
@@ -39,13 +40,28 @@ export function TaskCreateMenu({
     const [submitting, setSubmitting] = useState(false);
     const router = useRouter();
 
+    useEffect(() => {
+        if (!calendarId) return;
+        fetch(`/api/groups?calendarId=${calendarId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.data) {
+                    setGroups(data.data);
+                    if (data.data.length > 0) {
+                        setSelectedGroupName(data.data[0].name);
+                    }
+                }
+            })
+            .catch(() => setGroups([]));
+    }, [calendarId]);
+
     const handleCreate = async () => {
         if (submitting) return;
         if (!name.trim()) return;
         if (!dueDate) return;
+        if (!calendarId) return;
 
-        const calendar = calendars.find((c) => c.title === calendarTitle);
-        if (!calendar) return;
+        const selectedGroup = groups.find((g) => g.name === selectedGroupName);
 
         setSubmitting(true);
 
@@ -61,7 +77,8 @@ export function TaskCreateMenu({
                     name: name.trim(),
                     dueAt,
                     allDay,
-                    calendarId: calendar.id,
+                    calendarId,
+                    groupId: selectedGroup?.id,
                     notes: notes.trim() || undefined,
                     remindBefore: remindBefore ? parseInt(remindBefore, 10) : undefined,
                     link: link.trim() || undefined,
@@ -93,12 +110,12 @@ export function TaskCreateMenu({
                     autoFocus
                 />
 
-                <label className={styles.label}>Calendar</label>
+                <label className={styles.label}>Group</label>
                 <div className={styles.dropdownRow}>
                     <DropDownSecondary
-                        items={calendars.map((c) => c.title)}
-                        defaultValue={calendarTitle}
-                        onChange={setCalendarTitle}
+                        items={groups.map((g) => g.name)}
+                        defaultValue={selectedGroupName}
+                        onChange={setSelectedGroupName}
                         width="100%"
                     />
                 </div>

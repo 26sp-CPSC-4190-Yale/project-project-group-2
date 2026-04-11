@@ -18,3 +18,13 @@
     top: 1.13rem;
     position: absolute;
 }
+
+.files {
+  position: absolute;
+  top: 2.25rem;
+  right: 5.5rem;
+  height: 1.75rem;
+  width: 1.75rem;
+  color: #6C3ECC;
+  cursor: pointer;
+}

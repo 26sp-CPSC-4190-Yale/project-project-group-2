@@ -28,6 +28,12 @@ export function DropDownSecondary({
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        if (defaultValue !== undefined && defaultValue !== selected) {
+            setSelected(defaultValue);
+        }
+    }, [defaultValue]);
+
+    useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
                 setOpen(false);

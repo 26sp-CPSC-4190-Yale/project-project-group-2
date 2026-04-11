@@ -17,11 +17,9 @@ import { CalendarNextPrevious, type ViewMode } from "./CalendarNextPrevious";
 import { AddNewMenu } from "../AddNewMenu";
 import { EventCardEditMenu } from "../EventCardEditMenu";
 import type { CalendarEvent } from "../types";
-import type { SidebarCalendar } from "../layout/Sidebar";
 
 interface CalendarViewLayoutProps {
     selectedCalendarId: string | null;
-    calendars: SidebarCalendar[];
 }
 
 function getDateRange(viewMode: ViewMode, date: Date) {
@@ -52,7 +50,6 @@ function getDateRange(viewMode: ViewMode, date: Date) {
 
 export function CalendarViewLayout({
     selectedCalendarId,
-    calendars,
 }: CalendarViewLayoutProps) {
     const [viewMode, setViewMode] = useState<ViewMode>("Month");
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -154,10 +151,9 @@ export function CalendarViewLayout({
                     />
                 )}
             </div>
-            {showAddMenu && (
+            {showAddMenu && selectedCalendarId && (
                 <AddNewMenu
-                    calendars={calendars}
-                    defaultCalendarId={selectedCalendarId}
+                    calendarId={selectedCalendarId}
                     onClose={handleMenuClose}
                 />
             )}
