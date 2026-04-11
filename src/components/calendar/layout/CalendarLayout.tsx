@@ -10,7 +10,7 @@ import { useState } from "react";
 import styles from "./CalendarLayout.module.css";
 import { Sidebar, type SidebarCalendar } from "./Sidebar";
 import { CalendarViewLayout } from "../views/CalendarViewLayout";
-import { Header } from "./Header";
+import { Header } from "../../Header";
 import { CalendarCreateMenu } from "../CalendarCreateMenu";
 import { TaskCreateMenu } from "../TaskCreateMenu";
 
@@ -33,7 +33,7 @@ export function CalendarLayout({
 
     return (
         <div className={styles.container}>
-            <Header avatarUrl={avatarUrl} />
+            <Header page="home" avatarUrl={avatarUrl} />
             <div className={styles.main}>
                 <div className={`${styles.sidebarWrapper} ${sidebarCollapsed ? styles.sidebarCollapsed : ""}`}>
                     <button

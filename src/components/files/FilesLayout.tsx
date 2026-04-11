@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./FilesLayout.module.css";
+import { Header } from "../Header";
 
 interface FileItem {
     id: string;
@@ -9,7 +10,13 @@ interface FileItem {
     path: string;
 }
 
-export function FilesLayout() {
+interface FilesLayoutProps{
+    avatarUrl?: string | null;
+}
+
+export function FilesLayout({
+    avatarUrl,
+}: FilesLayoutProps) {
     const [files, setFiles] = useState<FileItem[]>([]);
 
     useEffect(() => {
@@ -56,7 +63,8 @@ export function FilesLayout() {
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.title}>Your Files</h1>
+            <Header page="files" avatarUrl={avatarUrl} />
+            <h1 className={styles.title}>All your schedules, one place.</h1>
 
             <div className={styles.grid}>
                 {files.map((file) => (
