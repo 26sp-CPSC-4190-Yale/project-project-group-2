@@ -1,8 +1,9 @@
 .container {
     display: flex;
+    align-items: center;
     width: 14.5rem;
     height: 1.75rem;
-    padding: 0.25rem 1rem;    
+    padding: 0.25rem 0.5rem 0.25rem 1rem;
     border-radius: 0.5rem;
     cursor: pointer;
     transition: background-color 0.15s ease;
@@ -21,11 +22,15 @@
 }
 
 .text {
+    flex: 1;
     font-family: var(--font-dm-sans);
     font-size: 0.94775rem;
     font-style: normal;
     font-weight: 400;
-    line-height: normal;  
+    line-height: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .activeText {
@@ -34,4 +39,47 @@
 
 .inactiveText {
     color: #6c3ecc;
+}
+
+.menuWrapper {
+    position: relative;
+    margin-left: auto;
+    padding-left: 1rem;
+}
+
+.dotsButton {
+    all: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.25rem;
+    font-size: 1.2rem;
+    letter-spacing: -0.05em;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.dotsActive {
+    color: #F0EEFE;
+}
+
+.dotsActive:hover {
+    background-color: rgba(240, 238, 254, 0.15);
+}
+
+.dotsInactive {
+    color: #6c3ecc;
+}
+
+.dotsInactive:hover {
+    background-color: rgba(108, 62, 204, 0.1);
+}
+
+.actionMenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 10;
 }

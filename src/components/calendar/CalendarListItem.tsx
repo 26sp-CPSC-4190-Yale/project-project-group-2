@@ -4,7 +4,9 @@
  * @component
  */
 
+import { useState, useRef, useEffect } from "react";
 import styles from "./CalendarListItem.module.css";
+import { ActionMenu } from "@/components/ActionMenu";
 
 interface CalendarListItemProps {
     calendarName?: string;
@@ -17,6 +19,21 @@ export function CalendarListItem({
     active = false,
     onClick,
 }: CalendarListItemProps) {
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setMenuOpen(false);
+            }
+        }
+        if (menuOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [menuOpen]);
+
     return (
         <div
             className={`${styles.container} ${active ? styles.active : styles.inactive}`}
@@ -24,6 +41,25 @@ export function CalendarListItem({
         >
             <div className={`${styles.text} ${active ? styles.activeText : styles.inactiveText}`}>
                 {calendarName}
+            </div>
+
+            <div className={styles.menuWrapper} ref={menuRef}>
+                <button
+                    className={`${styles.dotsButton} ${active ? styles.dotsActive : styles.dotsInactive}`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpen((prev) => !prev);
+                    }}
+                    aria-label="Calendar actions"
+                >
+                    ···
+                </button>
+
+                {menuOpen && (
+                    <div className={styles.actionMenu}>
+                        <ActionMenu items={[]} />
+                    </div>
+                )}
             </div>
         </div>
     );
