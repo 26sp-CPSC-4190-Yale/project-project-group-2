@@ -25,15 +25,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const { searchParams } = request.nextUrl;
   const calendarId = searchParams.get("calendarId");
-  const groupId = searchParams.get("groupId");   
+  const groupIds = searchParams.getAll("groupId");
   const start = searchParams.get("start");
-  const end = searchParams.get("end");                                   
-                                              
+  const end = searchParams.get("end");
+
   const events = await prisma.event.findMany({
     where: {
-      group: { calendar: { userId: session.userId } },                              
+      group: { calendar: { userId: session.userId } },
       ...(calendarId && { group: { calendarId } }),
-      ...(groupId && { groupId }),                                                  
+      groupId: groupIds.length > 0 ? { in: groupIds } : { in: [] },
       ...(start && { startAt: { gte: new Date(start) } }),
       ...(end && { startAt: { lte: new Date(end) } }),
     },

@@ -24,7 +24,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const { searchParams } = request.nextUrl;
   const calendarId = searchParams.get("calendarId");
-  const groupId = searchParams.get("groupId");
+  const groupIds = searchParams.getAll("groupId");
   const completed = searchParams.get("completed");
   const start = searchParams.get("start");
   const end = searchParams.get("end");
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     where: {
       userId: session.userId,
       ...(calendarId && { group: { calendarId } }),
-      ...(groupId && { groupId }),  
+      groupId: groupIds.length > 0 ? { in: groupIds } : { in: [] },
       ...(completed !== null && { completed: completed === "true" }),
       ...(start && { dueAt: { gte: new Date(start) } }),
       ...(end && { dueAt: { lte: new Date(end) } }),

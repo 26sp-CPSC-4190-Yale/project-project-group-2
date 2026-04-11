@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import styles from "./Sidebar.module.css";
 import { CalendarListItem } from "../CalendarListItem";
 import { TaskListItem } from "../TaskListItem";
+import { GroupListItem } from "../GroupListItem";
 import { CreateListItemButton } from "../CreateListItemButton";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
 
@@ -25,12 +26,21 @@ interface SidebarTask {
     dueAt?: string;
 }
 
+interface SidebarGroup {
+    id: string;
+    name: string;
+    isDefault: boolean;
+}
+
 interface SidebarProps {
     calendars: SidebarCalendar[];
     selectedCalendarId: string | null;
     onSelectCalendar: (id: string) => void;
     onOpenCreateCalendar?: (calendar?: SidebarCalendar) => void;
     onOpenCreateTask?: (task?: any) => void;
+    onOpenCreateGroup?: () => void;
+    onSelectGroup?: (groupIds: string[]) => void;
+    groupRefreshKey?: number;
     taskRefreshKey?: number;
     onRefreshTasks?: () => void;
 }
@@ -41,29 +51,68 @@ export function Sidebar({
     onSelectCalendar,
     onOpenCreateCalendar,
     onOpenCreateTask,
+    onOpenCreateGroup,
+    onSelectGroup,
     onRefreshTasks,
+    groupRefreshKey = 0,
     taskRefreshKey = 0,
 }: SidebarProps) {
     const defaultCalTitle = calendars.find((c) => c.id === selectedCalendarId)?.title ?? "";
     const [taskCalendarTitle, setTaskCalendarTitle] = useState(defaultCalTitle);
     const [tasks, setTasks] = useState<SidebarTask[]>([]);
+    const [groups, setGroups] = useState<SidebarGroup[]>([]);
+    const [selectedGroupIds, setSelectedGroupIds] = useState<Set<string>>(new Set());
     const [deleteCalendar, setDeleteCalendar] = useState<SidebarCalendar | null>(null);
     const taskCalendarId = calendars.find((c) => c.title === taskCalendarTitle)?.id;
     const [deleteTask, setDeleteTask] = useState<SidebarTask | null>(null);
 
+    // Fetch groups whenever the selected calendar changes
+    useEffect(() => {
+        if (!selectedCalendarId) {
+            setGroups([]);
+            setSelectedGroupIds(new Set());
+            onSelectGroup?.([]);
+            return;
+        }
+        fetch(`/api/groups?calendarId=${selectedCalendarId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.data) {
+                    setGroups(data.data);
+                    // all groups start checked
+                    const allIds = new Set<string>(data.data.map((g: SidebarGroup) => g.id));
+                    setSelectedGroupIds(allIds);
+                    onSelectGroup?.(Array.from(allIds));
+                }
+            })
+            .catch(() => setGroups([]));
+    }, [selectedCalendarId, groupRefreshKey]);
+
+    // Fetch tasks whenever the selected calendar changes
     useEffect(() => {
         if (!selectedCalendarId) {
             setTasks([]);
             return;
         }
-        fetch(`/api/tasks?calendarId=${selectedCalendarId}`)
+        const groupParams = Array.from(selectedGroupIds).map((id) => `&groupId=${id}`).join("");
+        fetch(`/api/tasks?calendarId=${selectedCalendarId}${groupParams}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log("TASK DATA:", data);
                 if (data.data) setTasks(data.data);
             })
             .catch(() => setTasks([]));
-    }, [selectedCalendarId, taskRefreshKey]);
+    }, [selectedCalendarId, selectedGroupIds, taskRefreshKey]);
+
+    const handleToggleGroup = (groupId: string) => {
+        const newSet = new Set(selectedGroupIds);
+        if (newSet.has(groupId)) {
+            newSet.delete(groupId);
+        } else {
+            newSet.add(groupId);
+        }
+        setSelectedGroupIds(newSet);
+        onSelectGroup?.(Array.from(newSet));
+    };
 
     const handleToggleTask = async (taskId: string, currentCompleted: boolean) => {
         setTasks((prev) =>
@@ -111,6 +160,7 @@ export function Sidebar({
 
         return diffDays <= 3 && diffDays >= 0;
     }
+
     return (
         <div className={styles.container}>
             <div className={styles.calendarHeader}>
@@ -142,6 +192,32 @@ export function Sidebar({
                         isDefault={cal.title === "My Calendar"}
                     />
                 ))}
+            </div>
+
+            <div className={styles.separatorBar} />
+
+            <div className={styles.taskHeader}>
+                <div className={styles.headerText}>
+                    GROUPS
+                </div>
+                <div className={styles.createButton}>
+                    <CreateListItemButton onClick={onOpenCreateGroup} />
+                </div>
+            </div>
+            <div className={styles.taskList}>
+                {groups.map((group) => (
+                    <GroupListItem
+                        key={group.id}
+                        groupName={group.name}
+                        selected={selectedGroupIds.has(group.id)}
+                        onToggle={() => handleToggleGroup(group.id)}
+                    />
+                ))}
+                {groups.length === 0 && (
+                    <div className={styles.emptyState}>
+                        No groups yet
+                    </div>
+                )}
             </div>
 
             <div className={styles.separatorBar} />

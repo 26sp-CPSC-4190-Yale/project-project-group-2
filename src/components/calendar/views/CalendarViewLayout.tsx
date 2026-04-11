@@ -20,6 +20,7 @@ import type { CalendarEvent } from "../types";
 
 interface CalendarViewLayoutProps {
     selectedCalendarId: string | null;
+    selectedGroupIds?: string[];
 }
 
 function getDateRange(viewMode: ViewMode, date: Date) {
@@ -50,6 +51,7 @@ function getDateRange(viewMode: ViewMode, date: Date) {
 
 export function CalendarViewLayout({
     selectedCalendarId,
+    selectedGroupIds,
 }: CalendarViewLayoutProps) {
     const [viewMode, setViewMode] = useState<ViewMode>("Month");
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -64,13 +66,16 @@ export function CalendarViewLayout({
             return;
         }
         const { start, end } = getDateRange(viewMode, currentDate);
-        fetch(`/api/events?calendarId=${selectedCalendarId}&start=${start}&end=${end}`)
+        const groupParams = selectedGroupIds && selectedGroupIds.length > 0
+            ? selectedGroupIds.map((id) => `&groupId=${id}`).join("")
+            : "";
+        fetch(`/api/events?calendarId=${selectedCalendarId}&start=${start}&end=${end}${groupParams}`)
             .then((res) => res.json())
             .then((data) => {
                 if (data.data) setEvents(data.data);
             })
             .catch(() => setEvents([]));
-    }, [selectedCalendarId, viewMode, currentDate, eventRefreshKey]);
+    }, [selectedCalendarId, selectedGroupIds, viewMode, currentDate, eventRefreshKey]);
 
     const handlePrevious = useCallback(() => {
         setCurrentDate((prev) => {

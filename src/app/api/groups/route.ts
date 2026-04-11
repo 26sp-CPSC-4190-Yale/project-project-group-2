@@ -63,5 +63,31 @@ export async function GET(
 export async function POST(
   request: NextRequest,
 ): Promise<NextResponse<ApiResponse<GroupResponse>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  let body: CreateGroupBody;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonError("Invalid JSON body", 400);
+  }
+
+  if (!body.calendarId) return jsonError("calendarId is required", 400);
+
+  const calendar = await prisma.calendar.findFirst({
+    where: { id: body.calendarId, userId: session.userId },
+  });
+  if (!calendar) return jsonError("Calendar not found", 404);
+
+  const group = await prisma.group.create({
+    data: {
+      calendarId: body.calendarId,
+      name: body.name,
+      notes: body.notes,
+      color: body.color,
+    },
+  });
+
+  return jsonSuccess(group, 201);
 }

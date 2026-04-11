@@ -13,6 +13,7 @@ import { CalendarViewLayout } from "../views/CalendarViewLayout";
 import { Header } from "../../Header";
 import { CalendarCreateMenu } from "../CalendarCreateMenu";
 import { TaskCreateMenu } from "../TaskCreateMenu";
+import { GroupCreateMenu } from "../GroupCreateMenu";
 
 interface CalendarLayoutProps {
     calendars: SidebarCalendar[];
@@ -28,6 +29,9 @@ export function CalendarLayout({
     );
     const [showCreateCalendar, setShowCreateCalendar] = useState(false);
     const [showCreateTask, setShowCreateTask] = useState(false);
+    const [showCreateGroup, setShowCreateGroup] = useState(false);
+    const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
+    const [groupRefreshKey, setGroupRefreshKey] = useState(0);
     const [taskRefreshKey, setTaskRefreshKey] = useState(0);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [editingCalendar, setEditingCalendar] = useState<SidebarCalendar | null>(null);
@@ -70,6 +74,9 @@ export function CalendarLayout({
 
                                 setShowCreateTask(true);
                             }}
+                            onOpenCreateGroup={() => setShowCreateGroup(true)}
+                            groupRefreshKey={groupRefreshKey}
+                            onSelectGroup={(ids) => setSelectedGroupIds(ids)}
                             taskRefreshKey={taskRefreshKey}
                             onRefreshTasks={() => setTaskRefreshKey((k) => k + 1)}
                         />
@@ -77,6 +84,7 @@ export function CalendarLayout({
                 </div>
                 <CalendarViewLayout
                     selectedCalendarId={selectedCalendarId}
+                    selectedGroupIds={selectedGroupIds}
                 />
             </div>
             {showCreateCalendar && (
@@ -95,6 +103,15 @@ export function CalendarLayout({
                         setShowCreateTask(false);
                         setEditingTask(null);
                         setTaskRefreshKey((k) => k + 1);
+                    }}
+                />
+            )}
+            {showCreateGroup && selectedCalendarId && (
+                <GroupCreateMenu
+                    calendarId={selectedCalendarId}
+                    onClose={() => {
+                        setShowCreateGroup(false);
+                        setGroupRefreshKey((k) => k + 1);
                     }}
                 />
             )}
