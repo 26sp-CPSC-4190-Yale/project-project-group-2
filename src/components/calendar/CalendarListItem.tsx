@@ -72,51 +72,51 @@ export function CalendarListItem({
                 {calendarName}
             </div>
 
-            <div className={styles.menuWrapper} ref={menuRef}>
-                <button
-                    className={`${styles.dotsButton} ${active ? styles.dotsActive : styles.dotsInactive}`}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setMenuOpen((prev) => !prev);
-                    }}
-                    aria-label="Calendar actions"
-                >
-                    ···
-                </button>
-
-                {menuOpen && (
-                    <div
-                        className={`${styles.dropdown} ${
-                            menuDirection === "up" ? styles.up : styles.down
+            {!isDefault && showMenu && (
+                <div className={styles.menuWrapper} ref={menuRef}>
+                    <button
+                        className={`${styles.dotsButton} ${
+                            active ? styles.dotsActive : styles.dotsInactive
                         }`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setMenuOpen((prev) => !prev);
+                        }}
+                        aria-label="Calendar actions"
                     >
-                        {!isDefault && (
-                            <>
-                                <div
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setMenuOpen(false);
-                                        onEdit?.();
-                                    }}
-                                >
-                                    Edit
-                                </div>
+                        ···
+                    </button>
 
-                                <div
-                                    className={styles.delete}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setMenuOpen(false);
-                                        onDelete?.();
-                                    }}
-                                >
-                                    Delete
-                                </div>
-                            </>
-                        )}
-                    </div>
-                )}
-            </div>
+                    {menuOpen && (
+                        <div
+                            className={`${styles.dropdown} ${
+                                menuDirection === "up" ? styles.up : styles.down
+                            }`}
+                        >
+                            <div
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setMenuOpen(false);
+                                    onEdit?.();
+                                }}
+                            >
+                                Edit
+                            </div>
+
+                            <div
+                                className={styles.delete}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setMenuOpen(false);
+                                    onDelete?.();
+                                }}
+                            >
+                                Delete
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
