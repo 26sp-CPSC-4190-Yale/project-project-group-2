@@ -12,12 +12,21 @@ import { useRouter } from "next/navigation";
 import styles from "./CalendarCreateMenu.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
+import { useEffect } from "react";
 
 interface CalendarCreateMenuProps {
     onClose: () => void;
 }
 
-export function CalendarCreateMenu({ onClose }: CalendarCreateMenuProps) {
+interface Props {
+    initialData?: {
+        id: string;
+        title: string;
+    } | null;
+    onClose: () => void;
+}
+
+export function CalendarCreateMenu({ initialData, onClose }: Props) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -28,24 +37,47 @@ export function CalendarCreateMenu({ onClose }: CalendarCreateMenuProps) {
         setSubmitting(true);
 
         try {
-            const res = await fetch("/api/calendars", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title: title.trim() || undefined,
-                    description: description.trim() || undefined,
-                }),
-            });
+            let res;
+
+            if (initialData) {
+                res = await fetch(`/api/calendars/${initialData.id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        title: title.trim(),
+                        description: description.trim(),
+                    }),
+                });
+            } else {
+                res = await fetch("/api/calendars", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        title: title.trim() || undefined,
+                        description: description.trim() || undefined,
+                    }),
+                });
+            }
 
             if (res.ok) {
-                router.refresh();
+                window.location.reload();
                 onClose();
             }
         } finally {
             setSubmitting(false);
         }
+
+        console.log("MODE:", initialData ? "EDIT" : "CREATE");
+        console.log("TITLE:", title);
     };
 
+    useEffect(() => {
+        if (initialData) {
+            setTitle(initialData.title);
+        } else {
+            setTitle("");
+        }
+    }, [initialData]);
     return (
         <div className={styles.backdrop} onClick={onClose}>
             <div className={styles.card} onClick={(e) => e.stopPropagation()}>
@@ -73,7 +105,11 @@ export function CalendarCreateMenu({ onClose }: CalendarCreateMenuProps) {
                 <div className={styles.actions}>
                     <ButtonSecondary label="Cancel" onClick={onClose} />
                     <ButtonPrimary
-                        label={submitting ? "Creating…" : "Create"}
+                        label={
+                            submitting
+                                ? initialData ? "Saving…" : "Creating…"
+                                : initialData ? "Save" : "Create"
+                        }
                         onClick={handleCreate}
                     />
                 </div>

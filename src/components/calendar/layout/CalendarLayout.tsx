@@ -30,6 +30,8 @@ export function CalendarLayout({
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [taskRefreshKey, setTaskRefreshKey] = useState(0);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [editingCalendar, setEditingCalendar] = useState<SidebarCalendar | null>(null);
+    const [editingTask, setEditingTask] = useState<any | null>(null);
 
     return (
         <div className={styles.container}>
@@ -50,9 +52,26 @@ export function CalendarLayout({
                             calendars={calendars}
                             selectedCalendarId={selectedCalendarId}
                             onSelectCalendar={setSelectedCalendarId}
-                            onOpenCreateCalendar={() => setShowCreateCalendar(true)}
-                            onOpenCreateTask={() => setShowCreateTask(true)}
+                            onOpenCreateCalendar={(calendar) => {
+                                if (calendar) {
+                                    setEditingCalendar(calendar);
+                                } else {
+                                    setEditingCalendar(null);
+                                }
+
+                                setShowCreateCalendar(true);
+                            }}
+                            onOpenCreateTask={(task) => {
+                                if (task && typeof task === "object" && "id" in task) {
+                                    setEditingTask(task);
+                                } else {
+                                    setEditingTask(null);
+                                }
+
+                                setShowCreateTask(true);
+                            }}
                             taskRefreshKey={taskRefreshKey}
+                            onRefreshTasks={() => setTaskRefreshKey((k) => k + 1)}
                         />
                     </div>
                 </div>
@@ -61,13 +80,20 @@ export function CalendarLayout({
                 />
             </div>
             {showCreateCalendar && (
-                <CalendarCreateMenu onClose={() => setShowCreateCalendar(false)} />
+                <CalendarCreateMenu
+                    initialData={editingCalendar}
+                    onClose={() => {
+                        setShowCreateCalendar(false);
+                        setEditingCalendar(null);
+                    }}
+                />
             )}
             {showCreateTask && selectedCalendarId && (
                 <TaskCreateMenu
                     calendarId={selectedCalendarId}
                     onClose={() => {
                         setShowCreateTask(false);
+                        setEditingTask(null);
                         setTaskRefreshKey((k) => k + 1);
                     }}
                 />

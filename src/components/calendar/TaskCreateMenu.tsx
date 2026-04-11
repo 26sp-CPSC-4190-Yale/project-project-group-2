@@ -21,11 +21,18 @@ interface GroupOption {
 interface TaskCreateMenuProps {
     calendarId: string;
     onClose: () => void;
+
+    initialData?: {
+        id: string;
+        name: string;
+        // add more if needed later
+    } | null;
 }
 
 export function TaskCreateMenu({
     calendarId,
     onClose,
+    initialData,
 }: TaskCreateMenuProps) {
     const [name, setName] = useState("");
     const [groups, setGroups] = useState<GroupOption[]>([]);
@@ -65,9 +72,13 @@ export function TaskCreateMenu({
 
         setSubmitting(true);
 
-        const dueAt = allDay
-            ? new Date(`${dueDate}T00:00:00`).toISOString()
-            : new Date(`${dueDate}T${dueTime || "00:00"}`).toISOString();
+        const isEdit = !!initialData?.id;
+
+        const dueAtISO = new Date(
+            allDay
+                ? `${dueDate}T00:00:00`
+                : `${dueDate}T${dueTime || "00:00"}`
+        ).toISOString();
 
         try {
             const res = await fetch("/api/tasks", {
@@ -75,7 +86,7 @@ export function TaskCreateMenu({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     name: name.trim(),
-                    dueAt,
+                    dueDate,
                     allDay,
                     calendarId,
                     groupId: selectedGroup?.id,
@@ -87,9 +98,15 @@ export function TaskCreateMenu({
             });
 
             if (res.ok) {
-                router.refresh();
                 onClose();
+            } else {
+                const err = await res.json().catch(() => null);
+                console.error("FAILED:", err);
+                alert(err?.error || "Failed to save task");
             }
+        } catch (err) {
+            console.error("Request failed:", err);
+            alert("Something went wrong");
         } finally {
             setSubmitting(false);
         }
@@ -105,7 +122,7 @@ export function TaskCreateMenu({
                     className={styles.input}
                     type="text"
                     placeholder="Task name"
-                    value={name}
+                    value={name || ""}
                     onChange={(e) => setName(e.target.value)}
                     autoFocus
                 />
@@ -136,7 +153,7 @@ export function TaskCreateMenu({
                         <input
                             className={styles.input}
                             type="date"
-                            value={dueDate}
+                            value={dueDate || ""}
                             onChange={(e) => setDueDate(e.target.value)}
                         />
                     </div>
@@ -146,7 +163,7 @@ export function TaskCreateMenu({
                             <input
                                 className={styles.input}
                                 type="time"
-                                value={dueTime}
+                                value={dueTime || ""}
                                 onChange={(e) => setDueTime(e.target.value)}
                             />
                         </div>
@@ -157,7 +174,7 @@ export function TaskCreateMenu({
                 <textarea
                     className={styles.textarea}
                     placeholder="Optional"
-                    value={notes}
+                    value={notes || ""}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
                 />
@@ -169,7 +186,7 @@ export function TaskCreateMenu({
                         type="number"
                         min="0"
                         placeholder="—"
-                        value={remindBefore}
+                        value={remindBefore || ""}
                         onChange={(e) => setRemindBefore(e.target.value)}
                     />
                     <span className={styles.remindUnit}>minutes</span>
@@ -180,7 +197,7 @@ export function TaskCreateMenu({
                     className={styles.input}
                     type="url"
                     placeholder="Optional"
-                    value={link}
+                    value={link || ""}
                     onChange={(e) => setLink(e.target.value)}
                 />
 
@@ -189,7 +206,7 @@ export function TaskCreateMenu({
                     className={styles.input}
                     type="text"
                     placeholder="Optional"
-                    value={location}
+                    value={location || ""}
                     onChange={(e) => setLocation(e.target.value)}
                 />
 

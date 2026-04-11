@@ -12,13 +12,24 @@ interface CalendarListItemProps {
     calendarName?: string;
     active?: boolean;
     onClick?: () => void;
+
+    onEdit?: () => void;
+    onDelete?: () => void;
+    isDefault?: boolean;
 }
+
+
 
 export function CalendarListItem({
     calendarName,
     active = false,
     onClick,
+    onEdit,
+    onDelete,
+    isDefault,
 }: CalendarListItemProps) {
+    const [showMenu, setShowMenu] = useState(false);
+    const [menuDirection, setMenuDirection] = useState<"up" | "down">("down");
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -38,6 +49,25 @@ export function CalendarListItem({
         <div
             className={`${styles.container} ${active ? styles.active : styles.inactive}`}
             onClick={onClick}
+            onMouseEnter={() => {
+                setShowMenu(true);
+
+                if (menuRef.current) {
+                    const rect = menuRef.current.getBoundingClientRect();
+                    const spaceBelow = window.innerHeight - rect.bottom;
+
+                    if (spaceBelow < 150) {
+                        setMenuDirection("up");
+                    } else {
+                        setMenuDirection("down");
+                    }
+                }
+            }}
+            onMouseLeave={() => {
+                if (!menuOpen) {
+                    setShowMenu(false);
+                }
+            }}
         >
             <div className={`${styles.text} ${active ? styles.activeText : styles.inactiveText}`}>
                 {calendarName}

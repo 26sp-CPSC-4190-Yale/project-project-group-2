@@ -48,6 +48,61 @@
 }
 
 .dueSoon {
-  background-color: rgba(255, 100, 100, 0.1);
-  border-left: 0.25rem solid #ff4d4f;
+  background-color: rgba(220, 38, 38, 0.08); /* light red */
+  border-left: 3px solid #dc2626;
+}
+
+.menuWrapper {
+  position: relative;
+  margin-left: auto;
+}
+
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 0.25rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #6c3ecc;
+}
+
+.container:hover .menuButton {
+  color: #4c1fb3;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.25rem);
+  z-index: 9999;
+
+  min-width: 120px;
+  background: #ffffff;
+  border-radius: 0.5rem;
+  padding: 0.3rem 0;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown div {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.dropdown div:not(.delete) {
+  color: #1f2937;
+}
+
+.delete {
+  color: #dc2626;
+}
+
+.delete:hover {
+  background: #fee2e2;
 }

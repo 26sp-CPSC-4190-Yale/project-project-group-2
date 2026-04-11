@@ -29,9 +29,10 @@ interface SidebarProps {
     calendars: SidebarCalendar[];
     selectedCalendarId: string | null;
     onSelectCalendar: (id: string) => void;
-    onOpenCreateCalendar?: () => void;
-    onOpenCreateTask?: () => void;
+    onOpenCreateCalendar?: (calendar?: SidebarCalendar) => void;
+    onOpenCreateTask?: (task?: any) => void;
     taskRefreshKey?: number;
+    onRefreshTasks?: () => void;
 }
 
 export function Sidebar({
@@ -40,13 +41,15 @@ export function Sidebar({
     onSelectCalendar,
     onOpenCreateCalendar,
     onOpenCreateTask,
+    onRefreshTasks,
     taskRefreshKey = 0,
 }: SidebarProps) {
     const defaultCalTitle = calendars.find((c) => c.id === selectedCalendarId)?.title ?? "";
     const [taskCalendarTitle, setTaskCalendarTitle] = useState(defaultCalTitle);
     const [tasks, setTasks] = useState<SidebarTask[]>([]);
-
+    const [deleteCalendar, setDeleteCalendar] = useState<SidebarCalendar | null>(null);
     const taskCalendarId = calendars.find((c) => c.title === taskCalendarTitle)?.id;
+    const [deleteTask, setDeleteTask] = useState<SidebarTask | null>(null);
 
     useEffect(() => {
         if (!selectedCalendarId) {
@@ -115,7 +118,7 @@ export function Sidebar({
                     MY CALENDARS
                 </div>
                 <div className={styles.createButton}>
-                    <CreateListItemButton onClick={onOpenCreateCalendar} />
+                    <CreateListItemButton onClick={() => onOpenCreateCalendar?.(undefined)} />
                 </div>
             </div>
             <div className={styles.calendarList}>
@@ -125,6 +128,18 @@ export function Sidebar({
                         calendarName={cal.title}
                         active={cal.id === selectedCalendarId}
                         onClick={() => onSelectCalendar(cal.id)}
+
+                        onEdit={() => {
+                            console.log("edit calendar", cal);
+                            onOpenCreateCalendar?.(cal);
+                        }}
+
+                        onDelete={() => {
+                            if (cal.title === "My Calendar") return;
+                            setDeleteCalendar(cal);
+                        }}
+
+                        isDefault={cal.title === "My Calendar"}
                     />
                 ))}
             </div>
@@ -145,20 +160,86 @@ export function Sidebar({
             />
             <div className={styles.taskList}>
                 {filteredTasks.map((task) => (
-                    <TaskListItem
-                        key={task.id}
-                        taskName={task.name}
-                        checked={task.completed}
-                        onToggle={() => handleToggleTask(task.id, task.completed)}
-                        isDueSoon={isDueSoon(task.dueAt)}
-                    />
+                <TaskListItem
+                    key={task.id}
+                    taskName={task.name}
+                    checked={task.completed}
+                    onToggle={() => handleToggleTask(task.id, task.completed)}
+                    isDueSoon={isDueSoon(task.dueAt)}
+
+                    onEdit={() => {
+                        console.log("edit task", task);
+                        onOpenCreateTask?.(task);
+                    }}
+
+                    onDelete={() => {
+                        setDeleteTask(task);
+                    }}
+                />
                 ))}
-                {/* {filteredTasks.length === 0 && (
-                    <div style={{ fontSize: "0.85rem", opacity: 0.6 }}>
+                {filteredTasks.length === 0 && (
+                    <div className={styles.emptyState}>
                         No upcoming tasks 🎉
                     </div>
-                )} */}
+                )}
             </div>
+            {deleteCalendar && (
+                <div className={styles.modalBackdrop}>
+                    <div className={styles.modal}>
+                        <h3>Delete Calendar</h3>
+                        <p>Are you sure you want to delete "{deleteCalendar.title}"?</p>
+
+                        <div className={styles.modalActions}>
+                            <button onClick={() => setDeleteCalendar(null)}>
+                                Cancel
+                            </button>
+
+                            <button
+                                className={styles.deleteButton}
+                                onClick={async () => {
+                                    await fetch(`/api/calendars/${deleteCalendar.id}`, {
+                                        method: "DELETE",
+                                    });
+
+                                    setDeleteCalendar(null);
+                                    window.location.reload();
+                                }}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        {deleteTask && (
+            <div className={styles.modalBackdrop}>
+                <div className={styles.modal}>
+                    <h3>Delete Task</h3>
+                    <p>Are you sure you want to delete "{deleteTask.name}"?</p>
+
+                    <div className={styles.modalActions}>
+                        <button onClick={() => setDeleteTask(null)}>
+                            Cancel
+                        </button>
+
+                        <button
+                            className={styles.deleteButton}
+                            onClick={async () => {
+                                await fetch(`/api/tasks/${deleteTask.id}`, {
+                                    method: "DELETE",
+                                });
+
+                                setDeleteTask(null);
+                                onRefreshTasks?.();
+                            }}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
         </div>
+
     );
 }
