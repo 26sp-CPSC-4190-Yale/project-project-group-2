@@ -18,6 +18,7 @@ model User {
 
   calendars Calendar[]
   tasks     Task[]
+  uploadedFiles UploadedFile[]
 }
 
 model Calendar {
@@ -91,4 +92,14 @@ model Task {
 
   eventId String?
   event   Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model UploadedFile {
+  id          String   @id @default(cuid())
+  name        String
+  storagePath String   @unique
+  userId      String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

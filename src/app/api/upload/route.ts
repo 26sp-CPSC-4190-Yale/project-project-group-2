@@ -1,12 +1,19 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 
 export async function POST(req: Request) {
-    const formData = await req.formData();
-    const file = formData.get("file") as File;
+    const session = await getSession();
 
-    if (!file) {
+    if (!session) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const formData = await req.formData();
+    const file = formData.get("file");
+
+    if (!(file instanceof File)) {
         return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
@@ -17,22 +24,29 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadDir = path.join(process.cwd(), "uploads");
+    const safeName = file.name.replace(/\s+/g, "_");
+    const storagePath = `${session.userId}/${Date.now()}_${safeName}`;
 
-    if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir);
+    const { error } = await supabaseAdmin.storage
+        .from("user-files")
+        .upload(storagePath, buffer, {
+            contentType: file.type,
+        });
+
+    if (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const fileName = `${Date.now()}_${file.name}`;
-    const filePath = path.join(uploadDir, fileName);
+    const savedFile = await prisma.uploadedFile.create({
+        data: {
+            name: file.name,
+            storagePath,
+            userId: session.userId,
+        },
+    });
 
-    fs.writeFileSync(filePath, buffer);
-
-    const newFile = {
-        id: Date.now(),
-        name: file.name,
-        path: `/uploads/${fileName}`,
-    };
-
-    return NextResponse.json(newFile);
+    return NextResponse.json({
+        id: savedFile.id,
+        name: savedFile.name,
+    });
 }

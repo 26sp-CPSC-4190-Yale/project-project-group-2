@@ -1,23 +1,22 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 
 export async function GET() {
-    const uploadDir = path.join(process.cwd(), "uploads");
+    const session = await getSession();
 
-    if (!fs.existsSync(uploadDir)) {
-        return NextResponse.json([]);
+    if (!session) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const files = fs.readdirSync(uploadDir);
-
-    const formattedFiles = files.map((file, index) => {
-        return {
-            id: index,
-            name: file.split("_").slice(1).join("_"),
-            path: `/uploads/${file}`,
-        };
+    const files = await prisma.uploadedFile.findMany({
+        where: {
+            userId: session.userId,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
     });
 
-    return NextResponse.json(formattedFiles);
+    return NextResponse.json(files);
 }

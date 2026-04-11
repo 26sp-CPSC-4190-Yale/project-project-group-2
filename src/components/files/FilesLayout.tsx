@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import styles from "./FilesLayout.module.css";
 
 interface FileItem {
-    id: number;
+    id: string;
     name: string;
     path: string;
 }
@@ -20,6 +20,15 @@ export function FilesLayout() {
         const res = await fetch("/api/files");
         const data = await res.json();
         setFiles(data);
+    }
+
+    async function openFile(fileId: string) {
+        const res = await fetch(`/api/files/${fileId}/open`);
+        const data = await res.json();
+
+        if (data.url) {
+            window.open(data.url, "_blank");
+        }
     }
 
     function handleOpenFile(file: FileItem) {
@@ -54,7 +63,7 @@ export function FilesLayout() {
                     <div
                         key={file.id}
                         className={styles.card}
-                        onClick={() => handleOpenFile(file)}
+                        onClick={() => openFile(file.id)}
                     >
                         <div className={styles.icon}>📄</div>
                         <div className={styles.name}>{file.name}</div>
