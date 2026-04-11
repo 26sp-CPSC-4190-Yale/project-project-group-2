@@ -16,6 +16,9 @@ export async function GET() {
         orderBy: {
             createdAt: "desc",
         },
+        include: {
+            calendar: { select: { id: true, title: true } },
+        },
     });
 
     return NextResponse.json(files);

@@ -1,0 +1,30 @@
+.searchBar {
+    display: flex;
+    align-items: center;
+    height: 2.3125rem;
+    padding: 0 0.75rem;
+    border-radius: 0.5625rem;
+    border: 1px solid #A697C5;
+    background: #F0EEFE;
+    gap: 0.5rem;
+}
+
+.input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #3d2d5c;
+    font-family: var(--font-dm-sans);
+    font-size: 0.94775rem;
+    font-weight: 400;
+}
+
+.input::placeholder {
+    color: #A697C5;
+    font-family: var(--font-dm-sans);
+    font-size: 0.94775rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}

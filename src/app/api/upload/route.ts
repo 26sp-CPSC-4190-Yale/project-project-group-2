@@ -37,16 +37,19 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    const calendarId = formData.get("calendarId") as string | null;
+
     const savedFile = await prisma.uploadedFile.create({
         data: {
             name: file.name,
             storagePath,
             userId: session.userId,
+            calendarId: calendarId || null,
+        },
+        include: {
+            calendar: { select: { id: true, title: true } },
         },
     });
 
-    return NextResponse.json({
-        id: savedFile.id,
-        name: savedFile.name,
-    });
+    return NextResponse.json(savedFile);
 }

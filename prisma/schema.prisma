@@ -33,6 +33,7 @@ model Calendar {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   groups Group[]
+  files  UploadedFile[]
 }
 
 model Group {
@@ -95,11 +96,13 @@ model Task {
 }
 
 model UploadedFile {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
-  storagePath String   @unique
+  storagePath String    @unique
   userId      String
-  createdAt   DateTime @default(now())
+  calendarId  String?
+  createdAt   DateTime  @default(now())
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  calendar    Calendar? @relation(fields: [calendarId], references: [id], onDelete: SetNull)
 }
