@@ -86,7 +86,7 @@ export function TaskCreateMenu({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     name: name.trim(),
-                    dueDate,
+                    dueAt: dueAtISO,
                     allDay,
                     calendarId,
                     groupId: selectedGroup?.id,

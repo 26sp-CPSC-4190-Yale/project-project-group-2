@@ -6,7 +6,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import styles from "./CalendarListItem.module.css";
-import { ActionMenu } from "@/components/ActionMenu";
 
 interface CalendarListItemProps {
     calendarName?: string;
@@ -86,8 +85,35 @@ export function CalendarListItem({
                 </button>
 
                 {menuOpen && (
-                    <div className={styles.actionMenu}>
-                        <ActionMenu items={[]} />
+                    <div
+                        className={`${styles.dropdown} ${
+                            menuDirection === "up" ? styles.up : styles.down
+                        }`}
+                    >
+                        {!isDefault && (
+                            <>
+                                <div
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setMenuOpen(false);
+                                        onEdit?.();
+                                    }}
+                                >
+                                    Edit
+                                </div>
+
+                                <div
+                                    className={styles.delete}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setMenuOpen(false);
+                                        onDelete?.();
+                                    }}
+                                >
+                                    Delete
+                                </div>
+                            </>
+                        )}
                     </div>
                 )}
             </div>
