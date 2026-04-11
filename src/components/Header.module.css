@@ -28,3 +28,9 @@
   color: #6C3ECC;
   cursor: pointer;
 }
+
+.bellWrapper {
+  position: absolute;
+  top: 2.25rem;
+  right: 8.5rem;
+}

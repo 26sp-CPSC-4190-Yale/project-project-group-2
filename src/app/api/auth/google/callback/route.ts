@@ -75,8 +75,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     where: { userId: user.id },
   });
   if (calendarCount === 0) {
-    await prisma.calendar.create({
+    const calendar = await prisma.calendar.create({
       data: { title: "My Calendar", userId: user.id },
+    });
+    await prisma.group.create({
+      data: {
+        calendarId: calendar.id,
+        name: "Default Group",
+        isDefault: true,
+      },
     });
   }
 

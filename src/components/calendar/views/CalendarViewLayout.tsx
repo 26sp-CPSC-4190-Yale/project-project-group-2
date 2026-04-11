@@ -166,6 +166,7 @@ export function CalendarViewLayout({
                 <EventCardEditMenu
                     event={editingEvent}
                     onClose={handleEditClose}
+                    readOnly={editingEvent.isShared}
                 />
             )}
         </div>

@@ -1,0 +1,137 @@
+.bellWrapper {
+    position: relative;
+    height: 1.75rem;
+    width: 1.75rem;
+}
+
+.bellIcon {
+    height: 1.75rem;
+    width: 1.75rem;
+    color: #6C3ECC;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.bellIcon:hover {
+    color: #4c1fb3;
+}
+
+.badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    background: #dc2626;
+    color: #fff;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.625rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: 20rem;
+    max-height: 24rem;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+    z-index: 300;
+}
+
+.dropdownHeader {
+    padding: 0.75rem 1rem 0.5rem;
+    color: #6c3ecc;
+    font-family: "DM Serif Display", serif;
+    font-size: 1rem;
+    font-weight: 400;
+    border-bottom: 1px solid #D9CFFB;
+}
+
+.inviteRow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #F0EEFE;
+}
+
+.inviteRow:last-child {
+    border-bottom: none;
+}
+
+.eventName {
+    color: #333;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.senderName {
+    color: #6c3ecc;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+.eventDate {
+    color: #999;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.6875rem;
+}
+
+.inviteActions {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+}
+
+.acceptBtn,
+.declineBtn {
+    all: unset;
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.3rem;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.acceptBtn {
+    background: #6c3ecc;
+    color: #fff;
+}
+
+.acceptBtn:hover {
+    background: #5a32b0;
+}
+
+.declineBtn {
+    background: #F0EEFE;
+    color: #6c3ecc;
+}
+
+.declineBtn:hover {
+    background: #D9CFFB;
+}
+
+.emptyState {
+    padding: 1.25rem 1rem;
+    text-align: center;
+    color: #999;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.8125rem;
+}

@@ -8,15 +8,16 @@ import type { CreateEventBody } from "@/types";
  * List events, with optional filters.
  *
  * Without filters, returns all events across all of the authenticated
- * user's calendars. Use the date-range filters (`start`, `end`) to
- * fetch only events relevant to a particular view window.
+ * user's calendars, plus any shared events the user has accepted.
+ * Use the date-range filters (`start`, `end`) to fetch only events
+ * relevant to a particular view window.
  *
  * @route   GET /api/events
  * @query   [calendarId] — only return events in this calendar
  * @query   [groupId]    — only return events in this group
  * @query   [start]      — ISO 8601 date; events starting on or after
  * @query   [end]        — ISO 8601 date; events starting on or before
- * @returns {ApiResponse<EventResponse[]>} array of events, separated by group and ordered by start datetime ascending
+ * @returns {ApiResponse<EventResponse[]>} array of owned + shared events, ordered by start datetime ascending
  * @error   401 — not authenticated
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -37,10 +38,36 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ...(start && { startAt: { gte: new Date(start) } }),
       ...(end && { startAt: { lte: new Date(end) } }),
     },
-    orderBy: { startAt: "asc" },                                                    
+    orderBy: { startAt: "asc" },
   });
 
-  return jsonSuccess(events);
+  const sharedEventLinks = await prisma.sharedEvent.findMany({
+    where: {
+      userId: session.userId,
+      ...(groupIds.length > 0 && { groupId: { in: groupIds } }),
+      ...(calendarId && { group: { calendarId } }),
+    },
+    include: { event: true },
+  });
+
+  const sharedEvents = sharedEventLinks
+    .filter((se) => {
+      const s = se.event.startAt;
+      if (start && s < new Date(start)) return false;
+      if (end && s > new Date(end)) return false;
+      return true;
+    })
+    .map((se) => ({
+      ...se.event,
+      groupId: se.groupId,
+      isShared: true,
+    }));
+
+  const allEvents = [...events, ...sharedEvents].sort(
+    (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime(),
+  );
+
+  return jsonSuccess(allEvents);
 }
 
 /**

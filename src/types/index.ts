@@ -70,10 +70,24 @@ export interface EventResponse {
   location: string | null;
   remindBefore: number | null;
   groupId: string;
+  isShared?: boolean;
   createdAt: string;
   updatedAt: string;
   tasks?: TaskResponse[];
   group?: GroupResponse;
+}
+
+export interface InvitationResponse {
+  id: string;
+  status: "PENDING" | "ACCEPTED" | "DECLINED";
+  eventId: string;
+  senderId: string;
+  recipientId: string;
+  createdAt: string;
+  updatedAt: string;
+  event?: EventResponse;
+  sender?: Pick<UserResponse, "id" | "name" | "email" | "avatarUrl">;
+  recipient?: Pick<UserResponse, "id" | "name" | "email" | "avatarUrl">;
 }
 
 export interface TaskResponse {
@@ -142,6 +156,11 @@ export interface CreateTaskBody {
   eventId?: string;
 }
 
+export interface CreateInvitationBody {
+  eventId: string;
+  recipientEmail: string;
+}
+
 // =============================================================================
 // Update Request Body Types
 //
@@ -187,6 +206,10 @@ export interface UpdateTaskBody {
   eventId?: string | null;
 }
 
+export interface UpdateInvitationBody {
+  status: "ACCEPTED" | "DECLINED";
+}
+
 // =============================================================================
 // Query Parameter Types
 //
@@ -213,6 +236,13 @@ export interface TaskQueryParams {
   completed?: string;
   start?: string;
   end?: string;
+}
+
+export interface InvitationQueryParams {
+  /** "sent" | "received" */
+  type?: string;
+  /** "PENDING" | "ACCEPTED" | "DECLINED" */
+  status?: string;
 }
 
 /** Query params for GET /api/calendars/[id] */

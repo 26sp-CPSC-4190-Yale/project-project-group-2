@@ -4,6 +4,7 @@
  */
 
 import { ProfileIcon } from "./calendar/layout/ProfileIcon";
+import { InvitationBell } from "./calendar/layout/InvitationBell";
 import styles from "./Header.module.css";
 import { Logo } from "@/components/Logo";
 import HoverSvg from "./HoverSvg";
@@ -53,6 +54,9 @@ export function Header({
                     onClick={() => window.location.href = "/"}
                 />
             }
+            <div className={styles.bellWrapper}>
+                <InvitationBell />
+            </div>
             <div className={styles.profileWrapper}>
                 <ProfileIcon avatarUrl={avatarUrl} />
             </div>

@@ -19,6 +19,9 @@ model User {
   calendars Calendar[]
   tasks     Task[]
   uploadedFiles UploadedFile[]
+  sentInvitations     EventInvitation[] @relation("SentInvitations")
+  receivedInvitations EventInvitation[] @relation("ReceivedInvitations")
+  sharedEvents        SharedEvent[]     @relation("SharedEvents")
 }
 
 model Calendar {
@@ -50,6 +53,7 @@ model Group {
 
   events Event[]
   tasks  Task[]
+  sharedEvents SharedEvent[]
 }
 
 model Event {
@@ -70,6 +74,8 @@ model Event {
   group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   tasks Task[]
+  invitations  EventInvitation[]
+  sharedEvents SharedEvent[]
 }
 
 model Task {
@@ -105,4 +111,44 @@ model UploadedFile {
 
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   calendar    Calendar? @relation(fields: [calendarId], references: [id], onDelete: SetNull)
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model EventInvitation {
+  id        String           @id @default(cuid())
+  status    InvitationStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  eventId     String
+  event       Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  senderId    String
+  sender      User   @relation("SentInvitations", fields: [senderId], references: [id], onDelete: Cascade)
+
+  recipientId String
+  recipient   User   @relation("ReceivedInvitations", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, recipientId])
+}
+
+model SharedEvent {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation("SharedEvents", fields: [userId], references: [id], onDelete: Cascade)
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
 }

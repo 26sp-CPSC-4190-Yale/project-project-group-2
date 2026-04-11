@@ -11,11 +11,13 @@ import { useRouter } from "next/navigation";
 import styles from "./EventCardEditMenu.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
+import { ShareEventModal } from "./ShareEventModal";
 import type { CalendarEvent } from "./types";
 
 interface EventCardEditMenuProps {
     event: CalendarEvent;
     onClose: () => void;
+    readOnly?: boolean;
 }
 
 function toDateValue(iso: string): string {
@@ -28,7 +30,7 @@ function toTimeValue(iso: string): string {
     return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-export function EventCardEditMenu({ event, onClose }: EventCardEditMenuProps) {
+export function EventCardEditMenu({ event, onClose, readOnly = false }: EventCardEditMenuProps) {
     const [name, setName] = useState(event.name);
     const [allDay, setAllDay] = useState(event.allDay);
     const [startDate, setStartDate] = useState(toDateValue(event.startAt));
@@ -43,6 +45,7 @@ export function EventCardEditMenu({ event, onClose }: EventCardEditMenuProps) {
         event.remindBefore !== null ? String(event.remindBefore) : "",
     );
     const [submitting, setSubmitting] = useState(false);
+    const [showShareModal, setShowShareModal] = useState(false);
     const router = useRouter();
 
     const handleSave = async () => {
@@ -98,6 +101,79 @@ export function EventCardEditMenu({ event, onClose }: EventCardEditMenuProps) {
             setSubmitting(false);
         }
     };
+
+    if (readOnly) {
+        return (
+            <div className={styles.backdrop} onClick={onClose}>
+                <div className={styles.card} onClick={(e) => e.stopPropagation()}>
+                    <h2 className={styles.heading}>Shared Event</h2>
+
+                    <label className={styles.label}>Name</label>
+                    <div className={styles.readOnlyValue}>{event.name}</div>
+
+                    <div className={styles.row}>
+                        <div className={styles.column}>
+                            <label className={styles.label}>Start Date</label>
+                            <div className={styles.readOnlyValue}>{startDate}</div>
+                        </div>
+                        {!event.allDay && (
+                            <div className={styles.column}>
+                                <label className={styles.label}>Start Time</label>
+                                <div className={styles.readOnlyValue}>{startTime}</div>
+                            </div>
+                        )}
+                    </div>
+
+                    {(endDate || event.endAt) && (
+                        <div className={styles.row}>
+                            <div className={styles.column}>
+                                <label className={styles.label}>End Date</label>
+                                <div className={styles.readOnlyValue}>{endDate || "—"}</div>
+                            </div>
+                            {!event.allDay && (
+                                <div className={styles.column}>
+                                    <label className={styles.label}>End Time</label>
+                                    <div className={styles.readOnlyValue}>{endTime || "—"}</div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {event.description && (
+                        <>
+                            <label className={styles.label}>Description</label>
+                            <div className={styles.readOnlyValue}>{event.description}</div>
+                        </>
+                    )}
+
+                    {event.notes && (
+                        <>
+                            <label className={styles.label}>Notes</label>
+                            <div className={styles.readOnlyValue}>{event.notes}</div>
+                        </>
+                    )}
+
+                    {event.location && (
+                        <>
+                            <label className={styles.label}>Location</label>
+                            <div className={styles.readOnlyValue}>{event.location}</div>
+                        </>
+                    )}
+
+                    {event.link && (
+                        <>
+                            <label className={styles.label}>Link</label>
+                            <div className={styles.readOnlyValue}>{event.link}</div>
+                        </>
+                    )}
+
+                    <div className={styles.actions}>
+                        <ButtonSecondary label="Close" onClick={onClose} />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.backdrop} onClick={onClose}>
@@ -220,6 +296,7 @@ export function EventCardEditMenu({ event, onClose }: EventCardEditMenuProps) {
 
                 <div className={styles.actions}>
                     <ButtonSecondary label="Delete" onClick={handleDelete} />
+                    <ButtonSecondary label="Share" onClick={() => setShowShareModal(true)} />
                     <div className={styles.actionSpacer} />
                     <ButtonSecondary label="Cancel" onClick={onClose} />
                     <ButtonPrimary
@@ -228,6 +305,13 @@ export function EventCardEditMenu({ event, onClose }: EventCardEditMenuProps) {
                     />
                 </div>
             </div>
+            {showShareModal && (
+                <ShareEventModal
+                    eventId={event.id}
+                    eventName={event.name}
+                    onClose={() => setShowShareModal(false)}
+                />
+            )}
         </div>
     );
 }

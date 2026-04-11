@@ -25,14 +25,21 @@ function formatTime(iso: string): string {
 export function EventCard({ event, style, compact, onClick }: EventCardProps) {
     if (compact) {
         return (
-            <div className={styles.compact} onClick={onClick}>
+            <div
+                className={`${styles.compact} ${event.isShared ? styles.shared : ""}`}
+                onClick={onClick}
+            >
                 <span className={styles.compactName}>{event.name}</span>
             </div>
         );
     }
 
     return (
-        <div className={styles.bar} style={style} onClick={onClick}>
+        <div
+            className={`${styles.bar} ${event.isShared ? styles.shared : ""}`}
+            style={style}
+            onClick={onClick}
+        >
             <span className={styles.barName}>{event.name}</span>
             {!event.allDay && (
                 <span className={styles.barTime}>{formatTime(event.startAt)}</span>

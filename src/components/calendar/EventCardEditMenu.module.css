@@ -162,3 +162,15 @@
 .actionSpacer {
     flex: 1;
 }
+
+.readOnlyValue {
+    color: #333;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.8125rem;
+    padding: 0.5rem 0.625rem;
+    background: #FAF9FF;
+    border: 1.5px solid #D9CFFB;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    word-break: break-word;
+}
