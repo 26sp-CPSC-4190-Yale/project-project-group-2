@@ -4,8 +4,10 @@
  * @component
  */
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import styles from "./CalendarListItem.module.css";
+import { ActionMenu } from "@/components/ActionMenu";
 
 interface CalendarListItemProps {
     calendarName?: string;
@@ -17,8 +19,6 @@ interface CalendarListItemProps {
     isDefault?: boolean;
 }
 
-
-
 export function CalendarListItem({
     calendarName,
     active = false,
@@ -28,13 +28,27 @@ export function CalendarListItem({
     isDefault,
 }: CalendarListItemProps) {
     const [showMenu, setShowMenu] = useState(false);
-    const [menuDirection, setMenuDirection] = useState<"up" | "down">("down");
     const [menuOpen, setMenuOpen] = useState(false);
+    const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
     const menuRef = useRef<HTMLDivElement>(null);
+    const portalRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
+
+    const openMenu = useCallback(() => {
+        if (buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect();
+            setMenuPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
+        }
+        setMenuOpen(true);
+    }, []);
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
-            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+            const target = e.target as Node;
+            if (
+                menuRef.current && !menuRef.current.contains(target) &&
+                portalRef.current && !portalRef.current.contains(target)
+            ) {
                 setMenuOpen(false);
             }
         }
@@ -48,20 +62,7 @@ export function CalendarListItem({
         <div
             className={`${styles.container} ${active ? styles.active : styles.inactive}`}
             onClick={onClick}
-            onMouseEnter={() => {
-                setShowMenu(true);
-
-                if (menuRef.current) {
-                    const rect = menuRef.current.getBoundingClientRect();
-                    const spaceBelow = window.innerHeight - rect.bottom;
-
-                    if (spaceBelow < 150) {
-                        setMenuDirection("up");
-                    } else {
-                        setMenuDirection("down");
-                    }
-                }
-            }}
+            onMouseEnter={() => setShowMenu(true)}
             onMouseLeave={() => {
                 if (!menuOpen) {
                     setShowMenu(false);
@@ -75,45 +76,54 @@ export function CalendarListItem({
             {!isDefault && showMenu && (
                 <div className={styles.menuWrapper} ref={menuRef}>
                     <button
+                        ref={buttonRef}
                         className={`${styles.dotsButton} ${
                             active ? styles.dotsActive : styles.dotsInactive
                         }`}
                         onClick={(e) => {
                             e.stopPropagation();
-                            setMenuOpen((prev) => !prev);
+                            if (menuOpen) {
+                                setMenuOpen(false);
+                            } else {
+                                openMenu();
+                            }
                         }}
                         aria-label="Calendar actions"
                     >
                         ···
                     </button>
 
-                    {menuOpen && (
+                    {menuOpen && createPortal(
                         <div
-                            className={`${styles.dropdown} ${
-                                menuDirection === "up" ? styles.up : styles.down
-                            }`}
+                            ref={portalRef}
+                            style={{
+                                position: "fixed",
+                                top: menuPos.top,
+                                right: menuPos.right,
+                                zIndex: 9999,
+                            }}
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            <div
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setMenuOpen(false);
-                                    onEdit?.();
-                                }}
-                            >
-                                Edit
-                            </div>
-
-                            <div
-                                className={styles.delete}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setMenuOpen(false);
-                                    onDelete?.();
-                                }}
-                            >
-                                Delete
-                            </div>
-                        </div>
+                            <ActionMenu
+                                items={[
+                                    {
+                                        label: "Edit",
+                                        onClick: () => {
+                                            setMenuOpen(false);
+                                            onEdit?.();
+                                        },
+                                    },
+                                    {
+                                        label: "Delete",
+                                        onClick: () => {
+                                            setMenuOpen(false);
+                                            onDelete?.();
+                                        },
+                                    },
+                                ]}
+                            />
+                        </div>,
+                        document.body,
                     )}
                 </div>
             )}

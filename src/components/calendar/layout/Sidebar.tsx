@@ -12,6 +12,9 @@ import { TaskListItem } from "../TaskListItem";
 import { GroupListItem } from "../GroupListItem";
 import { CreateListItemButton } from "../CreateListItemButton";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
+import { DeleteCalendarModal } from "../DeleteCalendarModal";
+import { DeleteTaskModal } from "../DeleteTaskModal";
+import { DeleteGroupModal } from "../DeleteGroupModal";
 
 export interface SidebarCalendar {
     id: string;
@@ -30,6 +33,7 @@ interface SidebarGroup {
     id: string;
     name: string;
     isDefault: boolean;
+    notes?: string;
 }
 
 interface SidebarProps {
@@ -38,11 +42,12 @@ interface SidebarProps {
     onSelectCalendar: (id: string) => void;
     onOpenCreateCalendar?: (calendar?: SidebarCalendar) => void;
     onOpenCreateTask?: (task?: any) => void;
-    onOpenCreateGroup?: () => void;
+    onOpenCreateGroup?: (group?: SidebarGroup) => void;
     onSelectGroup?: (groupIds: string[]) => void;
     groupRefreshKey?: number;
     taskRefreshKey?: number;
     onRefreshTasks?: () => void;
+    onRefreshGroups?: () => void;
 }
 
 export function Sidebar({
@@ -54,6 +59,7 @@ export function Sidebar({
     onOpenCreateGroup,
     onSelectGroup,
     onRefreshTasks,
+    onRefreshGroups,
     groupRefreshKey = 0,
     taskRefreshKey = 0,
 }: SidebarProps) {
@@ -65,6 +71,7 @@ export function Sidebar({
     const [deleteCalendar, setDeleteCalendar] = useState<SidebarCalendar | null>(null);
     const taskCalendarId = calendars.find((c) => c.title === taskCalendarTitle)?.id;
     const [deleteTask, setDeleteTask] = useState<SidebarTask | null>(null);
+    const [deleteGroup, setDeleteGroup] = useState<SidebarGroup | null>(null);
 
     // Fetch groups whenever the selected calendar changes
     useEffect(() => {
@@ -201,7 +208,7 @@ export function Sidebar({
                     GROUPS
                 </div>
                 <div className={styles.createButton}>
-                    <CreateListItemButton onClick={onOpenCreateGroup} />
+                    <CreateListItemButton onClick={() => onOpenCreateGroup?.(undefined)} />
                 </div>
             </div>
             <div className={styles.taskList}>
@@ -211,6 +218,8 @@ export function Sidebar({
                         groupName={group.name}
                         selected={selectedGroupIds.has(group.id)}
                         onToggle={() => handleToggleGroup(group.id)}
+                        onEdit={() => onOpenCreateGroup?.(group)}
+                        onDelete={() => setDeleteGroup(group)}
                     />
                 ))}
                 {groups.length === 0 && (
@@ -260,61 +269,44 @@ export function Sidebar({
                 )}
             </div>
             {deleteCalendar && (
-                <div className={styles.modalBackdrop}>
-                    <div className={styles.modal}>
-                        <h3>Delete Calendar</h3>
-                        <p>Are you sure you want to delete "{deleteCalendar.title}"?</p>
-
-                        <div className={styles.modalActions}>
-                            <button onClick={() => setDeleteCalendar(null)}>
-                                Cancel
-                            </button>
-
-                            <button
-                                className={styles.deleteButton}
-                                onClick={async () => {
-                                    await fetch(`/api/calendars/${deleteCalendar.id}`, {
-                                        method: "DELETE",
-                                    });
-
-                                    setDeleteCalendar(null);
-                                    window.location.reload();
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <DeleteCalendarModal
+                    calendarTitle={deleteCalendar.title}
+                    onConfirm={async () => {
+                        await fetch(`/api/calendars/${deleteCalendar.id}`, {
+                            method: "DELETE",
+                        });
+                        setDeleteCalendar(null);
+                        window.location.reload();
+                    }}
+                    onClose={() => setDeleteCalendar(null)}
+                />
             )}
-        {deleteTask && (
-            <div className={styles.modalBackdrop}>
-                <div className={styles.modal}>
-                    <h3>Delete Task</h3>
-                    <p>Are you sure you want to delete "{deleteTask.name}"?</p>
-
-                    <div className={styles.modalActions}>
-                        <button onClick={() => setDeleteTask(null)}>
-                            Cancel
-                        </button>
-
-                        <button
-                            className={styles.deleteButton}
-                            onClick={async () => {
-                                await fetch(`/api/tasks/${deleteTask.id}`, {
-                                    method: "DELETE",
-                                });
-
-                                setDeleteTask(null);
-                                onRefreshTasks?.();
-                            }}
-                        >
-                            Delete
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )}
+            {deleteTask && (
+                <DeleteTaskModal
+                    taskName={deleteTask.name}
+                    onConfirm={async () => {
+                        await fetch(`/api/tasks/${deleteTask.id}`, {
+                            method: "DELETE",
+                        });
+                        setDeleteTask(null);
+                        onRefreshTasks?.();
+                    }}
+                    onClose={() => setDeleteTask(null)}
+                />
+            )}
+            {deleteGroup && (
+                <DeleteGroupModal
+                    groupName={deleteGroup.name}
+                    onConfirm={async () => {
+                        await fetch(`/api/groups/${deleteGroup.id}`, {
+                            method: "DELETE",
+                        });
+                        setDeleteGroup(null);
+                        onRefreshGroups?.();
+                    }}
+                    onClose={() => setDeleteGroup(null)}
+                />
+            )}
         </div>
 
     );

@@ -36,6 +36,7 @@ export function CalendarLayout({
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [editingCalendar, setEditingCalendar] = useState<SidebarCalendar | null>(null);
     const [editingTask, setEditingTask] = useState<any | null>(null);
+    const [editingGroup, setEditingGroup] = useState<{ id: string; name: string; notes?: string } | null>(null);
 
     return (
         <div className={styles.container}>
@@ -74,11 +75,19 @@ export function CalendarLayout({
 
                                 setShowCreateTask(true);
                             }}
-                            onOpenCreateGroup={() => setShowCreateGroup(true)}
+                            onOpenCreateGroup={(group) => {
+                                if (group) {
+                                    setEditingGroup(group);
+                                } else {
+                                    setEditingGroup(null);
+                                }
+                                setShowCreateGroup(true);
+                            }}
                             groupRefreshKey={groupRefreshKey}
                             onSelectGroup={(ids) => setSelectedGroupIds(ids)}
                             taskRefreshKey={taskRefreshKey}
                             onRefreshTasks={() => setTaskRefreshKey((k) => k + 1)}
+                            onRefreshGroups={() => setGroupRefreshKey((k) => k + 1)}
                         />
                     </div>
                 </div>
@@ -109,8 +118,10 @@ export function CalendarLayout({
             {showCreateGroup && selectedCalendarId && (
                 <GroupCreateMenu
                     calendarId={selectedCalendarId}
+                    initialData={editingGroup}
                     onClose={() => {
                         setShowCreateGroup(false);
+                        setEditingGroup(null);
                         setGroupRefreshKey((k) => k + 1);
                     }}
                 />

@@ -45,4 +45,33 @@
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 0;
+    flex: 1;
+}
+
+.menuWrapper {
+    position: relative;
+    margin-left: auto;
+}
+
+.dotsButton {
+    all: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.25rem;
+    font-size: 1.2rem;
+    letter-spacing: -0.05em;
+    color: #6c3ecc;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.dotsButton:hover {
+    background-color: rgba(108, 62, 204, 0.1);
+}
+
+.container:hover .dotsButton {
+    color: #4c1fb3;
 }

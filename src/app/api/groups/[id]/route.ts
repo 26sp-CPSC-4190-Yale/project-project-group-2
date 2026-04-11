@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
+import { jsonSuccess, jsonError } from "@/lib/api";
 import type {
   ApiResponse,
   GroupResponse,
@@ -21,7 +24,20 @@ export async function GET(
   request: NextRequest,
   context: IdRouteContext,
 ): Promise<NextResponse<ApiResponse<GroupResponse>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+
+  const group = await prisma.group.findUnique({
+    where: { id },
+    include: { calendar: true },
+  });
+
+  if (!group) return jsonError("Group not found", 404);
+  if (group.calendar.userId !== session.userId) return jsonError("Forbidden", 403);
+
+  return jsonSuccess(group);
 }
 
 /**
@@ -45,7 +61,36 @@ export async function PATCH(
   request: NextRequest,
   context: IdRouteContext,
 ): Promise<NextResponse<ApiResponse<GroupResponse>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+
+  const existing = await prisma.group.findUnique({
+    where: { id },
+    include: { calendar: true },
+  });
+
+  if (!existing) return jsonError("Group not found", 404);
+  if (existing.calendar.userId !== session.userId) return jsonError("Forbidden", 403);
+
+  let body: UpdateGroupBody;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonError("Invalid JSON body", 400);
+  }
+
+  const group = await prisma.group.update({
+    where: { id },
+    data: {
+      name: body.name,
+      color: body.color,
+      notes: body.notes,
+    },
+  });
+
+  return jsonSuccess(group);
 }
 
 /**
@@ -65,5 +110,20 @@ export async function DELETE(
   request: NextRequest,
   context: IdRouteContext,
 ): Promise<NextResponse<ApiResponse<{ message: string }>>> {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
+  const session = await getSession();
+  if (!session) return jsonError("Unauthorized", 401);
+
+  const { id } = await context.params;
+
+  const existing = await prisma.group.findUnique({
+    where: { id },
+    include: { calendar: true },
+  });
+
+  if (!existing) return jsonError("Group not found", 404);
+  if (existing.calendar.userId !== session.userId) return jsonError("Forbidden", 403);
+
+  await prisma.group.delete({ where: { id } });
+
+  return jsonSuccess({ message: "Group deleted" });
 }
