@@ -28,10 +28,6 @@ export async function GET(
 
   const calendar = await prisma.calendar.findUnique({
     where: { id },
-    include: {
-      events: include?.includes("events") ?? false,
-      tasks: include?.includes("tasks") ?? false,
-    },
   });
 
   if (!calendar) return jsonError("Calendar not found", 404);

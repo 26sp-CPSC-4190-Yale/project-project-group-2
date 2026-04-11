@@ -52,8 +52,8 @@ export interface GroupResponse {
   notes: string | null;
   color: string;
   calendarId: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   events?: EventResponse[];
   tasks?: TaskResponse[];
 }
