@@ -264,7 +264,7 @@ export function Sidebar({
                 ))}
                 {filteredTasks.length === 0 && (
                     <div className={styles.emptyState}>
-                        No upcoming tasks 🎉
+                        No upcoming tasks
                     </div>
                 )}
             </div>
