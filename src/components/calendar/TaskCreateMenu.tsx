@@ -61,7 +61,13 @@ export function TaskCreateMenu({
             })
             .catch(() => setGroups([]));
     }, [calendarId]);
-
+    useEffect(() => {
+        if (initialData) {
+            setName(initialData.name);
+        } else {
+            setName("");
+        }
+    }, [initialData]);
     const handleCreate = async () => {
         if (submitting) return;
         if (!name.trim()) return;
@@ -81,8 +87,12 @@ export function TaskCreateMenu({
         ).toISOString();
 
         try {
-            const res = await fetch("/api/tasks", {
-                method: "POST",
+        const isEdit = !!initialData?.id;
+
+        const res = await fetch(
+            isEdit ? `/api/tasks/${initialData!.id}` : "/api/tasks",
+            {
+                method: isEdit ? "PATCH" : "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     name: name.trim(),
@@ -95,7 +105,8 @@ export function TaskCreateMenu({
                     link: link.trim() || undefined,
                     location: location.trim() || undefined,
                 }),
-            });
+            }
+        );
 
             if (res.ok) {
                 onClose();
@@ -115,7 +126,9 @@ export function TaskCreateMenu({
     return (
         <div className={styles.backdrop} onClick={onClose}>
             <div className={styles.card} onClick={(e) => e.stopPropagation()}>
-                <h2 className={styles.heading}>New Task</h2>
+                <h2 className={styles.heading}>
+                    {initialData ? "Edit Task" : "New Task"}
+                </h2>
 
                 <label className={styles.label}>Name</label>
                 <input
@@ -213,7 +226,11 @@ export function TaskCreateMenu({
                 <div className={styles.actions}>
                     <ButtonSecondary label="Cancel" onClick={onClose} />
                     <ButtonPrimary
-                        label={submitting ? "Creating…" : "Create"}
+                        label={
+                            submitting
+                                ? (initialData ? "Saving…" : "Creating…")
+                                : (initialData ? "Save" : "Create")
+                        }
                         onClick={handleCreate}
                     />
                 </div>

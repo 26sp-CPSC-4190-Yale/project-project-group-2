@@ -72,6 +72,12 @@ export function Sidebar({
     const taskCalendarId = calendars.find((c) => c.title === taskCalendarTitle)?.id;
     const [deleteTask, setDeleteTask] = useState<SidebarTask | null>(null);
     const [deleteGroup, setDeleteGroup] = useState<SidebarGroup | null>(null);
+    const [loaded, setLoaded] = useState(false);
+    const [now, setNow] = useState<Date | null>(null);
+
+    useEffect(() => {
+        setNow(new Date());
+    }, []);
 
     // Fetch groups whenever the selected calendar changes
     useEffect(() => {
@@ -95,20 +101,24 @@ export function Sidebar({
             .catch(() => setGroups([]));
     }, [selectedCalendarId, groupRefreshKey]);
 
-    // Fetch tasks whenever the selected calendar changes
+    //fetch tasks whenever the selected calendar changes
     useEffect(() => {
         if (!selectedCalendarId) {
             setTasks([]);
+            setLoaded(true);
             return;
         }
-        const groupParams = Array.from(selectedGroupIds).map((id) => `&groupId=${id}`).join("");
-        fetch(`/api/tasks?calendarId=${selectedCalendarId}${groupParams}`)
+
+        setLoaded(false);
+
+        fetch(`/api/tasks?calendarId=${selectedCalendarId}`)
             .then((res) => res.json())
             .then((data) => {
                 if (data.data) setTasks(data.data);
             })
-            .catch(() => setTasks([]));
-    }, [selectedCalendarId, selectedGroupIds, taskRefreshKey]);
+            .catch(() => setTasks([]))
+            .finally(() => setLoaded(true));
+    }, [selectedCalendarId, taskRefreshKey]);
 
     const handleToggleGroup = (groupId: string) => {
         const newSet = new Set(selectedGroupIds);
@@ -133,9 +143,17 @@ export function Sidebar({
         });
     };
 
-    const now = new Date();
-    const sevenDaysFromNow = new Date();
-    sevenDaysFromNow.setDate(now.getDate() + 7);
+    if (!now) {
+        return (
+            <div className={styles.container}>
+                {/* skeleton / empty shell to match server */}
+            </div>
+        );
+    }
+
+    const safeNow = now;
+    const sevenDaysFromNow = new Date(safeNow);
+    sevenDaysFromNow.setDate(safeNow.getDate() + 7);
 
     const filteredTasks = tasks
         .filter((task) => {
@@ -145,7 +163,7 @@ export function Sidebar({
 
             const due = new Date(task.dueAt);
 
-            return due >= now && due <= sevenDaysFromNow;
+            return due >= safeNow && due <= sevenDaysFromNow;
         })
         .sort((a, b) => {
             return new Date(a.dueAt!).getTime() - new Date(b.dueAt!).getTime();
@@ -156,7 +174,7 @@ export function Sidebar({
 
         const due = new Date(dueAt);
 
-        const today = new Date(now);
+        const today = new Date(safeNow);
         today.setHours(0, 0, 0, 0);
 
         const dueDay = new Date(due);
@@ -167,7 +185,6 @@ export function Sidebar({
 
         return diffDays <= 3 && diffDays >= 0;
     }
-
     return (
         <div className={styles.container}>
             <div className={styles.calendarHeader}>
@@ -239,35 +256,30 @@ export function Sidebar({
                     <CreateListItemButton onClick={onOpenCreateTask} />
                 </div>
             </div>
+            <div className={styles.taskList}>
+                {!loaded ? null : filteredTasks.length === 0 ? (
+                    <div className={styles.emptyState}>
+                        No upcoming tasks
+                    </div>
+                ) : (
+                    filteredTasks.map((task) => (
+                        <TaskListItem
+                            key={task.id}
+                            taskName={task.name}
+                            dueAt={task.dueAt}
+                            checked={task.completed}
+                            onToggle={() => handleToggleTask(task.id, task.completed)}
+                            isDueSoon={isDueSoon(task.dueAt)}
+                            onEdit={() => onOpenCreateTask?.(task)}
+                            onDelete={() => setDeleteTask(task)}
+                        />
+                    ))
+                )}
+            </div>
             <ButtonSecondary
                 label="View All Tasks"
                 width="14.5rem"
             />
-            <div className={styles.taskList}>
-                {filteredTasks.map((task) => (
-                <TaskListItem
-                    key={task.id}
-                    taskName={task.name}
-                    checked={task.completed}
-                    onToggle={() => handleToggleTask(task.id, task.completed)}
-                    isDueSoon={isDueSoon(task.dueAt)}
-
-                    onEdit={() => {
-                        console.log("edit task", task);
-                        onOpenCreateTask?.(task);
-                    }}
-
-                    onDelete={() => {
-                        setDeleteTask(task);
-                    }}
-                />
-                ))}
-                {filteredTasks.length === 0 && (
-                    <div className={styles.emptyState}>
-                        No upcoming tasks
-                    </div>
-                )}
-            </div>
             {deleteCalendar && (
                 <DeleteCalendarModal
                     calendarTitle={deleteCalendar.title}

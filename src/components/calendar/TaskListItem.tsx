@@ -13,7 +13,7 @@ export interface TaskListItemProps {
     taskName: string;
     checked?: boolean;
     onToggle?: () => void;
-
+    dueAt?: string;
     onEdit?: () => void;
     onDelete?: () => void;
     isDueSoon?: boolean;
@@ -26,6 +26,7 @@ export function TaskListItem({
     onEdit,
     onDelete,
     isDueSoon,
+    dueAt,
 }: TaskListItemProps) {
     const [showMenu, setShowMenu] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -62,6 +63,33 @@ export function TaskListItem({
         };
     }, [menuOpen]);
 
+    function formatDueDate(dueAt?: string) {
+        if (!dueAt) return "";
+
+        const date = new Date(dueAt);
+
+        const options: Intl.DateTimeFormatOptions = {
+            month: "short",
+            day: "numeric",
+        };
+
+        const datePart = date.toLocaleDateString(undefined, options);
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+
+        if (hours === 0 && minutes === 0) {
+            return datePart;
+        }
+
+        const timePart = date.toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit",
+        });
+
+        return `${datePart} • ${timePart}`;
+    }
+
     return (
         <div
             className={`${styles.container} ${isDueSoon ? styles.dueSoon : ""}`}
@@ -75,7 +103,19 @@ export function TaskListItem({
                 {checked && <div className={styles.checkmark} />}
             </div>
 
-            <span className={styles.text}>{taskName}</span>
+            <div className={styles.textWrapper}>
+                <span className={styles.text}>{taskName}</span>
+
+                {dueAt && (
+                    <span
+                        className={`${styles.dueDate} ${
+                            isDueSoon ? styles.dueSoon : ""
+                        }`}
+                    >
+                        {formatDueDate(dueAt)}
+                    </span>
+                )}
+            </div>
 
             {(showMenu || menuOpen) && (
                 <div

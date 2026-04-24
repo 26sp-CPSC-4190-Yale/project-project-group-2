@@ -80,3 +80,21 @@
 .container:hover .dotsButton {
     color: #4c1fb3;
 }
+
+.textWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.dueDate {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.1rem;
+}
+
+.dueSoon {
+  color: #dc2626;
+  font-weight: 500;
+}
