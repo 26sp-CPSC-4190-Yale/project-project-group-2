@@ -256,3 +256,31 @@ export interface EventGetParams {
   /** Comma-separated relation includes: "tasks" */
   include?: string;
 }
+
+export interface AiChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface AiPageContext {
+  page: "calendar" | "files";
+  selectedCalendarId: string | null;
+  selectedGroupIds: string[];
+  /** ISO 8601, client-side `new Date().toISOString()`. */
+  currentDateISO: string;
+  /** IANA zone, e.g. "America/New_York". `Intl.DateTimeFormat().resolvedOptions().timeZone`. */
+  timezone: string;
+}
+
+export interface AiChatRequestBody {
+  messages: AiChatMessage[];
+  context: AiPageContext;
+}
+
+/** Unified assistant response envelope. `proposal.data` is a validated server-side payload ready for the corresponding existing endpoint. */
+export type AiChatResponseBody =
+  | { kind: "text"; text: string }
+  | { kind: "question"; text: string }
+  | { kind: "proposal"; proposalKind: "event"; data: CreateEventBody & { displayCalendarTitle: string; displayGroupName: string } }
+  | { kind: "proposal"; proposalKind: "task"; data: CreateTaskBody & { displayCalendarTitle: string; displayGroupName: string } }
+  | { kind: "error"; message: string };
