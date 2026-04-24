@@ -107,12 +107,8 @@ export function TaskListItem({
                 <span className={styles.text}>{taskName}</span>
 
                 {dueAt && (
-                    <span
-                        className={`${styles.dueDate} ${
-                            isDueSoon ? styles.dueSoon : ""
-                        }`}
-                    >
-                        {formatDueDate(dueAt)}
+                    <span className={styles.dueDate}>
+                        Due on: {formatDueDate(dueAt)}
                     </span>
                 )}
             </div>
