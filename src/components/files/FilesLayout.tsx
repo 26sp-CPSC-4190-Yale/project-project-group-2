@@ -7,11 +7,11 @@ import styles from "./FilesLayout.module.css";
 import { Header } from "../header/Header";
 import { SearchBar } from "./SearchBar";
 import { ActionMenu } from "@/components/ActionMenu";
-import { RenameFileModal } from "./modals/RenameFileModal";
+import { EditFileModal, type EditFileChanges } from "./modals/EditFileModal";
 import { DeleteFileModal } from "./modals/DeleteFileModal";
 import { UploadFileModal } from "./modals/UploadFileModal";
-import { ExtractPdfModal } from "./ExtractPdfModal";
-import { ExtractPdfLoadingModal } from "./ExtractPdfLoadingModal";
+import { ExtractPdfModal } from "./modals/ExtractPdfModal";
+import { ExtractPdfLoadingModal } from "./modals/ExtractPdfLoadingModal";
 import type { ExtractPdfPrefetchPayload } from "@/types";
 
 const PdfThumbnail = dynamic(
@@ -35,7 +35,7 @@ export function FilesLayout({ avatarUrl }: FilesLayoutProps) {
     const router = useRouter();
     const [files, setFiles] = useState<FileItem[]>([]);
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-    const [renameTarget, setRenameTarget] = useState<FileItem | null>(null);
+    const [editTarget, setEditTarget] = useState<FileItem | null>(null);
     const [extractTarget, setExtractTarget] = useState<FileItem | null>(null);
     const [extractPrefetch, setExtractPrefetch] = useState<ExtractPdfPrefetchPayload | null>(
         null,
@@ -92,18 +92,23 @@ export function FilesLayout({ avatarUrl }: FilesLayoutProps) {
         setShowUpload(false);
     }
 
-    async function handleRename(fileId: string, newName: string) {
+    async function handleEdit(fileId: string, changes: EditFileChanges) {
+        if (Object.keys(changes).length === 0) {
+            setEditTarget(null);
+            return;
+        }
+
         const res = await fetch(`/api/files/${fileId}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: newName }),
+            body: JSON.stringify(changes),
         });
 
         if (res.ok) {
             const updated = await res.json();
             setFiles((prev) => prev.map((f) => (f.id === fileId ? updated : f)));
         }
-        setRenameTarget(null);
+        setEditTarget(null);
     }
 
     async function handleDelete(fileId: string) {
@@ -175,7 +180,7 @@ export function FilesLayout({ avatarUrl }: FilesLayoutProps) {
                                                     label: "Edit",
                                                     onClick: () => {
                                                         setOpenMenuId(null);
-                                                        setRenameTarget(file);
+                                                        setEditTarget(file);
                                                     },
                                                 },
                                                 {
@@ -214,11 +219,12 @@ export function FilesLayout({ avatarUrl }: FilesLayoutProps) {
                 />
             )}
 
-            {renameTarget && (
-                <RenameFileModal
-                    currentName={renameTarget.name}
-                    onConfirm={(newName) => handleRename(renameTarget.id, newName)}
-                    onClose={() => setRenameTarget(null)}
+            {editTarget && (
+                <EditFileModal
+                    currentName={editTarget.name}
+                    currentCalendarId={editTarget.calendarId}
+                    onConfirm={(changes) => handleEdit(editTarget.id, changes)}
+                    onClose={() => setEditTarget(null)}
                 />
             )}
 

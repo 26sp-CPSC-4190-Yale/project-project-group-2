@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "./ExtractPdfModal.module.css";
 import type { ExtractedItem } from "@/lib/aiSchemas";
 import type { ExtractPdfPrefetchPayload } from "@/types";
@@ -21,7 +21,7 @@ function formatItemDate(dateISO: string, endAtISO: string | null, allDay: boolea
     if (allDay) return formatDate(dateISO);
     const start = formatTime(dateISO);
     const date = formatDate(dateISO);
-    if (endAtISO) return `${start} – ${formatTime(endAtISO)} · ${date}`;
+    if (endAtISO) return `${start} - ${formatTime(endAtISO)} · ${date}`;
     return `${start} · ${date}`;
 }
 
@@ -44,6 +44,48 @@ export function ExtractPdfModal({ payload, onClose }: Props) {
         payload.extract.defaultGroupId ?? null,
     );
     const [importing, setImporting] = useState(false);
+
+    const sectionsContainerRef = useRef<HTMLDivElement>(null);
+    const eventsListRef = useRef<HTMLUListElement>(null);
+    const tasksListRef = useRef<HTMLUListElement>(null);
+
+    useLayoutEffect(() => {
+        const container = sectionsContainerRef.current;
+        if (!container) return;
+
+        const recalc = () => {
+            const elist = eventsListRef.current;
+            const tlist = tasksListRef.current;
+            const cont = sectionsContainerRef.current;
+            if (!cont) return;
+
+            if (elist) elist.style.maxHeight = "";
+            if (tlist) tlist.style.maxHeight = "";
+
+            const E = elist?.scrollHeight ?? 0;
+            const T = tlist?.scrollHeight ?? 0;
+            const containerHeight = cont.clientHeight;
+            const chrome = Math.max(0, cont.scrollHeight - E - T);
+            const available = Math.max(0, containerHeight - chrome);
+
+            if (E + T <= available) return;
+
+            const half = available / 2;
+            if (E <= half && tlist) {
+                tlist.style.maxHeight = `${available - E}px`;
+            } else if (T <= half && elist) {
+                elist.style.maxHeight = `${available - T}px`;
+            } else {
+                if (elist) elist.style.maxHeight = `${half}px`;
+                if (tlist) tlist.style.maxHeight = `${half}px`;
+            }
+        };
+
+        recalc();
+        const observer = new ResizeObserver(recalc);
+        observer.observe(container);
+        return () => observer.disconnect();
+    }, [items.length]);
 
     useEffect(() => {
         if (!targetCalendarId) return;
@@ -79,10 +121,13 @@ export function ExtractPdfModal({ payload, onClose }: Props) {
     const eventRows = items.map((row, index) => ({ row, index })).filter(({ row }) => row.kind === "event");
     const taskRows = items.map((row, index) => ({ row, index })).filter(({ row }) => row.kind === "task");
 
-    function renderList(rows: { row: RowItem; index: number }[]) {
+    function renderList(
+        rows: { row: RowItem; index: number }[],
+        listRef: React.Ref<HTMLUListElement>,
+    ) {
         if (rows.length === 0) return null;
         return (
-            <ul className={styles.list}>
+            <ul className={styles.list} ref={listRef}>
                 {rows.map(({ row, index }) => (
                     <li key={index} className={styles.row}>
                         <input
@@ -109,19 +154,21 @@ export function ExtractPdfModal({ payload, onClose }: Props) {
     return (
         <div className={styles.backdrop} onClick={onClose}>
             <div className={styles.card} onClick={(e) => e.stopPropagation()}>
-                <h2 className={styles.heading}>Add to calendar</h2>
+                <div className={styles.heading}>Add to calendar</div>
 
-<div className={styles.section}>
-                    <h3 className={styles.sectionHeading}>Events</h3>
-                    {renderList(eventRows)}
+                <div className={styles.sectionsContainer} ref={sectionsContainerRef}>
+                    <div className={styles.section}>
+                        <div className={styles.sectionHeading}>Events</div>
+                        {renderList(eventRows, eventsListRef)}
+                    </div>
+
+                    <div className={styles.section}>
+                        <div className={styles.sectionHeading}>Tasks</div>
+                        {renderList(taskRows, tasksListRef)}
+                    </div>
                 </div>
 
-                <div className={styles.section}>
-                    <h3 className={styles.sectionHeading}>Tasks</h3>
-                    {renderList(taskRows)}
-                </div>
-
-<div className={styles.actions}>
+                <div className={styles.actions}>
                     <ButtonSecondary label="Cancel" onClick={onClose} />
                     <ButtonPrimary
                         label={

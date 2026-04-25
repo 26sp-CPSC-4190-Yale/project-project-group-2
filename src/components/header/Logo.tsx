@@ -15,7 +15,9 @@ export function Logo({
     return (
         <div className={styles.container}
         >
+            <a href="/">
                 Planar
+            </a>
         </div>
     );
 }
