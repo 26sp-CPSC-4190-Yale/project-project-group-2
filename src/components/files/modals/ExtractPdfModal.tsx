@@ -6,24 +6,9 @@ import type { ExtractedItem } from "@/lib/aiSchemas";
 import type { ExtractPdfPrefetchPayload } from "@/types";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
+import { formatItemDate } from "@/lib/formatDate";
 
 type RowItem = ExtractedItem & { included: boolean };
-
-function formatTime(iso: string) {
-    return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-function formatDate(iso: string) {
-    return new Date(iso).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
-}
-
-function formatItemDate(dateISO: string, endAtISO: string | null, allDay: boolean) {
-    if (allDay) return formatDate(dateISO);
-    const start = formatTime(dateISO);
-    const date = formatDate(dateISO);
-    if (endAtISO) return `${start} - ${formatTime(endAtISO)} · ${date}`;
-    return `${start} · ${date}`;
-}
 
 interface Props {
     payload: ExtractPdfPrefetchPayload;

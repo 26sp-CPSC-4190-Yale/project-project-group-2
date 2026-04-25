@@ -9,15 +9,50 @@ import styles from "./ChatInputBar.module.css";
 
 interface ChatInputBarProps {
     placeholderText?: string | null;
+    value?: string;
+    onChange?: (value: string) => void;
+    onSubmit?: () => void;
+    disabled?: boolean;
 }
 
 export function ChatInputBar({
     placeholderText,
+    value: valueProp,
+    onChange,
+    onSubmit,
+    disabled = false,
 }: ChatInputBarProps) {
-    const [value, setValue] = useState("");
+    // Support both controlled and uncontrolled usage so this component remains
+    // backwards-compatible with any other place that may still mount it
+    // without passing value/onChange.
+    const [internalValue, setInternalValue] = useState("");
+    const isControlled = valueProp !== undefined;
+    const value = isControlled ? (valueProp as string) : internalValue;
+    const setValue = (next: string) => {
+        if (isControlled) {
+            onChange?.(next);
+        } else {
+            setInternalValue(next);
+        }
+    };
+
     const [isMultiline, setIsMultiline] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const measureRef = useRef<HTMLTextAreaElement>(null);
+
+    const canSubmit = !disabled && value.trim().length > 0;
+
+    function handleSubmit() {
+        if (!canSubmit) return;
+        onSubmit?.();
+    }
+
+    function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit();
+        }
+    }
 
     useLayoutEffect(() => {
         const ta = textareaRef.current;
@@ -51,20 +86,56 @@ export function ChatInputBar({
 
     return (
         <div
-            className={`${styles.container} ${isMultiline ? styles.multiline : ""}`}
+            className={`${styles.container} ${isMultiline ? styles.multiline : ""} ${disabled ? styles.disabled : ""}`}
         >
             <textarea
                 ref={textareaRef}
                 className={styles.input}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder={placeholderText ?? ""}
                 rows={1}
+                disabled={disabled}
             />
-            <button className={styles.button} type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
+            <button
+                className={styles.button}
+                type="button"
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+                aria-label={disabled ? "Sending" : "Send message"}
+            >
+                {disabled ? (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        className={`size-6 ${styles.spinner}`}
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 3a9 9 0 1 0 9 9"
+                        />
+                    </svg>
+                ) : (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="size-6"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m15 11.25-3-3m0 0-3 3m3-3v7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                        />
+                    </svg>
+                )}
             </button>
             <textarea
                 ref={measureRef}

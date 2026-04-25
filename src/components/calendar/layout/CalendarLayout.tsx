@@ -55,6 +55,15 @@ export function CalendarLayout({
                     <button
                         className={styles.defaultToggle}
                         onClick={() => {
+                            // If the chat sidebar is being closed by switching away,
+                            // also clear the persisted chat thread.
+                            if (chatSidebarOpen) {
+                                try {
+                                    window.localStorage.removeItem("ai-chat:thread:v1");
+                                } catch {
+                                    // ignore storage failures
+                                }
+                            }
                             setDefaultSidebarOpen((v) => !v);
                             setChatSidebarOpen(false);
 
@@ -75,6 +84,15 @@ export function CalendarLayout({
                     <button
                         className={styles.chatToggle}
                         onClick={() => {
+                            // Toggling the chat sidebar away clears the persisted thread
+                            // so the user gets a fresh chat next time it opens.
+                            if (chatSidebarOpen) {
+                                try {
+                                    window.localStorage.removeItem("ai-chat:thread:v1");
+                                } catch {
+                                    // ignore storage failures
+                                }
+                            }
                             setChatSidebarOpen((v) => !v);
                             setDefaultSidebarOpen(false);
 
@@ -132,7 +150,12 @@ export function CalendarLayout({
                             />
                         :
                             <ChatSidebar
-
+                                selectedCalendarId={selectedCalendarId}
+                                selectedGroupIds={selectedGroupIds}
+                                onCalendarMutated={() => {
+                                    setTaskRefreshKey((k) => k + 1);
+                                    setSharedEventsRefreshKey((k) => k + 1);
+                                }}
                             />
                             
                         }
