@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+
+export const maxDuration = 120;
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { jsonError, jsonSuccess } from "@/lib/api";

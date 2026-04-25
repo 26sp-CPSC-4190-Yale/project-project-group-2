@@ -10,6 +10,9 @@ import { ActionMenu } from "@/components/ActionMenu";
 import { RenameFileModal } from "./RenameFileModal";
 import { DeleteFileModal } from "./DeleteFileModal";
 import { UploadFileModal } from "./UploadFileModal";
+import { ExtractPdfModal } from "./ExtractPdfModal";
+import { ExtractPdfLoadingModal } from "./ExtractPdfLoadingModal";
+import type { ExtractPdfPrefetchPayload } from "@/types";
 
 const PdfThumbnail = dynamic(
     () => import("./PdfThumbnail").then((mod) => mod.PdfThumbnail),
@@ -33,6 +36,10 @@ export function FilesLayout({ avatarUrl }: FilesLayoutProps) {
     const [files, setFiles] = useState<FileItem[]>([]);
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const [renameTarget, setRenameTarget] = useState<FileItem | null>(null);
+    const [extractTarget, setExtractTarget] = useState<FileItem | null>(null);
+    const [extractPrefetch, setExtractPrefetch] = useState<ExtractPdfPrefetchPayload | null>(
+        null,
+    );
     const [deleteTarget, setDeleteTarget] = useState<FileItem | null>(null);
     const [showUpload, setShowUpload] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
@@ -165,10 +172,18 @@ export function FilesLayout({ avatarUrl }: FilesLayoutProps) {
                                         <ActionMenu
                                             items={[
                                                 {
-                                                    label: "Rename",
+                                                    label: "Edit",
                                                     onClick: () => {
                                                         setOpenMenuId(null);
                                                         setRenameTarget(file);
+                                                    },
+                                                },
+                                                {
+                                                    label: "Extract",
+                                                    onClick: () => {
+                                                        setOpenMenuId(null);
+                                                        setExtractPrefetch(null);
+                                                        setExtractTarget(file);
                                                     },
                                                 },
                                                 {
@@ -204,6 +219,24 @@ export function FilesLayout({ avatarUrl }: FilesLayoutProps) {
                     currentName={renameTarget.name}
                     onConfirm={(newName) => handleRename(renameTarget.id, newName)}
                     onClose={() => setRenameTarget(null)}
+                />
+            )}
+
+            {extractTarget && !extractPrefetch && (
+                <ExtractPdfLoadingModal
+                    fileId={extractTarget.id}
+                    fileName={extractTarget.name}
+                    onDone={(payload) => setExtractPrefetch(payload)}
+                    onClose={() => setExtractTarget(null)}
+                />
+            )}
+            {extractTarget && extractPrefetch && (
+                <ExtractPdfModal
+                    payload={extractPrefetch}
+                    onClose={() => {
+                        setExtractTarget(null);
+                        setExtractPrefetch(null);
+                    }}
                 />
             )}
 

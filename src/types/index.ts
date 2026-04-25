@@ -284,3 +284,20 @@ export type AiChatResponseBody =
   | { kind: "proposal"; proposalKind: "event"; data: CreateEventBody & { displayCalendarTitle: string; displayGroupName: string } }
   | { kind: "proposal"; proposalKind: "task"; data: CreateTaskBody & { displayCalendarTitle: string; displayGroupName: string } }
   | { kind: "error"; message: string };
+
+// =============================================================================
+// PDF Extraction Types
+// =============================================================================
+
+import type { ExtractedItem } from "@/lib/aiSchemas";
+
+export interface ExtractPdfPrefetchPayload {
+  extract: {
+    items: ExtractedItem[];
+    defaultCalendarId: string | null;
+    defaultGroupId: string | null;
+    detectedTimezone: string | null;
+    unparseableNotes: string | null;
+  };
+  calendars: Array<{ id: string; title: string }>;
+}

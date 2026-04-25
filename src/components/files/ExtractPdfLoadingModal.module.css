@@ -1,0 +1,75 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 20, 50, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 210;
+    padding: 1rem;
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 371px;
+    height: 655px;
+    padding: 2rem 1.5rem;
+    border-radius: 1rem;
+    background: #F0EEFE;
+    box-shadow: 0 8px 32px rgba(108, 62, 204, 0.2);
+    border: 1.5px solid #d9cffb;
+}
+
+.title {
+    position: absolute;
+    top: 229px;
+    left: 73px;
+    color: #000;
+    font-family: "DM Serif Display";
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin: 0;
+}
+
+.subtitle {
+    position: absolute;
+    top: 288px;
+    align-items: center;
+    margin: 0;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.8125rem;
+    color: #555;
+    word-break: break-word;
+}
+
+.spinner {
+    position: absolute;
+    top: 325px;
+    left: calc(50% - 1.25rem);
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3px solid #e8e0fc;
+    border-top-color: #6c3ecc;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error {
+    margin: 0;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.8125rem;
+    color: #8b1a1a;
+    text-align: center;
+}
