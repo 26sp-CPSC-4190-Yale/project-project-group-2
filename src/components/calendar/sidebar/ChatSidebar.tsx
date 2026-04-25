@@ -5,6 +5,7 @@
 
 "use client";
 
+import { ChatInputBar } from "./ChatInputBar";
 import styles from "./ChatSidebar.module.css";
 
 interface ChatSidebarProps {
@@ -15,10 +16,12 @@ export function ChatSidebar({
 
     return (
         <>
-            <div>
+            <div className={styles.introText}>
                 I'll plan when you're ready.
             </div>
-            
+            <ChatInputBar
+                placeholderText="Edit your calendar."
+            />
         </>
 
     );

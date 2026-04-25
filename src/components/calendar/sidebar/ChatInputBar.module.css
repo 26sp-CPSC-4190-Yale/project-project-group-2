@@ -1,0 +1,109 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2.25rem;
+    min-height: 2.3125rem;
+    width: 13.625rem;
+    padding-left: 1rem;
+    padding-right: 0.5rem;
+    border-radius: 6.25rem;
+    border: 1px solid #D9D9D9;
+    background: #fff;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.container.multiline {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 1.15rem;
+}
+
+.input {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    background: transparent;
+    color: #000;
+    font-family: var(--font-dm-sans);
+    font-size: 0.9375rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.4;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.input::placeholder {
+    color: #A697C5;
+}
+
+.input::selection {
+    background: #A697C5;
+    color: #fff;
+}
+
+.input::-moz-selection {
+    background: #A697C5;
+    color: #fff;
+}
+
+.container.multiline .input {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.button {
+    width: 1.5rem;
+    height: 1.5rem;
+    background: transparent;
+    border: none;
+    color: #A687C5;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.container.multiline .button {
+    align-self: flex-end;
+    margin-right: 0.5rem;
+}
+
+.measure {
+    position: absolute;
+    visibility: hidden;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    width: 8.375rem;
+    height: 0;
+    min-height: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+    resize: none;
+    overflow: hidden;
+    background: transparent;
+    font-family: var(--font-dm-sans);
+    font-size: 0.9375rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+}
