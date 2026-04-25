@@ -3,10 +3,10 @@
  * @component
  */
 
-import { ProfileIcon } from "./calendar/layout/ProfileIcon";
-import { InvitationBell } from "./calendar/layout/InvitationBell";
+import { ProfileIcon } from "./ProfileIcon";
+import { InvitationBell } from "./InvitationBell";
 import styles from "./Header.module.css";
-import { Logo } from "@/components/Logo";
+import { Logo } from "@/components/header/Logo";
 import HoverSvg from "./HoverSvg";
 
 interface HeaderProps {

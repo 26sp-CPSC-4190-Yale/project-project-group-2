@@ -6,15 +6,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styles from "./Sidebar.module.css";
-import { CalendarListItem } from "../CalendarListItem";
-import { TaskListItem } from "../TaskListItem";
-import { GroupListItem } from "../GroupListItem";
-import { CreateListItemButton } from "../CreateListItemButton";
+import styles from "./DefaultSidebar.module.css";
+import { CalendarListItem } from "./CalendarListItem";
+import { TaskListItem } from "./TaskListItem";
+import { GroupListItem } from "./GroupListItem";
+import { CreateListItemButton } from "./CreateListItemButton";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
-import { DeleteCalendarModal } from "../DeleteCalendarModal";
-import { DeleteTaskModal } from "../DeleteTaskModal";
-import { DeleteGroupModal } from "../DeleteGroupModal";
+import { DeleteCalendarModal } from "../modals/DeleteCalendarModal";
+import { DeleteTaskModal } from "../modals/DeleteTaskModal";
+import { DeleteGroupModal } from "../modals/DeleteGroupModal";
 
 export interface SidebarCalendar {
     id: string;
@@ -36,7 +36,7 @@ interface SidebarGroup {
     notes?: string;
 }
 
-interface SidebarProps {
+interface DefaultSidebarProps {
     calendars: SidebarCalendar[];
     selectedCalendarId: string | null;
     onSelectCalendar: (id: string) => void;
@@ -50,7 +50,7 @@ interface SidebarProps {
     onRefreshGroups?: () => void;
 }
 
-export function Sidebar({
+export function DefaultSidebar({
     calendars,
     selectedCalendarId,
     onSelectCalendar,
@@ -62,7 +62,7 @@ export function Sidebar({
     onRefreshGroups,
     groupRefreshKey = 0,
     taskRefreshKey = 0,
-}: SidebarProps) {
+}: DefaultSidebarProps) {
     const defaultCalTitle = calendars.find((c) => c.id === selectedCalendarId)?.title ?? "";
     const [taskCalendarTitle, setTaskCalendarTitle] = useState(defaultCalTitle);
     const [tasks, setTasks] = useState<SidebarTask[]>([]);
@@ -169,7 +169,7 @@ export function Sidebar({
     }
 
     return (
-        <div className={styles.container}>
+        <>
             <div className={styles.calendarHeader}>
                 <div className={styles.headerText}>
                     MY CALENDARS
@@ -307,7 +307,7 @@ export function Sidebar({
                     onClose={() => setDeleteGroup(null)}
                 />
             )}
-        </div>
+        </>
 
     );
 }

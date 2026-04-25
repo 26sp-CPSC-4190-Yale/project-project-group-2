@@ -4,13 +4,13 @@
  * @component
  */
 
-import styles from "./AddNewButton.module.css";
+import styles from "./CreateEventButton.module.css";
 
-interface AddNewButtonProps {
+interface CreateEventButtonProps {
     onClick?: () => void;
 }
 
-export function AddNewButton({ onClick }: AddNewButtonProps) {
+export function CreateEventButton({ onClick }: CreateEventButtonProps) {
     return (
         <div className={styles.container} onClick={onClick}>
             <span className={styles.text}>Add Event</span>

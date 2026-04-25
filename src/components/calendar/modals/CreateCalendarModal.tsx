@@ -9,16 +9,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./CalendarCreateMenu.module.css";
+import styles from "./CreateCalendarModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
 import { useEffect } from "react";
 
-interface CalendarCreateMenuProps {
-    onClose: () => void;
-}
-
-interface Props {
+interface CreateCalendarModalProps {
     initialData?: {
         id: string;
         title: string;
@@ -26,7 +22,7 @@ interface Props {
     onClose: () => void;
 }
 
-export function CalendarCreateMenu({ initialData, onClose }: Props) {
+export function CreateCalendarModal({ initialData, onClose }: CreateCalendarModalProps) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [submitting, setSubmitting] = useState(false);

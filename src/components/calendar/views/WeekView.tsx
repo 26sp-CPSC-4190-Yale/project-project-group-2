@@ -4,7 +4,7 @@
  */
 
 import styles from "./WeekView.module.css";
-import { EventCard } from "../EventCard";
+import { EventCard } from "./EventCard";
 import type { CalendarEvent } from "../types";
 
 interface WeekViewProps {

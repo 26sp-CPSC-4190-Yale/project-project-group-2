@@ -4,7 +4,7 @@
  */
 
 import styles from "./AuthLayout.module.css";
-import { Logo } from "@/components/Logo";
+import { Logo } from "@/components/header/Logo";
 import { OAuthButton } from "./OAuthButton";
 
 interface AuthLayoutProps {

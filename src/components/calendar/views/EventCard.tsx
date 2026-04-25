@@ -5,7 +5,7 @@
  */
 
 import styles from "./EventCard.module.css";
-import type { CalendarEvent } from "./types";
+import type { CalendarEvent } from "../types";
 
 interface EventCardProps {
     event: CalendarEvent;

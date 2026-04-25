@@ -8,13 +8,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./EventCardEditMenu.module.css";
+import styles from "./EditEventModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
 import { ShareEventModal } from "./ShareEventModal";
-import type { CalendarEvent } from "./types";
+import type { CalendarEvent } from "../types";
 
-interface EventCardEditMenuProps {
+interface EditEventModalProps {
     event: CalendarEvent;
     onClose: () => void;
     readOnly?: boolean;
@@ -30,7 +30,7 @@ function toTimeValue(iso: string): string {
     return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-export function EventCardEditMenu({ event, onClose, readOnly = false }: EventCardEditMenuProps) {
+export function EditEventModal({ event, onClose, readOnly = false }: EditEventModalProps) {
     const [name, setName] = useState(event.name);
     const [allDay, setAllDay] = useState(event.allDay);
     const [startDate, setStartDate] = useState(toDateValue(event.startAt));

@@ -6,11 +6,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styles from "./TaskCreateMenu.module.css";
+import styles from "./CreateGroupModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
 
-interface GroupCreateMenuProps {
+interface CreateGroupModalProps {
     calendarId: string;
     initialData?: {
         id: string;
@@ -20,11 +20,11 @@ interface GroupCreateMenuProps {
     onClose: () => void;
 }
 
-export function GroupCreateMenu({
+export function CreateGroupModal({
     calendarId,
     initialData,
     onClose,
-}: GroupCreateMenuProps) {
+}: CreateGroupModalProps) {
     const [name, setName] = useState("");
     const [notes, setNotes] = useState("");
     const [submitting, setSubmitting] = useState(false);

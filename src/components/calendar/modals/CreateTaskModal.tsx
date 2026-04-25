@@ -8,7 +8,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./TaskCreateMenu.module.css";
+import styles from "./CreateTaskModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
 import { DropDownSecondary } from "@/components/DropDownSecondary";
@@ -18,7 +18,7 @@ interface GroupOption {
     name: string;
 }
 
-interface TaskCreateMenuProps {
+interface CreateTaskModalProps {
     calendarId: string;
     onClose: () => void;
 
@@ -29,11 +29,11 @@ interface TaskCreateMenuProps {
     } | null;
 }
 
-export function TaskCreateMenu({
+export function CreateTaskModal({
     calendarId,
     onClose,
     initialData,
-}: TaskCreateMenuProps) {
+}: CreateTaskModalProps) {
     const [name, setName] = useState("");
     const [groups, setGroups] = useState<GroupOption[]>([]);
     const [selectedGroupName, setSelectedGroupName] = useState("");

@@ -8,14 +8,14 @@
 
 import { useState, useCallback, useEffect } from "react";
 import styles from "./CalendarViewLayout.module.css";
-import { AddNewButton } from "./AddNewButton";
+import { CreateEventButton } from "./CreateEventButton";
 import { DropDownPrimary } from "@/components/DropDownPrimary";
 import { DayView } from "./DayView";
 import { WeekView } from "./WeekView";
 import { MonthView } from "./MonthView";
 import { CalendarNextPrevious, type ViewMode } from "./CalendarNextPrevious";
-import { AddNewMenu } from "../AddNewMenu";
-import { EventCardEditMenu } from "../EventCardEditMenu";
+import { CreateEventModal } from "../modals/CreateEventModal";
+import { EditEventModal } from "../modals/EditEventModal";
 import type { CalendarEvent } from "../types";
 
 interface CalendarViewLayoutProps {
@@ -131,7 +131,7 @@ export function CalendarViewLayout({
                     onChange={handleViewChange}
                     width="5.5rem"
                 />
-                <AddNewButton onClick={() => setShowAddMenu(true)} />
+                <CreateEventButton onClick={() => setShowAddMenu(true)} />
             </div>
             <div className={styles.view}>
                 {viewMode === "Day" && (
@@ -157,13 +157,13 @@ export function CalendarViewLayout({
                 )}
             </div>
             {showAddMenu && selectedCalendarId && (
-                <AddNewMenu
+                <CreateEventModal
                     calendarId={selectedCalendarId}
                     onClose={handleMenuClose}
                 />
             )}
             {editingEvent && (
-                <EventCardEditMenu
+                <EditEventModal
                     event={editingEvent}
                     onClose={handleEditClose}
                     readOnly={editingEvent.isShared}

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { Sidebar, type SidebarCalendar } from "@/components/calendar/layout/Sidebar";
+import { DefaultSidebar, type SidebarCalendar } from "@/components/calendar/sidebar/DefaultSidebar";
 import { server } from "../../../msw/server";
 
 const calendars: SidebarCalendar[] = [
@@ -13,7 +13,7 @@ const calendars: SidebarCalendar[] = [
 describe("<Sidebar />", () => {
   it("lists the provided calendars", () => {
     render(
-      <Sidebar
+      <DefaultSidebar
         calendars={calendars}
         selectedCalendarId="c1"
         onSelectCalendar={() => {}}
@@ -43,7 +43,7 @@ describe("<Sidebar />", () => {
     );
 
     render(
-      <Sidebar
+      <DefaultSidebar
         calendars={calendars}
         selectedCalendarId="c1"
         onSelectCalendar={() => {}}
@@ -80,7 +80,7 @@ describe("<Sidebar />", () => {
 
     const user = userEvent.setup();
     render(
-      <Sidebar
+      <DefaultSidebar
         calendars={calendars}
         selectedCalendarId="c1"
         onSelectCalendar={() => {}}

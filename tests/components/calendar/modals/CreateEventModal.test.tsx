@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { AddNewMenu } from "@/components/calendar/AddNewMenu";
-import { server } from "../../msw/server";
+import { CreateEventModal } from "@/components/calendar/modals/CreateEventModal";
+import { server } from "../../../msw/server";
 
-describe("<AddNewMenu />", () => {
+describe("<CreateEventModal />", () => {
   it("loads groups from the API on mount", async () => {
     server.use(
       http.get("*/api/groups", () =>
@@ -18,7 +18,7 @@ describe("<AddNewMenu />", () => {
       ),
     );
 
-    render(<AddNewMenu calendarId="c1" onClose={() => {}} />);
+    render(<CreateEventModal calendarId="c1" onClose={() => {}} />);
 
     await waitFor(() => {
       expect(screen.getByText(/Work|Personal/)).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe("<AddNewMenu />", () => {
     );
 
     const user = userEvent.setup();
-    render(<AddNewMenu calendarId="c1" onClose={() => {}} />);
+    render(<CreateEventModal calendarId="c1" onClose={() => {}} />);
 
     await waitFor(() => screen.getByText("Work"));
 
@@ -74,7 +74,7 @@ describe("<AddNewMenu />", () => {
     );
 
     const user = userEvent.setup();
-    render(<AddNewMenu calendarId="c1" onClose={() => {}} />);
+    render(<CreateEventModal calendarId="c1" onClose={() => {}} />);
 
     await waitFor(() => screen.getByText("Work"));
     await user.click(screen.getByText(/Create/));

@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { EventCardEditMenu } from "@/components/calendar/EventCardEditMenu";
+import { EditEventModal } from "@/components/calendar/modals/EditEventModal";
 import type { CalendarEvent } from "@/components/calendar/types";
-import { server } from "../../msw/server";
+import { server } from "../../../msw/server";
 
 const event: CalendarEvent = {
   id: "e1",
@@ -20,9 +20,9 @@ const event: CalendarEvent = {
   calendarId: "c1",
 };
 
-describe("<EventCardEditMenu />", () => {
+describe("<EditEventModal />", () => {
   it("renders a read-only view when readOnly is true (shared event)", () => {
-    render(<EventCardEditMenu event={event} readOnly onClose={() => {}} />);
+    render(<EditEventModal event={event} readOnly onClose={() => {}} />);
     expect(screen.getByText(/Shared Event/i)).toBeInTheDocument();
     expect(screen.getByText("Interview")).toBeInTheDocument();
     // No "Save" or "Delete" buttons in read-only mode.
@@ -40,7 +40,7 @@ describe("<EventCardEditMenu />", () => {
     );
 
     const user = userEvent.setup();
-    render(<EventCardEditMenu event={event} onClose={() => {}} />);
+    render(<EditEventModal event={event} onClose={() => {}} />);
 
     const nameInput = screen.getAllByRole("textbox")[0];
     await user.clear(nameInput);
@@ -62,7 +62,7 @@ describe("<EventCardEditMenu />", () => {
     );
 
     const user = userEvent.setup();
-    render(<EventCardEditMenu event={event} onClose={() => {}} />);
+    render(<EditEventModal event={event} onClose={() => {}} />);
 
     await user.click(screen.getByText(/^Delete$/));
 

@@ -8,7 +8,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./AddNewMenu.module.css";
+import styles from "./CreateEventModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
 import { DropDownSecondary } from "@/components/DropDownSecondary";
@@ -18,15 +18,15 @@ interface GroupOption {
     name: string;
 }
 
-interface AddNewMenuProps {
+interface CreateEventModalProps {
     calendarId: string;
     onClose: () => void;
 }
 
-export function AddNewMenu({
+export function CreateEventModal({
     calendarId,
     onClose,
-}: AddNewMenuProps) {
+}: CreateEventModalProps) {
     const [name, setName] = useState("");
     const [groups, setGroups] = useState<GroupOption[]>([]);
     const [selectedGroupName, setSelectedGroupName] = useState("");

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { EventCard } from "@/components/calendar/EventCard";
+import { EventCard } from "@/components/calendar/views/EventCard";
 import type { CalendarEvent } from "@/components/calendar/types";
 
 const baseEvent: CalendarEvent = {

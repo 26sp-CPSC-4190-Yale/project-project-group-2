@@ -1,0 +1,66 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 16rem;
+  height: calc(100vh - 12.05rem);
+  margin: 2.75rem 0 0 1.08rem;
+  padding: 1.25rem 0.75rem;
+  border-radius: 0.5rem;
+  background: #F0EEFE;
+  overflow-y: auto;
+  overflow-x: visible;
+  
+}
+
+
+.headerText {
+  color: #6C3ECC;
+  font-family: var(--font-dm-sans);
+  font-size: 0.9375rem;
+  font-weight: 400;
+}
+
+.calendarHeader,
+.taskHeader {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+
+.calendarList,
+.taskList {
+  height: 8rem;
+  overflow-y: auto;
+  overflow-x: visible;
+}
+
+.separatorBar {
+  width: 12.6rem;
+  height: 0.06rem;
+  margin: 0.25rem 0 1.5rem;
+  background-color: #D9CFFB;
+}
+
+
+.createButton {
+  display: flex;
+  justify-content: flex-end;
+  flex: 1;
+  margin-right: 0.25rem;
+}
+
+
+.emptyState {
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
+  text-align: center;
+
+  color: #2d1a66;
+  background: rgba(108, 62, 204, 0.12);
+
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
