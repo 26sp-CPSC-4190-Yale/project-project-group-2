@@ -32,9 +32,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const events = await prisma.event.findMany({
     where: {
-      group: { calendar: { userId: session.userId } },
-      ...(calendarId && { group: { calendarId } }),
-      groupId: groupIds.length > 0 ? { in: groupIds } : { in: [] },
+      group: {
+        calendar: { userId: session.userId },
+        ...(calendarId && { calendarId }),
+      },
+      ...(groupIds.length > 0 && { groupId: { in: groupIds } }),
       ...(start && { startAt: { gte: new Date(start) } }),
       ...(end && { startAt: { lte: new Date(end) } }),
     },

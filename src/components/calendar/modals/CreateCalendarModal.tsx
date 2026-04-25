@@ -77,7 +77,7 @@ export function CreateCalendarModal({ initialData, onClose }: CreateCalendarModa
     return (
         <div className={styles.backdrop} onClick={onClose}>
             <div className={styles.card} onClick={(e) => e.stopPropagation()}>
-                <h2 className={styles.heading}>New Calendar</h2>
+                <h2 className={styles.heading}>{initialData ? "Edit Calendar" : "New Calendar"}</h2>
 
                 <label className={styles.label}>Title</label>
                 <input

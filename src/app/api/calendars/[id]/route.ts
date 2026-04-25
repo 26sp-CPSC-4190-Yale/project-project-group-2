@@ -105,6 +105,7 @@ export async function DELETE(
     where: { id, userId: session.userId },
   });
   if (!existing) return jsonError("Calendar not found", 404);
+  if (existing.isDefault) return jsonError("Cannot delete the default calendar", 400);
 
   await prisma.calendar.delete({ where: { id } });
 

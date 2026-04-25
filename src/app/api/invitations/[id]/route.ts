@@ -57,7 +57,7 @@ export async function PATCH(
 
     if (!calendar) {
       calendar = await prisma.calendar.create({
-        data: { title: "My Calendar", userId: session.userId },
+        data: { title: "My Calendar", userId: session.userId, isDefault: true },
         include: { groups: { where: { isDefault: true }, take: 1 } },
       });
     }

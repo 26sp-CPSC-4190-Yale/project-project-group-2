@@ -29,6 +29,7 @@ model Calendar {
   title       String   @default("Calendar")
   color       String   @default("none")
   description String?
+  isDefault   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

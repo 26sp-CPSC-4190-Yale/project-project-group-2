@@ -33,7 +33,11 @@ function formatDate(iso: string): string {
     });
 }
 
-export function InvitationBell() {
+interface InvitationBellProps {
+    onInvitationsChanged?: () => void;
+}
+
+export function InvitationBell({ onInvitationsChanged }: InvitationBellProps = {}) {
     const [invitations, setInvitations] = useState<Invitation[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
@@ -76,8 +80,9 @@ export function InvitationBell() {
 
         if (res.ok) {
             setInvitations((prev) => prev.filter((inv) => inv.id !== id));
+            onInvitationsChanged?.();
         }
-    }, []);
+    }, [onInvitationsChanged]);
 
     return (
         <div className={styles.bellWrapper} ref={wrapperRef}>

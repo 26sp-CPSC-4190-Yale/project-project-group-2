@@ -49,6 +49,7 @@
 
 .cell {
     flex: 1;
+    min-width: 0;
     padding: 0.3rem 0.4rem;
     border-right: 1px solid #E8E0FD;
     overflow: hidden;
@@ -66,6 +67,7 @@
     overflow: hidden;
     flex: 1;
     min-height: 0;
+    min-width: 0;
 }
 
 .moreLabel {

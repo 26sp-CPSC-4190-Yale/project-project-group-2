@@ -4,6 +4,7 @@
     justify-content: flex-start;
     flex: 1;
     min-height: 0;
+    min-width: 0;
 }
 
 .buttonRow {
@@ -24,6 +25,7 @@
     display: flex;
     flex: 1;
     min-height: 0;
+    min-width: 0;
     border-radius: 0.5rem;
     background-color: white;
     overflow: hidden;

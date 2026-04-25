@@ -12,11 +12,13 @@ import HoverSvg from "./HoverSvg";
 interface HeaderProps {
     page: string;
     avatarUrl?: string | null;
+    onInvitationsChanged?: () => void;
 }
 
 export function Header({
     page,
     avatarUrl,
+    onInvitationsChanged,
 }: HeaderProps) {
     return (
         <div className={styles.header}>
@@ -55,7 +57,7 @@ export function Header({
                 />
             }
             <div className={styles.bellWrapper}>
-                <InvitationBell />
+                <InvitationBell onInvitationsChanged={onInvitationsChanged} />
             </div>
             <div className={styles.profileWrapper}>
                 <ProfileIcon avatarUrl={avatarUrl} />

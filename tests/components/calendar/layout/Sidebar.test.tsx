@@ -6,8 +6,8 @@ import { DefaultSidebar, type SidebarCalendar } from "@/components/calendar/side
 import { server } from "../../../msw/server";
 
 const calendars: SidebarCalendar[] = [
-  { id: "c1", title: "My Calendar" },
-  { id: "c2", title: "Work" },
+  { id: "c1", title: "My Calendar", isDefault: true },
+  { id: "c2", title: "Work", isDefault: false },
 ];
 
 describe("<Sidebar />", () => {

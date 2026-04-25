@@ -7,7 +7,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import styles from "./CreateTaskModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
@@ -25,8 +24,26 @@ interface CreateTaskModalProps {
     initialData?: {
         id: string;
         name: string;
-        // add more if needed later
+        dueAt?: string | null;
+        allDay?: boolean;
+        notes?: string | null;
+        remindBefore?: number | null;
+        link?: string | null;
+        location?: string | null;
+        groupId?: string;
     } | null;
+}
+
+function dueDateFromISO(iso?: string | null): string {
+    if (!iso) return "";
+    const d = new Date(iso);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function dueTimeFromISO(iso?: string | null): string {
+    if (!iso) return "";
+    const d = new Date(iso);
+    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
 export function CreateTaskModal({
@@ -45,28 +62,53 @@ export function CreateTaskModal({
     const [link, setLink] = useState("");
     const [location, setLocation] = useState("");
     const [submitting, setSubmitting] = useState(false);
-    const router = useRouter();
 
     useEffect(() => {
         if (!calendarId) return;
         fetch(`/api/groups?calendarId=${calendarId}`)
             .then((res) => res.json())
             .then((data) => {
-                if (data.data) {
-                    setGroups(data.data);
-                    if (data.data.length > 0) {
-                        setSelectedGroupName(data.data[0].name);
+                if (!data.data) return;
+                setGroups(data.data);
+                if (initialData?.groupId) {
+                    const g = data.data.find((x: GroupOption) => x.id === initialData.groupId);
+                    if (g) {
+                        setSelectedGroupName(g.name);
+                        return;
                     }
+                }
+                if (data.data.length > 0) {
+                    setSelectedGroupName(data.data[0].name);
                 }
             })
             .catch(() => setGroups([]));
-    }, [calendarId]);
+    }, [calendarId, initialData?.groupId]);
+
     useEffect(() => {
-        if (initialData) {
-            setName(initialData.name);
-        } else {
+        if (!initialData) {
             setName("");
+            setDueDate("");
+            setDueTime("");
+            setAllDay(true);
+            setNotes("");
+            setRemindBefore("");
+            setLink("");
+            setLocation("");
+            return;
         }
+        setName(initialData.name ?? "");
+        setDueDate(dueDateFromISO(initialData.dueAt));
+        const isAllDay = initialData.allDay ?? true;
+        setAllDay(isAllDay);
+        setDueTime(isAllDay ? "" : dueTimeFromISO(initialData.dueAt));
+        setNotes(initialData.notes ?? "");
+        setRemindBefore(
+            initialData.remindBefore !== null && initialData.remindBefore !== undefined
+                ? String(initialData.remindBefore)
+                : "",
+        );
+        setLink(initialData.link ?? "");
+        setLocation(initialData.location ?? "");
     }, [initialData]);
     const handleCreate = async () => {
         if (submitting) return;
@@ -87,8 +129,6 @@ export function CreateTaskModal({
         ).toISOString();
 
         try {
-        const isEdit = !!initialData?.id;
-
         const res = await fetch(
             isEdit ? `/api/tasks/${initialData!.id}` : "/api/tasks",
             {

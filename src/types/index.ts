@@ -40,6 +40,7 @@ export interface CalendarResponse {
   title: string;
   color: string;
   description: string | null;
+  isDefault: boolean;
   userId: string;
   createdAt: string;
   updatedAt: string;

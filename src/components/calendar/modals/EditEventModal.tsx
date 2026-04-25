@@ -13,6 +13,7 @@ import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
 import { ShareEventModal } from "./ShareEventModal";
 import type { CalendarEvent } from "../types";
+import { ButtonDanger } from "@/components/ButtonDanger";
 
 interface EditEventModalProps {
     event: CalendarEvent;
@@ -295,7 +296,7 @@ export function EditEventModal({ event, onClose, readOnly = false }: EditEventMo
                 />
 
                 <div className={styles.actions}>
-                    <ButtonSecondary label="Delete" onClick={handleDelete} />
+                    <ButtonDanger label="Delete" onClick={handleDelete} />
                     <ButtonSecondary label="Share" onClick={() => setShowShareModal(true)} />
                     <div className={styles.actionSpacer} />
                     <ButtonSecondary label="Cancel" onClick={onClose} />

@@ -45,6 +45,32 @@
     font-weight: 600;
 }
 
+.allDayRow {
+    display: flex;
+    border-bottom: 1px solid #D9CFFB;
+    flex-shrink: 0;
+}
+
+.allDayGutter {
+    width: 4rem;
+    flex-shrink: 0;
+    padding: 0.25rem 0.5rem 0.25rem 0;
+    text-align: right;
+    color: #999;
+    font-family: var(--font-dm-sans);
+    font-size: 0.6875rem;
+}
+
+.allDayCell {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.2rem 0.15rem;
+    border-left: 1px solid #E8E0FD;
+}
+
 .body {
     flex: 1;
     overflow-y: auto;

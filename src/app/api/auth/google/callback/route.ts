@@ -76,7 +76,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   });
   if (calendarCount === 0) {
     const calendar = await prisma.calendar.create({
-      data: { title: "My Calendar", userId: user.id },
+      data: { title: "My Calendar", userId: user.id, isDefault: true },
     });
     await prisma.group.create({
       data: {

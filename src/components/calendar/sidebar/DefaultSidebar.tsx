@@ -20,6 +20,7 @@ export interface SidebarCalendar {
     id: string;
     title: string;
     color?: string;
+    isDefault: boolean;
 }
 
 interface SidebarTask {
@@ -27,6 +28,12 @@ interface SidebarTask {
     name: string;
     completed: boolean;
     dueAt?: string;
+    allDay?: boolean;
+    notes?: string | null;
+    remindBefore?: number | null;
+    link?: string | null;
+    location?: string | null;
+    groupId?: string;
 }
 
 interface SidebarGroup {
@@ -192,11 +199,11 @@ export function DefaultSidebar({
                         }}
 
                         onDelete={() => {
-                            if (cal.title === "My Calendar") return;
+                            if (cal.isDefault) return;
                             setDeleteCalendar(cal);
                         }}
 
-                        isDefault={cal.title === "My Calendar"}
+                        isDefault={cal.isDefault}
                     />
                 ))}
             </div>
@@ -219,7 +226,11 @@ export function DefaultSidebar({
                         selected={selectedGroupIds.has(group.id)}
                         onToggle={() => handleToggleGroup(group.id)}
                         onEdit={() => onOpenCreateGroup?.(group)}
-                        onDelete={() => setDeleteGroup(group)}
+                        onDelete={() => {
+                            if (group.isDefault) return;
+                            setDeleteGroup(group);
+                        }}
+                        isDefault={group.isDefault}
                     />
                 ))}
                 {groups.length === 0 && (

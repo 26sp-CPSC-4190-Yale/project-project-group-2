@@ -15,6 +15,7 @@ export interface GroupListItemProps {
     onToggle?: () => void;
     onEdit?: () => void;
     onDelete?: () => void;
+    isDefault?: boolean;
 }
 
 export function GroupListItem({
@@ -23,6 +24,7 @@ export function GroupListItem({
     onToggle,
     onEdit,
     onDelete,
+    isDefault = false,
 }: GroupListItemProps) {
     const [showMenu, setShowMenu] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -73,7 +75,7 @@ export function GroupListItem({
             </div>
             <span className={styles.text}>{groupName}</span>
 
-            {(showMenu || menuOpen) && (
+            {!isDefault && (showMenu || menuOpen) && (
                 <div
                     className={styles.menuWrapper}
                     ref={menuRef}

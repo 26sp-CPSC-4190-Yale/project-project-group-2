@@ -21,6 +21,7 @@ import type { CalendarEvent } from "../types";
 interface CalendarViewLayoutProps {
     selectedCalendarId: string | null;
     selectedGroupIds?: string[];
+    sharedEventsRefreshKey?: number;
 }
 
 function getDateRange(viewMode: ViewMode, date: Date) {
@@ -52,6 +53,7 @@ function getDateRange(viewMode: ViewMode, date: Date) {
 export function CalendarViewLayout({
     selectedCalendarId,
     selectedGroupIds,
+    sharedEventsRefreshKey = 0,
 }: CalendarViewLayoutProps) {
     const [viewMode, setViewMode] = useState<ViewMode>("Week");
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -75,7 +77,7 @@ export function CalendarViewLayout({
                 if (data.data) setEvents(data.data);
             })
             .catch(() => setEvents([]));
-    }, [selectedCalendarId, selectedGroupIds, viewMode, currentDate, eventRefreshKey]);
+    }, [selectedCalendarId, selectedGroupIds, viewMode, currentDate, eventRefreshKey, sharedEventsRefreshKey]);
 
     const handlePrevious = useCallback(() => {
         setCurrentDate((prev) => {

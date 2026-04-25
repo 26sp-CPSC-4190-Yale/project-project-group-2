@@ -53,6 +53,8 @@ export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
             return isSameDay(start, day) && e.allDay === allDay;
         });
 
+    const hasAnyAllDay = days.some((d) => getEventsForDay(d, true).length > 0);
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -67,6 +69,23 @@ export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
                     </div>
                 ))}
             </div>
+            {hasAnyAllDay && (
+                <div className={styles.allDayRow}>
+                    <div className={styles.allDayGutter}>All day</div>
+                    {days.map((day, di) => (
+                        <div className={styles.allDayCell} key={di}>
+                            {getEventsForDay(day, true).map((e) => (
+                                <EventCard
+                                    key={e.id}
+                                    event={e}
+                                    compact
+                                    onClick={() => onEventClick?.(e)}
+                                />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            )}
             <div className={styles.body}>
                 <div className={styles.timeGrid} style={{ height: `${24 * HOUR_HEIGHT}rem` }}>
                     {HOURS.map((label, hi) => (

@@ -35,6 +35,7 @@ export function CalendarLayout({
     const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
     const [groupRefreshKey, setGroupRefreshKey] = useState(0);
     const [taskRefreshKey, setTaskRefreshKey] = useState(0);
+    const [sharedEventsRefreshKey, setSharedEventsRefreshKey] = useState(0);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [defaultSidebarOpen, setDefaultSidebarOpen] = useState(true);
     const [chatSidebarOpen, setChatSidebarOpen] = useState(false);
@@ -44,7 +45,11 @@ export function CalendarLayout({
 
     return (
         <div className={styles.container}>
-            <Header page="home" avatarUrl={avatarUrl} />
+            <Header
+                page="home"
+                avatarUrl={avatarUrl}
+                onInvitationsChanged={() => setSharedEventsRefreshKey((k) => k + 1)}
+            />
             <div className={styles.main}>
                 <div className={`${styles.sidebarWrapper} ${sidebarCollapsed ? styles.sidebarCollapsed : ""}`}>
                     <button
@@ -137,6 +142,7 @@ export function CalendarLayout({
                 <CalendarViewLayout
                     selectedCalendarId={selectedCalendarId}
                     selectedGroupIds={selectedGroupIds}
+                    sharedEventsRefreshKey={sharedEventsRefreshKey}
                 />
             </div>
             {showCreateCalendar && (
@@ -151,6 +157,7 @@ export function CalendarLayout({
             {showCreateTask && selectedCalendarId && (
                 <CreateTaskModal
                     calendarId={selectedCalendarId}
+                    initialData={editingTask}
                     onClose={() => {
                         setShowCreateTask(false);
                         setEditingTask(null);

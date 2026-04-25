@@ -32,8 +32,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const tasks = await prisma.task.findMany({
     where: {
       userId: session.userId,
-      ...(calendarId && { group: { calendarId } }),
-      groupId: groupIds.length > 0 ? { in: groupIds } : { in: [] },
+      ...(calendarId && {
+        group: {
+          calendarId,
+          calendar: { userId: session.userId },
+        },
+      }),
+      ...(groupIds.length > 0 && { groupId: { in: groupIds } }),
       ...(completed !== null && { completed: completed === "true" }),
       ...(start && { dueAt: { gte: new Date(start) } }),
       ...(end && { dueAt: { lte: new Date(end) } }),
