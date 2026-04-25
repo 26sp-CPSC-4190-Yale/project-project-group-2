@@ -53,7 +53,7 @@ describe("GET /api/files/[id]/open", () => {
     const res = await GET(buildNextRequest({ url: url("f1") }), buildIdContext("f1"));
 
     expect(res.status).toBe(200);
-    expect((await res.json()).url).toBe("https://supabase.example/abc.pdf?sig=xyz");
+    expect((await res.json()).data.url).toBe("https://supabase.example/abc.pdf?sig=xyz");
     expect(supabaseStorageFrom.createSignedUrl).toHaveBeenCalledWith("user-1/doc.pdf", 60);
   });
 });

@@ -25,8 +25,9 @@ export function FileViewer({ fileId, fileName, avatarUrl }: FileViewerProps) {
     useEffect(() => {
         fetch(`/api/files/${fileId}/open`)
             .then((res) => res.json())
-            .then((data) => {
-                if (data.url) setUrl(data.url);
+            .then((json) => {
+                const signedUrl = json.data?.url;
+                if (signedUrl) setUrl(signedUrl);
             })
             .catch(() => {});
     }, [fileId]);

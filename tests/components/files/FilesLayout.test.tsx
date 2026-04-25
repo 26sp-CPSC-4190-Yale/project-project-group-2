@@ -16,15 +16,17 @@ describe("<FilesLayout />", () => {
   it("lists files fetched from /api/files", async () => {
     server.use(
       http.get("*/api/files", () =>
-        HttpResponse.json([
-          {
-            id: "f1",
-            name: "Syllabus.pdf",
-            storagePath: "user/Syllabus.pdf",
-            calendarId: null,
-            calendar: null,
-          },
-        ]),
+        HttpResponse.json({
+          data: [
+            {
+              id: "f1",
+              name: "Syllabus.pdf",
+              storagePath: "user/Syllabus.pdf",
+              calendarId: null,
+              calendar: null,
+            },
+          ],
+        }),
       ),
     );
 
@@ -37,19 +39,21 @@ describe("<FilesLayout />", () => {
     let deleted = false;
     server.use(
       http.get("*/api/files", () =>
-        HttpResponse.json([
-          {
-            id: "f1",
-            name: "Syllabus.pdf",
-            storagePath: "user/Syllabus.pdf",
-            calendarId: null,
-            calendar: null,
-          },
-        ]),
+        HttpResponse.json({
+          data: [
+            {
+              id: "f1",
+              name: "Syllabus.pdf",
+              storagePath: "user/Syllabus.pdf",
+              calendarId: null,
+              calendar: null,
+            },
+          ],
+        }),
       ),
       http.delete("*/api/files/f1", () => {
         deleted = true;
-        return HttpResponse.json({ success: true });
+        return HttpResponse.json({ data: { message: "File deleted" } });
       }),
     );
 
@@ -72,24 +76,28 @@ describe("<FilesLayout />", () => {
     let patchBody: Record<string, unknown> | null = null;
     server.use(
       http.get("*/api/files", () =>
-        HttpResponse.json([
-          {
-            id: "f1",
-            name: "Old.pdf",
-            storagePath: "user/Old.pdf",
-            calendarId: null,
-            calendar: null,
-          },
-        ]),
+        HttpResponse.json({
+          data: [
+            {
+              id: "f1",
+              name: "Old.pdf",
+              storagePath: "user/Old.pdf",
+              calendarId: null,
+              calendar: null,
+            },
+          ],
+        }),
       ),
       http.patch("*/api/files/f1", async ({ request }) => {
         patchBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({
-          id: "f1",
-          name: (patchBody as { name: string }).name,
-          storagePath: "user/Old.pdf",
-          calendarId: null,
-          calendar: null,
+          data: {
+            id: "f1",
+            name: (patchBody as { name: string }).name,
+            storagePath: "user/Old.pdf",
+            calendarId: null,
+            calendar: null,
+          },
         });
       }),
     );

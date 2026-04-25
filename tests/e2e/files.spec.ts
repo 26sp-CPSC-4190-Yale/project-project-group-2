@@ -1,4 +1,4 @@
-import { test, expect, jsonRaw } from "./fixtures";
+import { test, expect, jsonData } from "./fixtures";
 
 test.describe("Files (smoke)", () => {
   test("files grid renders mocked files and the delete flow hits DELETE /api/files/:id", async ({
@@ -7,7 +7,7 @@ test.describe("Files (smoke)", () => {
     await page.route("**/api/files", (route, request) => {
       if (request.method() === "GET") {
         return route.fulfill(
-          jsonRaw([
+          jsonData([
             {
               id: "f-1",
               name: "Syllabus.pdf",
@@ -23,22 +23,14 @@ test.describe("Files (smoke)", () => {
 
     // PdfThumbnail calls this — return a fake signed URL to satisfy the fetch.
     await page.route("**/api/files/f-1/open", (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({ url: "about:blank" }),
-      }),
+      route.fulfill(jsonData({ url: "about:blank" })),
     );
 
     let deleteHit = false;
     await page.route("**/api/files/f-1", (route, request) => {
       if (request.method() === "DELETE") {
         deleteHit = true;
-        return route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify({ success: true }),
-        });
+        return route.fulfill(jsonData({ message: "File deleted" }));
       }
       return route.fallback();
     });

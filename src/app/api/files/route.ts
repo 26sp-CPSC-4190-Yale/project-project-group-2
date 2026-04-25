@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { jsonSuccess, jsonError } from "@/lib/api";
 
-export async function GET() {
+export async function GET(): Promise<NextResponse> {
     const session = await getSession();
-
-    if (!session) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!session) return jsonError("Unauthorized", 401);
 
     const files = await prisma.uploadedFile.findMany({
         where: {
@@ -21,5 +19,5 @@ export async function GET() {
         },
     });
 
-    return NextResponse.json(files);
+    return jsonSuccess(files);
 }

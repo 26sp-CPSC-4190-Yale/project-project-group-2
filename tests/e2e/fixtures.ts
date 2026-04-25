@@ -60,7 +60,8 @@ export function jsonData(data: unknown, status = 200) {
 }
 
 /**
- * Raw JSON (no envelope), used by `/api/files` which returns an array directly.
+ * Raw JSON (no envelope). Useful for endpoints (or fixtures) that intentionally
+ * bypass the project's `{ data }` envelope.
  */
 export function jsonRaw(data: unknown, status = 200) {
   return {

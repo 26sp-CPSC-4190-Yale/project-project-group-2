@@ -17,24 +17,26 @@ describe("GET /api/calendars/[id]", () => {
 
   it("returns 404 when the calendar does not exist", async () => {
     mockSession("user-1");
-    prismaMock.calendar.findUnique.mockResolvedValue(null as never);
+    prismaMock.calendar.findFirst.mockResolvedValue(null as never);
     const res = await GET(buildNextRequest({ url: url("c1") }), buildIdContext("c1"));
     expect(res.status).toBe(404);
   });
 
-  it("returns 403 when the calendar belongs to another user", async () => {
+  it("returns 404 when the calendar belongs to another user (no existence leak)", async () => {
     mockSession("user-1");
-    prismaMock.calendar.findUnique.mockResolvedValue(
-      makeCalendar({ id: "c1", userId: "user-2" }) as never,
-    );
+    // findFirst with { id, userId } does the scoping for us; foreign rows return null.
+    prismaMock.calendar.findFirst.mockResolvedValue(null as never);
     const res = await GET(buildNextRequest({ url: url("c1") }), buildIdContext("c1"));
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(404);
+    expect(prismaMock.calendar.findFirst).toHaveBeenCalledWith({
+      where: { id: "c1", userId: "user-1" },
+    });
   });
 
   it("returns the calendar on happy path", async () => {
     mockSession("user-1");
     const cal = makeCalendar({ id: "c1", userId: "user-1", title: "Mine" });
-    prismaMock.calendar.findUnique.mockResolvedValue(cal as never);
+    prismaMock.calendar.findFirst.mockResolvedValue(cal as never);
 
     const res = await GET(buildNextRequest({ url: url("c1") }), buildIdContext("c1"));
 
@@ -57,7 +59,7 @@ describe("PATCH /api/calendars/[id]", () => {
 
   it("returns 404 when the calendar does not exist", async () => {
     mockSession("user-1");
-    prismaMock.calendar.findUnique.mockResolvedValue(null as never);
+    prismaMock.calendar.findFirst.mockResolvedValue(null as never);
     const res = await PATCH(
       buildNextRequest({ method: "PATCH", url: url("c1"), body: { title: "x" } }),
       buildIdContext("c1"),
@@ -65,23 +67,24 @@ describe("PATCH /api/calendars/[id]", () => {
     expect(res.status).toBe(404);
   });
 
-  it("returns 403 when the calendar belongs to another user", async () => {
+  it("returns 404 when the calendar belongs to another user (no existence leak)", async () => {
     mockSession("user-1");
-    prismaMock.calendar.findUnique.mockResolvedValue(
-      makeCalendar({ id: "c1", userId: "user-2" }) as never,
-    );
+    prismaMock.calendar.findFirst.mockResolvedValue(null as never);
     const res = await PATCH(
       buildNextRequest({ method: "PATCH", url: url("c1"), body: { title: "x" } }),
       buildIdContext("c1"),
     );
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(404);
+    expect(prismaMock.calendar.findFirst).toHaveBeenCalledWith({
+      where: { id: "c1", userId: "user-1" },
+    });
   });
 
   it("updates the calendar on happy path", async () => {
     mockSession("user-1");
     const existing = makeCalendar({ id: "c1", userId: "user-1", title: "Old" });
     const updated = makeCalendar({ id: "c1", userId: "user-1", title: "New" });
-    prismaMock.calendar.findUnique.mockResolvedValue(existing as never);
+    prismaMock.calendar.findFirst.mockResolvedValue(existing as never);
     prismaMock.calendar.update.mockResolvedValue(updated as never);
 
     const res = await PATCH(
@@ -107,23 +110,24 @@ describe("DELETE /api/calendars/[id]", () => {
 
   it("returns 404 when the calendar does not exist", async () => {
     mockSession("user-1");
-    prismaMock.calendar.findUnique.mockResolvedValue(null as never);
+    prismaMock.calendar.findFirst.mockResolvedValue(null as never);
     const res = await DELETE(buildNextRequest({ method: "DELETE", url: url("c1") }), buildIdContext("c1"));
     expect(res.status).toBe(404);
   });
 
-  it("returns 403 when the calendar belongs to another user", async () => {
+  it("returns 404 when the calendar belongs to another user (no existence leak)", async () => {
     mockSession("user-1");
-    prismaMock.calendar.findUnique.mockResolvedValue(
-      makeCalendar({ id: "c1", userId: "user-2" }) as never,
-    );
+    prismaMock.calendar.findFirst.mockResolvedValue(null as never);
     const res = await DELETE(buildNextRequest({ method: "DELETE", url: url("c1") }), buildIdContext("c1"));
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(404);
+    expect(prismaMock.calendar.findFirst).toHaveBeenCalledWith({
+      where: { id: "c1", userId: "user-1" },
+    });
   });
 
   it("deletes the calendar on happy path", async () => {
     mockSession("user-1");
-    prismaMock.calendar.findUnique.mockResolvedValue(
+    prismaMock.calendar.findFirst.mockResolvedValue(
       makeCalendar({ id: "c1", userId: "user-1" }) as never,
     );
     prismaMock.calendar.delete.mockResolvedValue(makeCalendar({ id: "c1" }) as never);

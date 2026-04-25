@@ -1,14 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./EditFileModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
-
-interface CalendarOption {
-    id: string;
-    title: string;
-}
+import { useCalendars } from "@/hooks/useCalendars";
 
 export interface EditFileChanges {
     name?: string;
@@ -30,17 +26,7 @@ export function EditFileModal({
 }: EditFileModalProps) {
     const [name, setName] = useState(currentName);
     const [calendarId, setCalendarId] = useState<string>(currentCalendarId ?? "");
-    const [calendars, setCalendars] = useState<CalendarOption[]>([]);
-
-    useEffect(() => {
-        fetch("/api/calendars")
-            .then((res) => res.json())
-            .then((json) => {
-                const cals = json.data ?? json;
-                setCalendars(cals);
-            })
-            .catch(() => {});
-    }, []);
+    const { calendars } = useCalendars();
 
     const handleSave = () => {
         const trimmed = name.trim();

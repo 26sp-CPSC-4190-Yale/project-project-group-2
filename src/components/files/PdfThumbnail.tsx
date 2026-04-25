@@ -20,8 +20,9 @@ export function PdfThumbnail({ fileId, width = 180 }: PdfThumbnailProps) {
         let cancelled = false;
         fetch(`/api/files/${fileId}/open`)
             .then((res) => res.json())
-            .then((data) => {
-                if (!cancelled && data.url) setUrl(data.url);
+            .then((json) => {
+                const signedUrl = json.data?.url;
+                if (!cancelled && signedUrl) setUrl(signedUrl);
             })
             .catch(() => {});
         return () => { cancelled = true; };

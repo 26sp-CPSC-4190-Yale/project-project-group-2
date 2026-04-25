@@ -1,14 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import styles from "./UploadFileModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
-
-interface CalendarOption {
-    id: string;
-    title: string;
-}
+import { useCalendars } from "@/hooks/useCalendars";
 
 interface UploadFileModalProps {
     onUpload: (file: File, calendarId: string | null) => void;
@@ -16,21 +12,11 @@ interface UploadFileModalProps {
 }
 
 export function UploadFileModal({ onUpload, onClose }: UploadFileModalProps) {
-    const [calendars, setCalendars] = useState<CalendarOption[]>([]);
+    const { calendars } = useCalendars();
     const [selectedCalendarId, setSelectedCalendarId] = useState<string>("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        fetch("/api/calendars")
-            .then((res) => res.json())
-            .then((json) => {
-                const cals = json.data ?? json;
-                setCalendars(cals);
-            })
-            .catch(() => {});
-    }, []);
 
     const handleSubmit = async () => {
         if (!selectedFile || uploading) return;

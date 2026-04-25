@@ -53,7 +53,7 @@ export function CalendarViewLayout({
     selectedCalendarId,
     selectedGroupIds,
 }: CalendarViewLayoutProps) {
-    const [viewMode, setViewMode] = useState<ViewMode>("Month");
+    const [viewMode, setViewMode] = useState<ViewMode>("Week");
     const [currentDate, setCurrentDate] = useState(new Date());
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [showAddMenu, setShowAddMenu] = useState(false);

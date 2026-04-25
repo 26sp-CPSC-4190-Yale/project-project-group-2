@@ -22,8 +22,8 @@ describe("GET /api/files", () => {
 
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body).toHaveLength(1);
-    expect(body[0].id).toBe("f1");
+    expect(body.data).toHaveLength(1);
+    expect(body.data[0].id).toBe("f1");
     expect(prismaMock.uploadedFile.findMany).toHaveBeenCalledWith({
       where: { userId: "user-1" },
       orderBy: { createdAt: "desc" },

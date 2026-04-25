@@ -2,16 +2,14 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { jsonSuccess, jsonError } from "@/lib/api";
 
 export async function GET(
     req: Request,
     context: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
     const session = await getSession();
-
-    if (!session) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!session) return jsonError("Unauthorized", 401);
 
     const { id } = await context.params;
 
@@ -22,19 +20,13 @@ export async function GET(
         },
     });
 
-    if (!file) {
-        return NextResponse.json({ error: "File not found" }, { status: 404 });
-    }
+    if (!file) return jsonError("File not found", 404);
 
     const { data, error } = await supabaseAdmin.storage
         .from("user-files")
-        .createSignedUrl(file.storagePath, 60); // 60 seconds
+        .createSignedUrl(file.storagePath, 60);
 
-    if (error || !data) {
-        return NextResponse.json({ error: "Failed to generate URL" }, { status: 500 });
-    }
+    if (error || !data) return jsonError("Failed to generate URL", 500);
 
-    return NextResponse.json({
-        url: data.signedUrl,
-    });
+    return jsonSuccess({ url: data.signedUrl });
 }

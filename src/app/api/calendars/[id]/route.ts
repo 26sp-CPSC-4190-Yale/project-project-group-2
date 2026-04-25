@@ -13,8 +13,7 @@ import type { IdRouteContext, UpdateCalendarBody } from "@/types";
  * @query   [include] — comma-separated: "events"
  * @returns {ApiResponse<CalendarResponse>} the calendar (with optional includes)
  * @error   401 — not authenticated
- * @error   403 — calendar does not belong to the authenticated user
- * @error   404 — calendar not found
+ * @error   404 — calendar not found (or not owned by the caller)
  */
 export async function GET(
   request: NextRequest,
@@ -24,14 +23,12 @@ export async function GET(
   if (!session) return jsonError("Unauthorized", 401);
 
   const { id } = await context.params;
-  const include = request.nextUrl.searchParams.get("include");
 
-  const calendar = await prisma.calendar.findUnique({
-    where: { id },
+  const calendar = await prisma.calendar.findFirst({
+    where: { id, userId: session.userId },
   });
 
   if (!calendar) return jsonError("Calendar not found", 404);
-  if (calendar.userId !== session.userId) return jsonError("Forbidden", 403);
 
   return jsonSuccess(calendar);
 }
@@ -49,8 +46,7 @@ export async function GET(
  * @body    [description] — new description, or null to clear
  * @returns {ApiResponse<CalendarResponse>} the updated calendar
  * @error   401 — not authenticated
- * @error   403 — calendar does not belong to the authenticated user
- * @error   404 — calendar not found
+ * @error   404 — calendar not found (or not owned by the caller)
  * @error   400 — invalid body
  */
 export async function PATCH(
@@ -62,9 +58,10 @@ export async function PATCH(
 
   const { id } = await context.params;
 
-  const existing = await prisma.calendar.findUnique({ where: { id } });
+  const existing = await prisma.calendar.findFirst({
+    where: { id, userId: session.userId },
+  });
   if (!existing) return jsonError("Calendar not found", 404);
-  if (existing.userId !== session.userId) return jsonError("Forbidden", 403);
 
   let body: UpdateCalendarBody;
   try {
@@ -93,8 +90,7 @@ export async function PATCH(
  * @route   DELETE /api/calendars/[id]
  * @returns {ApiResponse<{ message: string }>} confirmation message
  * @error   401 — not authenticated
- * @error   403 — calendar does not belong to the authenticated user
- * @error   404 — calendar not found
+ * @error   404 — calendar not found (or not owned by the caller)
  */
 export async function DELETE(
   request: NextRequest,
@@ -105,9 +101,10 @@ export async function DELETE(
 
   const { id } = await context.params;
 
-  const existing = await prisma.calendar.findUnique({ where: { id } });
+  const existing = await prisma.calendar.findFirst({
+    where: { id, userId: session.userId },
+  });
   if (!existing) return jsonError("Calendar not found", 404);
-  if (existing.userId !== session.userId) return jsonError("Forbidden", 403);
 
   await prisma.calendar.delete({ where: { id } });
 

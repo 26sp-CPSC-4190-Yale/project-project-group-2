@@ -2,15 +2,14 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { jsonSuccess, jsonError } from "@/lib/api";
 
 export async function PATCH(
     req: Request,
     context: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
     const session = await getSession();
-    if (!session) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!session) return jsonError("Unauthorized", 401);
 
     const { id } = await context.params;
 
@@ -18,15 +17,21 @@ export async function PATCH(
         where: { id, userId: session.userId },
     });
 
-    if (!file) {
-        return NextResponse.json({ error: "File not found" }, { status: 404 });
-    }
+    if (!file) return jsonError("File not found", 404);
 
     let body: { name?: string; calendarId?: string | null };
     try {
         body = await req.json();
     } catch {
-        return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        return jsonError("Invalid JSON body", 400);
+    }
+
+    if (body.calendarId) {
+        const cal = await prisma.calendar.findFirst({
+            where: { id: body.calendarId, userId: session.userId },
+            select: { id: true },
+        });
+        if (!cal) return jsonError("Invalid calendarId", 400);
     }
 
     const data: { name?: string; calendarId?: string | null } = {};
@@ -39,17 +44,15 @@ export async function PATCH(
         include: { calendar: { select: { id: true, title: true } } },
     });
 
-    return NextResponse.json(updated);
+    return jsonSuccess(updated);
 }
 
 export async function DELETE(
-    req: Request,
+    _req: Request,
     context: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
     const session = await getSession();
-    if (!session) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!session) return jsonError("Unauthorized", 401);
 
     const { id } = await context.params;
 
@@ -57,9 +60,7 @@ export async function DELETE(
         where: { id, userId: session.userId },
     });
 
-    if (!file) {
-        return NextResponse.json({ error: "File not found" }, { status: 404 });
-    }
+    if (!file) return jsonError("File not found", 404);
 
     await supabaseAdmin.storage
         .from("user-files")
@@ -67,5 +68,5 @@ export async function DELETE(
 
     await prisma.uploadedFile.delete({ where: { id } });
 
-    return NextResponse.json({ success: true });
+    return jsonSuccess({ message: "File deleted" });
 }

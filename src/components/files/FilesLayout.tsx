@@ -71,8 +71,8 @@ export function FilesLayout({ avatarUrl }: FilesLayoutProps) {
 
     async function fetchFiles() {
         const res = await fetch("/api/files");
-        const data = await res.json();
-        setFiles(data);
+        const json = await res.json();
+        setFiles(json.data ?? []);
     }
 
     async function handleUpload(file: File, calendarId: string | null) {
@@ -86,8 +86,8 @@ export function FilesLayout({ avatarUrl }: FilesLayoutProps) {
         });
 
         if (res.ok) {
-            const newFile = await res.json();
-            setFiles((prev) => [newFile, ...prev]);
+            const json = await res.json();
+            setFiles((prev) => [json.data, ...prev]);
         }
         setShowUpload(false);
     }
@@ -105,8 +105,8 @@ export function FilesLayout({ avatarUrl }: FilesLayoutProps) {
         });
 
         if (res.ok) {
-            const updated = await res.json();
-            setFiles((prev) => prev.map((f) => (f.id === fileId ? updated : f)));
+            const json = await res.json();
+            setFiles((prev) => prev.map((f) => (f.id === fileId ? json.data : f)));
         }
         setEditTarget(null);
     }

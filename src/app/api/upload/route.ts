@@ -2,24 +2,17 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { jsonSuccess, jsonError } from "@/lib/api";
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
     const session = await getSession();
-
-    if (!session) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!session) return jsonError("Unauthorized", 401);
 
     const formData = await req.formData();
     const file = formData.get("file");
 
-    if (!(file instanceof File)) {
-        return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
-    }
-
-    if (file.type !== "application/pdf") {
-        return NextResponse.json({ error: "Only PDFs allowed" }, { status: 400 });
-    }
+    if (!(file instanceof File)) return jsonError("No file uploaded", 400);
+    if (file.type !== "application/pdf") return jsonError("Only PDFs allowed", 400);
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -33,23 +26,29 @@ export async function POST(req: Request) {
             contentType: file.type,
         });
 
-    if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    if (error) return jsonError(error.message, 500);
 
-    const calendarId = formData.get("calendarId") as string | null;
+    const calendarId = (formData.get("calendarId") as string | null) || null;
+
+    if (calendarId) {
+        const cal = await prisma.calendar.findFirst({
+            where: { id: calendarId, userId: session.userId },
+            select: { id: true },
+        });
+        if (!cal) return jsonError("Invalid calendarId", 400);
+    }
 
     const savedFile = await prisma.uploadedFile.create({
         data: {
             name: file.name,
             storagePath,
             userId: session.userId,
-            calendarId: calendarId || null,
+            calendarId,
         },
         include: {
             calendar: { select: { id: true, title: true } },
         },
     });
 
-    return NextResponse.json(savedFile);
+    return jsonSuccess(savedFile);
 }
