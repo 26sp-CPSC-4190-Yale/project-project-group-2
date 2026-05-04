@@ -88,6 +88,7 @@ describe("<FilesLayout />", () => {
           ],
         }),
       ),
+      http.get("*/api/calendars", () => HttpResponse.json({ data: [] })),
       http.patch("*/api/files/f1", async ({ request }) => {
         patchBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({
@@ -107,7 +108,7 @@ describe("<FilesLayout />", () => {
 
     await screen.findByText("Old.pdf");
     await user.click(screen.getByLabelText(/File actions/i));
-    await user.click(screen.getByText(/^Rename$/));
+    await user.click(screen.getByText(/^Edit$/));
 
     const input = screen.getByDisplayValue("Old.pdf");
     await user.clear(input);

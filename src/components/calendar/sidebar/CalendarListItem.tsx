@@ -9,8 +9,11 @@ import { createPortal } from "react-dom";
 import styles from "./CalendarListItem.module.css";
 import { ActionMenu } from "@/components/ActionMenu";
 
+const DEFAULT_COLOR = "#6c3ecc";
+
 interface CalendarListItemProps {
     calendarName?: string;
+    color?: string;
     active?: boolean;
     onClick?: () => void;
 
@@ -21,12 +24,14 @@ interface CalendarListItemProps {
 
 export function CalendarListItem({
     calendarName,
+    color,
     active = false,
     onClick,
     onEdit,
     onDelete,
     isDefault,
 }: CalendarListItemProps) {
+    const dotColor = color && color !== "none" ? color : DEFAULT_COLOR;
     const [showMenu, setShowMenu] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
@@ -69,6 +74,10 @@ export function CalendarListItem({
                 }
             }}
         >
+            <div
+                className={styles.dot}
+                style={{ backgroundColor: dotColor, boxShadow: active ? `0 0 0 2px white` : `0 0 0 1.5px ${dotColor}40` }}
+            />
             <div className={`${styles.text} ${active ? styles.activeText : styles.inactiveText}`}>
                 {calendarName}
             </div>

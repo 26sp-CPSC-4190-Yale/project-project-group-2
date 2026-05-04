@@ -41,6 +41,7 @@ interface SidebarGroup {
     name: string;
     isDefault: boolean;
     notes?: string;
+    color?: string;
 }
 
 interface DefaultSidebarProps {
@@ -190,6 +191,7 @@ export function DefaultSidebar({
                     <CalendarListItem
                         key={cal.id}
                         calendarName={cal.title}
+                        color={cal.color}
                         active={cal.id === selectedCalendarId}
                         onClick={() => onSelectCalendar(cal.id)}
 
@@ -223,6 +225,7 @@ export function DefaultSidebar({
                     <GroupListItem
                         key={group.id}
                         groupName={group.name}
+                        color={group.color}
                         selected={selectedGroupIds.has(group.id)}
                         onToggle={() => handleToggleGroup(group.id)}
                         onEdit={() => onOpenCreateGroup?.(group)}
@@ -259,6 +262,7 @@ export function DefaultSidebar({
                     onToggle={() => handleToggleTask(task.id, task.completed)}
                     isDueSoon={isDueSoon(task.dueAt)}
                     dueAt={task.dueAt}
+                    groupColor={groups.find((g) => g.id === task.groupId)?.color}
                     onEdit={() => {
                         console.log("edit task", task);
                         onOpenCreateTask?.(task);

@@ -11,6 +11,7 @@ import { ActionMenu } from "@/components/ActionMenu";
 
 export interface GroupListItemProps {
     groupName: string;
+    color?: string;
     selected?: boolean;
     onToggle?: () => void;
     onEdit?: () => void;
@@ -18,14 +19,18 @@ export interface GroupListItemProps {
     isDefault?: boolean;
 }
 
+const DEFAULT_COLOR = "#6c3ecc";
+
 export function GroupListItem({
     groupName,
+    color,
     selected = true,
     onToggle,
     onEdit,
     onDelete,
     isDefault = false,
 }: GroupListItemProps) {
+    const effectiveColor = (color && color !== "none") ? color : DEFAULT_COLOR;
     const [showMenu, setShowMenu] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
@@ -64,6 +69,7 @@ export function GroupListItem({
     return (
         <div
             className={styles.container}
+            style={{ "--group-color": effectiveColor } as React.CSSProperties}
             onClick={onToggle}
             onMouseEnter={() => setShowMenu(true)}
             onMouseLeave={() => {

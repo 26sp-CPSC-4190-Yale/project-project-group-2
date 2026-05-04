@@ -21,6 +21,14 @@
     background-color: rgba(108, 62, 204, 0.1);
 }
 
+.dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-right: 0.4rem;
+}
+
 .text {
     flex: 1;
     font-family: var(--font-dm-sans);

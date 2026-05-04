@@ -10,5 +10,6 @@ export interface CalendarEvent {
     location: string | null;
     remindBefore: number | null;
     calendarId: string;
+    color?: string;
     isShared?: boolean;
 }

@@ -12,7 +12,7 @@
 .checkbox {
     width: 0.82rem;
     height: 0.82rem;
-    border: 1.5px solid #6c3ecc;
+    border: 1.5px solid var(--group-color, #6c3ecc);
     border-radius: 0.15rem;
     flex-shrink: 0;
     display: flex;
@@ -22,7 +22,7 @@
 }
 
 .checked {
-    background-color: #6c3ecc;
+    background-color: var(--group-color, #6c3ecc);
 }
 
 .checkmark {

@@ -10,32 +10,42 @@ import styles from "./CreateGroupModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
 
+const DEFAULT_COLOR = "#6c3ecc";
+
 interface CreateGroupModalProps {
     calendarId: string;
+    calendarColor?: string;
     initialData?: {
         id: string;
         name: string;
         notes?: string;
+        color?: string;
     } | null;
     onClose: () => void;
 }
 
 export function CreateGroupModal({
     calendarId,
+    calendarColor,
     initialData,
     onClose,
 }: CreateGroupModalProps) {
     const [name, setName] = useState("");
     const [notes, setNotes] = useState("");
+    const [color, setColor] = useState(DEFAULT_COLOR);
     const [submitting, setSubmitting] = useState(false);
+
+    const resolvedDefault = (calendarColor && calendarColor !== "none") ? calendarColor : DEFAULT_COLOR;
 
     useEffect(() => {
         if (initialData) {
             setName(initialData.name);
             setNotes(initialData.notes ?? "");
+            setColor(initialData.color && initialData.color !== "none" ? initialData.color : resolvedDefault);
         } else {
             setName("");
             setNotes("");
+            setColor(resolvedDefault);
         }
     }, [initialData]);
 
@@ -55,6 +65,7 @@ export function CreateGroupModal({
                     body: JSON.stringify({
                         name: name.trim(),
                         notes: notes.trim() || undefined,
+                        color,
                     }),
                 });
             } else {
@@ -65,6 +76,7 @@ export function CreateGroupModal({
                         calendarId,
                         name: name.trim(),
                         notes: notes.trim() || undefined,
+                        color,
                     }),
                 });
             }
@@ -109,6 +121,17 @@ export function CreateGroupModal({
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
                 />
+
+                <label className={styles.label}>Color</label>
+                <div className={styles.colorRow}>
+                    <input
+                        className={styles.colorInput}
+                        type="color"
+                        value={color}
+                        onChange={(e) => setColor(e.target.value)}
+                    />
+                    <span className={styles.colorHex}>{color}</span>
+                </div>
 
                 <div className={styles.actions}>
                     <ButtonSecondary label="Cancel" onClick={onClose} />

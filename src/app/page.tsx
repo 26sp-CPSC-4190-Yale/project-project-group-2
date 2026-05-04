@@ -11,7 +11,7 @@ export default async function Home() {
     prisma.calendar.findMany({
       where: { userId: session.userId },
       orderBy: { createdAt: "asc" },
-      select: { id: true, title: true, isDefault: true },
+      select: { id: true, title: true, color: true, isDefault: true },
     }),
     prisma.user.findUnique({
       where: { id: session.userId },

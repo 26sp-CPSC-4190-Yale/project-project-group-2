@@ -41,7 +41,7 @@ export function CalendarLayout({
     const [chatSidebarOpen, setChatSidebarOpen] = useState(false);
     const [editingCalendar, setEditingCalendar] = useState<SidebarCalendar | null>(null);
     const [editingTask, setEditingTask] = useState<any | null>(null);
-    const [editingGroup, setEditingGroup] = useState<{ id: string; name: string; notes?: string } | null>(null);
+    const [editingGroup, setEditingGroup] = useState<{ id: string; name: string; notes?: string; color?: string } | null>(null);
 
     return (
         <div className={styles.container}>
@@ -191,6 +191,7 @@ export function CalendarLayout({
             {showCreateGroup && selectedCalendarId && (
                 <CreateGroupModal
                     calendarId={selectedCalendarId}
+                    calendarColor={calendars.find((c) => c.id === selectedCalendarId)?.color}
                     initialData={editingGroup}
                     onClose={() => {
                         setShowCreateGroup(false);

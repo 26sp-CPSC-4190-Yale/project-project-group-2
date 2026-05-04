@@ -17,7 +17,10 @@ export interface TaskListItemProps {
     onEdit?: () => void;
     onDelete?: () => void;
     isDueSoon?: boolean;
+    groupColor?: string;
 }
+
+const DEFAULT_COLOR = "#6c3ecc";
 
 export function TaskListItem({
     taskName,
@@ -27,7 +30,9 @@ export function TaskListItem({
     onDelete,
     isDueSoon,
     dueAt,
+    groupColor,
 }: TaskListItemProps) {
+    const effectiveColor = (groupColor && groupColor !== "none") ? groupColor : DEFAULT_COLOR;
     const [showMenu, setShowMenu] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
@@ -93,6 +98,7 @@ export function TaskListItem({
     return (
         <div
             className={`${styles.container} ${isDueSoon ? styles.dueSoon : ""}`}
+            style={{ "--due-color": effectiveColor } as React.CSSProperties}
             onClick={onToggle}
             onMouseEnter={() => setShowMenu(true)}
             onMouseLeave={() => {

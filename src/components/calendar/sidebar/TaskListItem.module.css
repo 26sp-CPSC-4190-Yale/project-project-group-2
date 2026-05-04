@@ -6,12 +6,13 @@
     gap: 0.36rem;
     cursor: pointer;
     user-select: none;
+    border-left: 0.1875rem solid var(--due-color, #6c3ecc);
 }
 
 .checkbox {
     width: 0.82rem;
     height: 0.82rem;
-    border: 1.5px solid #6c3ecc;
+    border: 0.09375rem solid #6c3ecc;
     border-radius: 0.15rem;
     flex-shrink: 0;
     display: flex;
@@ -28,7 +29,7 @@
     width: 0.28rem;
     height: 0.48rem;
     border: solid #fff;
-    border-width: 0 1.5px 1.5px 0;
+    border-width: 0 0.09375rem 0.09375rem 0;
     transform: rotate(45deg);
     translate: 0 -0.04rem;
 }
@@ -49,7 +50,6 @@
 
 .dueSoon {
     background-color: rgba(220, 38, 38, 0.08);
-    border-left: 3px solid #dc2626;
 }
 
 .menuWrapper {
@@ -86,7 +86,7 @@
   flex: 1;
   justify-content: center;
   overflow: hidden;
-  gap: 2px;
+  gap: 0.125rem;
 }
 
 .dueDate {
@@ -95,7 +95,7 @@
   margin-top: 0.1rem;
 }
 
-.dueSoon {
+.dueSoon .dueDate {
   color: #dc2626;
   font-weight: 500;
 }

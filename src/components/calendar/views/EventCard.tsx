@@ -7,6 +7,8 @@
 import styles from "./EventCard.module.css";
 import type { CalendarEvent } from "../types";
 
+const DEFAULT_COLOR = "#6c3ecc";
+
 interface EventCardProps {
     event: CalendarEvent;
     style?: React.CSSProperties;
@@ -23,10 +25,14 @@ function formatTime(iso: string): string {
 }
 
 export function EventCard({ event, style, compact, onClick }: EventCardProps) {
+    const effectiveColor = (event.color && event.color !== "none") ? event.color : DEFAULT_COLOR;
+    const colorVars = { "--cal-color": effectiveColor } as React.CSSProperties;
+
     if (compact) {
         return (
             <div
                 className={`${styles.compact} ${event.isShared ? styles.shared : ""}`}
+                style={colorVars}
                 onClick={onClick}
             >
                 <span className={styles.compactName}>{event.name}</span>
@@ -37,7 +43,7 @@ export function EventCard({ event, style, compact, onClick }: EventCardProps) {
     return (
         <div
             className={`${styles.bar} ${event.isShared ? styles.shared : ""}`}
-            style={style}
+            style={{ ...colorVars, ...style }}
             onClick={onClick}
         >
             <span className={styles.barName}>{event.name}</span>

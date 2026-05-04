@@ -2,7 +2,7 @@
     position: absolute;
     left: 2px;
     right: 2px;
-    background-color: #6c3ecc;
+    background-color: var(--cal-color, #6c3ecc);
     border-radius: 0.25rem;
     padding: 0.2rem 0.4rem;
     overflow: hidden;
@@ -34,7 +34,7 @@
 }
 
 .compact {
-    background-color: #6c3ecc;
+    background-color: var(--cal-color, #6c3ecc);
     border-radius: 0.2rem;
     padding: 0.05rem 0.3rem;
     margin-top: 0.15rem;
@@ -59,6 +59,6 @@
 }
 
 .shared {
-    background-color: #9b7bd4;
-    border-left: 3px solid #6c3ecc;
+    background-color: color-mix(in srgb, var(--cal-color, #6c3ecc) 60%, white);
+    border-left: 3px solid var(--cal-color, #6c3ecc);
 }

@@ -40,6 +40,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ...(start && { startAt: { gte: new Date(start) } }),
       ...(end && { startAt: { lte: new Date(end) } }),
     },
+    include: { group: { select: { color: true } } },
     orderBy: { startAt: "asc" },
   });
 
@@ -49,8 +50,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ...(groupIds.length > 0 && { groupId: { in: groupIds } }),
       ...(calendarId && { group: { calendarId } }),
     },
-    include: { event: true },
+    include: { event: true, group: { select: { color: true } } },
   });
+
+  const ownedEvents = events.map(({ group, ...e }) => ({ ...e, color: group.color }));
 
   const sharedEvents = sharedEventLinks
     .filter((se) => {
@@ -63,9 +66,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ...se.event,
       groupId: se.groupId,
       isShared: true,
+      color: se.group.color,
     }));
 
-  const allEvents = [...events, ...sharedEvents].sort(
+  const allEvents = [...ownedEvents, ...sharedEvents].sort(
     (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime(),
   );
 

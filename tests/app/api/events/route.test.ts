@@ -19,13 +19,14 @@ describe("GET /api/events", () => {
     mockSession("user-1");
 
     const owned = [
-      makeEvent({ id: "e-own", startAt: new Date("2026-01-10T00:00:00Z"), groupId: "g1" }),
+      { ...makeEvent({ id: "e-own", startAt: new Date("2026-01-10T00:00:00Z"), groupId: "g1" }), group: { color: "none" } },
     ];
     const shared = [
       {
         id: "se-1",
         userId: "user-1",
         groupId: "g-shared",
+        group: { color: "none" },
         event: makeEvent({
           id: "e-shared",
           startAt: new Date("2026-01-05T00:00:00Z"),
@@ -61,12 +62,14 @@ describe("GET /api/events", () => {
         id: "se-1",
         userId: "user-1",
         groupId: "g-shared",
+        group: { color: "none" },
         event: makeEvent({ id: "e-early", startAt: new Date("2026-01-01T00:00:00Z") }),
       },
       {
         id: "se-2",
         userId: "user-1",
         groupId: "g-shared",
+        group: { color: "none" },
         event: makeEvent({ id: "e-in-range", startAt: new Date("2026-02-01T00:00:00Z") }),
       },
     ] as never);

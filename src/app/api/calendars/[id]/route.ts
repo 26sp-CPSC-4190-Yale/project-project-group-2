@@ -79,6 +79,13 @@ export async function PATCH(
     },
   });
 
+  if (body.color !== undefined) {
+    await prisma.group.updateMany({
+      where: { calendarId: id, isDefault: true },
+      data: { color: body.color },
+    });
+  }
+
   return jsonSuccess(calendar);
 }
 
