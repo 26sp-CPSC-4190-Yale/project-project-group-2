@@ -9,6 +9,7 @@ export interface CalendarEvent {
     notes: string | null;
     location: string | null;
     remindBefore: number | null;
+    groupId: string;
     calendarId: string;
     color?: string;
     isShared?: boolean;

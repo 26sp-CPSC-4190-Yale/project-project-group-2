@@ -17,12 +17,13 @@ const event: CalendarEvent = {
   notes: null,
   location: null,
   remindBefore: null,
+  groupId: "g1",
   calendarId: "c1",
 };
 
 describe("<EditEventModal />", () => {
   it("renders a read-only view when readOnly is true (shared event)", () => {
-    render(<EditEventModal event={event} readOnly onClose={() => {}} />);
+    render(<EditEventModal event={event} calendarId="c1" readOnly onClose={() => {}} />);
     expect(screen.getByText(/Shared Event/i)).toBeInTheDocument();
     expect(screen.getByText("Interview")).toBeInTheDocument();
     // No "Save" or "Delete" buttons in read-only mode.
@@ -33,6 +34,9 @@ describe("<EditEventModal />", () => {
   it("PATCHes the event when Save is clicked", async () => {
     let body: Record<string, unknown> | null = null;
     server.use(
+      http.get("*/api/groups", () =>
+        HttpResponse.json({ data: [{ id: "g1", name: "Default" }] }),
+      ),
       http.patch("*/api/events/e1", async ({ request }) => {
         body = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({ data: { id: "e1" } });
@@ -40,7 +44,7 @@ describe("<EditEventModal />", () => {
     );
 
     const user = userEvent.setup();
-    render(<EditEventModal event={event} onClose={() => {}} />);
+    render(<EditEventModal event={event} calendarId="c1" onClose={() => {}} />);
 
     const nameInput = screen.getAllByRole("textbox")[0];
     await user.clear(nameInput);
@@ -55,6 +59,9 @@ describe("<EditEventModal />", () => {
   it("DELETEs the event when Delete is clicked", async () => {
     let deleted = false;
     server.use(
+      http.get("*/api/groups", () =>
+        HttpResponse.json({ data: [{ id: "g1", name: "Default" }] }),
+      ),
       http.delete("*/api/events/e1", () => {
         deleted = true;
         return HttpResponse.json({ data: { message: "Event deleted" } });
@@ -62,7 +69,7 @@ describe("<EditEventModal />", () => {
     );
 
     const user = userEvent.setup();
-    render(<EditEventModal event={event} onClose={() => {}} />);
+    render(<EditEventModal event={event} calendarId="c1" onClose={() => {}} />);
 
     await user.click(screen.getByText(/^Delete$/));
 

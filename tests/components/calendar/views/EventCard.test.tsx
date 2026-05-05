@@ -15,6 +15,7 @@ const baseEvent: CalendarEvent = {
   notes: null,
   location: null,
   remindBefore: null,
+  groupId: "g1",
   calendarId: "c1",
 };
 

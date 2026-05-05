@@ -164,9 +164,10 @@ export function CalendarViewLayout({
                     onClose={handleMenuClose}
                 />
             )}
-            {editingEvent && (
+            {editingEvent && selectedCalendarId && (
                 <EditEventModal
                     event={editingEvent}
+                    calendarId={selectedCalendarId}
                     onClose={handleEditClose}
                     readOnly={editingEvent.isShared}
                 />

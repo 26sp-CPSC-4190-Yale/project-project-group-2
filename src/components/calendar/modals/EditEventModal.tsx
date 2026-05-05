@@ -6,17 +6,24 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./EditEventModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
 import { ShareEventModal } from "./ShareEventModal";
+import { DropDownSecondary } from "@/components/DropDownSecondary";
 import type { CalendarEvent } from "../types";
 import { ButtonDanger } from "@/components/ButtonDanger";
 
+interface GroupOption {
+    id: string;
+    name: string;
+}
+
 interface EditEventModalProps {
     event: CalendarEvent;
+    calendarId: string;
     onClose: () => void;
     readOnly?: boolean;
 }
@@ -31,9 +38,21 @@ function toTimeValue(iso: string): string {
     return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-export function EditEventModal({ event, onClose, readOnly = false }: EditEventModalProps) {
+export function EditEventModal({ event, calendarId, onClose, readOnly = false }: EditEventModalProps) {
     const [name, setName] = useState(event.name);
+    const [groups, setGroups] = useState<GroupOption[]>([]);
+    const [selectedGroupId, setSelectedGroupId] = useState(event.groupId);
     const [allDay, setAllDay] = useState(event.allDay);
+
+    useEffect(() => {
+        if (!calendarId) return;
+        fetch(`/api/groups?calendarId=${calendarId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.data) setGroups(data.data);
+            })
+            .catch(() => setGroups([]));
+    }, [calendarId]);
     const [startDate, setStartDate] = useState(toDateValue(event.startAt));
     const [startTime, setStartTime] = useState(toTimeValue(event.startAt));
     const [endDate, setEndDate] = useState(event.endAt ? toDateValue(event.endAt) : "");
@@ -73,6 +92,7 @@ export function EditEventModal({ event, onClose, readOnly = false }: EditEventMo
                     startAt,
                     endAt,
                     allDay,
+                    groupId: selectedGroupId !== event.groupId ? selectedGroupId : undefined,
                     description: description.trim() || null,
                     notes: notes.trim() || null,
                     link: link.trim() || null,
@@ -189,6 +209,19 @@ export function EditEventModal({ event, onClose, readOnly = false }: EditEventMo
                     onChange={(e) => setName(e.target.value)}
                     autoFocus
                 />
+
+                <label className={styles.label}>Group</label>
+                <div className={styles.dropdownRow}>
+                    <DropDownSecondary
+                        items={groups.map((g) => g.name)}
+                        defaultValue={groups.find((g) => g.id === selectedGroupId)?.name ?? ""}
+                        onChange={(name) => {
+                            const g = groups.find((g) => g.name === name);
+                            if (g) setSelectedGroupId(g.id);
+                        }}
+                        width="100%"
+                    />
+                </div>
 
                 <div
                     className={styles.checkboxRow}
