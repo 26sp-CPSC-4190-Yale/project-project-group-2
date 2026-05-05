@@ -69,6 +69,38 @@ export interface ProposedEventArgs {
     ],
   } as const;
   
+  export interface ScheduleEventArgs {
+    name: string;
+    calendarId: string;
+    groupId: string | null;
+    startAtISO: string;
+    endAtISO: string;
+    description: string | null;
+    location: string | null;
+    link: string | null;
+    remindBeforeMinutes: number | null;
+  }
+
+  export const scheduleEventSchema = {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      name:                { type: "string", description: "event name" },
+      calendarId:          { type: "string", description: "ID from the CALENDARS list" },
+      groupId:             { type: ["string", "null"], description: "null = use the calendar's default group" },
+      startAtISO:          { type: "string", description: "ISO 8601 with timezone offset" },
+      endAtISO:            { type: "string", description: "ISO 8601 with timezone offset" },
+      description:         { type: ["string", "null"] },
+      location:            { type: ["string", "null"] },
+      link:                { type: ["string", "null"] },
+      remindBeforeMinutes: { type: ["integer", "null"] },
+    },
+    required: [
+      "name", "calendarId", "groupId", "startAtISO", "endAtISO",
+      "description", "location", "link", "remindBeforeMinutes",
+    ],
+  } as const;
+
   export interface AskClarificationArgs {
     question: string;
   }
