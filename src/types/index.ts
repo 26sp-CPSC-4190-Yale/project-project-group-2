@@ -211,6 +211,15 @@ export interface UpdateInvitationBody {
   status: "ACCEPTED" | "DECLINED";
 }
 
+export interface CreateCalendarInvitationBody {
+  calendarId: string;
+  recipientEmail: string;
+}
+
+export interface UpdateCalendarInvitationBody {
+  status: "ACCEPTED" | "DECLINED";
+}
+
 // =============================================================================
 // Query Parameter Types
 //

@@ -8,7 +8,7 @@ import type { CreateCalendarBody } from "@/types";
  * List all calendars for the authenticated user.
  *
  * Returns every calendar owned by the current user, ordered by creation
- * date (newest first).
+ * date (oldest first, so the default calendar is always at the top).
  *
  * @route   GET /api/calendars
  * @returns {ApiResponse<CalendarResponse[]>} array of the user's calendars
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const calendars = await prisma.calendar.findMany({
     where: { userId: session.userId },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: "asc" },
   });
 
   return jsonSuccess(calendars);

@@ -15,6 +15,7 @@ import { ButtonSecondary } from "@/components/ButtonSecondary";
 import { DeleteCalendarModal } from "../modals/DeleteCalendarModal";
 import { DeleteTaskModal } from "../modals/DeleteTaskModal";
 import { DeleteGroupModal } from "../modals/DeleteGroupModal";
+import { ShareCalendarModal } from "../modals/ShareCalendarModal";
 
 export interface SidebarCalendar {
     id: string;
@@ -77,6 +78,7 @@ export function DefaultSidebar({
     const [groups, setGroups] = useState<SidebarGroup[]>([]);
     const [selectedGroupIds, setSelectedGroupIds] = useState<Set<string>>(new Set());
     const [deleteCalendar, setDeleteCalendar] = useState<SidebarCalendar | null>(null);
+    const [shareCalendar, setShareCalendar] = useState<SidebarCalendar | null>(null);
     const taskCalendarId = calendars.find((c) => c.title === taskCalendarTitle)?.id;
     const [deleteTask, setDeleteTask] = useState<SidebarTask | null>(null);
     const [deleteGroup, setDeleteGroup] = useState<SidebarGroup | null>(null);
@@ -205,6 +207,8 @@ export function DefaultSidebar({
                             setDeleteCalendar(cal);
                         }}
 
+                        onShare={() => setShareCalendar(cal)}
+
                         isDefault={cal.isDefault}
                     />
                 ))}
@@ -320,6 +324,13 @@ export function DefaultSidebar({
                         onRefreshGroups?.();
                     }}
                     onClose={() => setDeleteGroup(null)}
+                />
+            )}
+            {shareCalendar && (
+                <ShareCalendarModal
+                    calendarId={shareCalendar.id}
+                    calendarTitle={shareCalendar.title}
+                    onClose={() => setShareCalendar(null)}
                 />
             )}
         </>

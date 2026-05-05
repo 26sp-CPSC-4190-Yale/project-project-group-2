@@ -9,8 +9,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import styles from "./InvitationBell.module.css";
 
-interface Invitation {
+interface EventInvitation {
     id: string;
+    kind: "event";
     status: string;
     event: {
         id: string;
@@ -23,6 +24,23 @@ interface Invitation {
         email: string;
     };
 }
+
+interface CalendarInvitation {
+    id: string;
+    kind: "calendar";
+    status: string;
+    calendar: {
+        id: string;
+        title: string;
+    };
+    sender: {
+        id: string;
+        name: string;
+        email: string;
+    };
+}
+
+type Invitation = EventInvitation | CalendarInvitation;
 
 function formatDate(iso: string): string {
     const d = new Date(iso);
@@ -44,10 +62,18 @@ export function InvitationBell({ onInvitationsChanged }: InvitationBellProps = {
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        fetch("/api/invitations?type=received&status=PENDING")
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.data) setInvitations(data.data);
+        Promise.all([
+            fetch("/api/invitations?type=received&status=PENDING").then((r) => r.json()),
+            fetch("/api/calendar-invitations?type=received&status=PENDING").then((r) => r.json()),
+        ])
+            .then(([eventData, calData]) => {
+                const eventInvs: EventInvitation[] = (eventData.data ?? []).map(
+                    (inv: Omit<EventInvitation, "kind">) => ({ ...inv, kind: "event" as const }),
+                );
+                const calInvs: CalendarInvitation[] = (calData.data ?? []).map(
+                    (inv: Omit<CalendarInvitation, "kind">) => ({ ...inv, kind: "calendar" as const }),
+                );
+                setInvitations([...eventInvs, ...calInvs]);
             })
             .catch(() => setInvitations([]));
     }, [refreshKey]);
@@ -71,15 +97,19 @@ export function InvitationBell({ onInvitationsChanged }: InvitationBellProps = {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [showDropdown]);
 
-    const handleRespond = useCallback(async (id: string, status: "ACCEPTED" | "DECLINED") => {
-        const res = await fetch(`/api/invitations/${id}`, {
+    const handleRespond = useCallback(async (inv: Invitation, status: "ACCEPTED" | "DECLINED") => {
+        const endpoint = inv.kind === "calendar"
+            ? `/api/calendar-invitations/${inv.id}`
+            : `/api/invitations/${inv.id}`;
+
+        const res = await fetch(endpoint, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status }),
         });
 
         if (res.ok) {
-            setInvitations((prev) => prev.filter((inv) => inv.id !== id));
+            setInvitations((prev) => prev.filter((i) => i.id !== inv.id));
             onInvitationsChanged?.();
         }
     }, [onInvitationsChanged]);
@@ -114,23 +144,32 @@ export function InvitationBell({ onInvitationsChanged }: InvitationBellProps = {
                     ) : (
                         invitations.map((inv) => (
                             <div key={inv.id} className={styles.inviteRow}>
-                                <span className={styles.eventName}>{inv.event.name}</span>
+                                <span className={styles.eventName}>
+                                    {inv.kind === "calendar"
+                                        ? inv.calendar.title
+                                        : inv.event.name}
+                                </span>
                                 <span className={styles.senderName}>
                                     From {inv.sender.name}
                                 </span>
-                                <span className={styles.eventDate}>
-                                    {formatDate(inv.event.startAt)}
-                                </span>
+                                {inv.kind === "event" && (
+                                    <span className={styles.eventDate}>
+                                        {formatDate(inv.event.startAt)}
+                                    </span>
+                                )}
+                                {inv.kind === "calendar" && (
+                                    <span className={styles.eventDate}>Calendar</span>
+                                )}
                                 <div className={styles.inviteActions}>
                                     <button
                                         className={styles.acceptBtn}
-                                        onClick={() => handleRespond(inv.id, "ACCEPTED")}
+                                        onClick={() => handleRespond(inv, "ACCEPTED")}
                                     >
                                         Accept
                                     </button>
                                     <button
                                         className={styles.declineBtn}
-                                        onClick={() => handleRespond(inv.id, "DECLINED")}
+                                        onClick={() => handleRespond(inv, "DECLINED")}
                                     >
                                         Decline
                                     </button>

@@ -36,10 +36,16 @@ export async function POST(req: Request) {
   const { fileId, timezone, todayISO } = await req.json();
   if (!fileId) return jsonError("fileId required", 400);
 
-  const file = await prisma.uploadedFile.findFirst({
-    where: { id: fileId, userId: session.userId },
-    include: { calendar: { include: { groups: { where: { isDefault: true }, take: 1 } } } },
-  });
+  const [file, defaultCalendar] = await Promise.all([
+    prisma.uploadedFile.findFirst({
+      where: { id: fileId, userId: session.userId },
+      include: { calendar: { include: { groups: { where: { isDefault: true }, take: 1 } } } },
+    }),
+    prisma.calendar.findFirst({
+      where: { userId: session.userId, isDefault: true },
+      include: { groups: { where: { isDefault: true }, take: 1 } },
+    }),
+  ]);
   if (!file) return jsonError("File not found", 404);
 
   // Download file from Supabase
@@ -82,8 +88,8 @@ export async function POST(req: Request) {
       items: parsed.items,
       detectedTimezone: parsed.detectedTimezone,
       unparseableNotes: parsed.unparseableNotes,
-      defaultCalendarId: file.calendarId,
-      defaultGroupId: file.calendar?.groups[0]?.id ?? null,
+      defaultCalendarId: file.calendarId ?? defaultCalendar?.id ?? null,
+      defaultGroupId: file.calendar?.groups[0]?.id ?? defaultCalendar?.groups[0]?.id ?? null,
     });
   } finally {
     // Clean up OpenAI-side file even if the model call throws.

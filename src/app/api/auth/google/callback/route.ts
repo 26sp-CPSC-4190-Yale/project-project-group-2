@@ -20,7 +20,7 @@ import { jsonError } from "@/lib/api";
  * @query   code  — authorization code from Google
  * @query   state — CSRF state token (if used)
  * @returns 302 redirect to app home on success, or error response
- * @error   400 — missing or invalid authorization code
+ * @error   400 — missing or invalid authorizati1on code
  * @error   500 — token exchange or profile fetch failed
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {

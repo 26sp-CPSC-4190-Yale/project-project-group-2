@@ -19,9 +19,11 @@ model User {
   calendars Calendar[]
   tasks     Task[]
   uploadedFiles UploadedFile[]
-  sentInvitations     EventInvitation[] @relation("SentInvitations")
-  receivedInvitations EventInvitation[] @relation("ReceivedInvitations")
-  sharedEvents        SharedEvent[]     @relation("SharedEvents")
+  sentInvitations     EventInvitation[]    @relation("SentInvitations")
+  receivedInvitations EventInvitation[]    @relation("ReceivedInvitations")
+  sharedEvents        SharedEvent[]        @relation("SharedEvents")
+  sentCalendarInvitations     CalendarInvitation[] @relation("SentCalendarInvitations")
+  receivedCalendarInvitations CalendarInvitation[] @relation("ReceivedCalendarInvitations")
 }
 
 model Calendar {
@@ -38,6 +40,7 @@ model Calendar {
 
   groups Group[]
   files  UploadedFile[]
+  calendarInvitations CalendarInvitation[]
 }
 
 model Group {
@@ -136,6 +139,24 @@ model EventInvitation {
   recipient   User   @relation("ReceivedInvitations", fields: [recipientId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, recipientId])
+}
+
+model CalendarInvitation {
+  id        String           @id @default(cuid())
+  status    InvitationStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  calendarId  String
+  calendar    Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  senderId    String
+  sender      User     @relation("SentCalendarInvitations", fields: [senderId], references: [id], onDelete: Cascade)
+
+  recipientId String
+  recipient   User     @relation("ReceivedCalendarInvitations", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@unique([calendarId, recipientId])
 }
 
 model SharedEvent {

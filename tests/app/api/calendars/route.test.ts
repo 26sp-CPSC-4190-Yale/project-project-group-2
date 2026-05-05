@@ -15,7 +15,7 @@ describe("GET /api/calendars", () => {
     expect(res.status).toBe(401);
   });
 
-  it("returns the caller's calendars, newest first", async () => {
+  it("returns the caller's calendars, oldest first", async () => {
     mockSession("user-1");
     const cals = [makeCalendar({ id: "c1" }), makeCalendar({ id: "c2" })];
     prismaMock.calendar.findMany.mockResolvedValue(cals as never);
@@ -26,7 +26,7 @@ describe("GET /api/calendars", () => {
     expect(await res.json()).toEqual({ data: cals.map((c) => JSON.parse(JSON.stringify(c))) });
     expect(prismaMock.calendar.findMany).toHaveBeenCalledWith({
       where: { userId: "user-1" },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "asc" },
     });
   });
 });

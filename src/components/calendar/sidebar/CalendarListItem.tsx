@@ -19,6 +19,7 @@ interface CalendarListItemProps {
 
     onEdit?: () => void;
     onDelete?: () => void;
+    onShare?: () => void;
     isDefault?: boolean;
 }
 
@@ -29,6 +30,7 @@ export function CalendarListItem({
     onClick,
     onEdit,
     onDelete,
+    onShare,
     isDefault,
 }: CalendarListItemProps) {
     const dotColor = color && color !== "none" ? color : DEFAULT_COLOR;
@@ -82,7 +84,7 @@ export function CalendarListItem({
                 {calendarName}
             </div>
 
-            {!isDefault && showMenu && (
+            {showMenu && (
                 <div className={styles.menuWrapper} ref={menuRef}>
                     <button
                         ref={buttonRef}
@@ -115,18 +117,27 @@ export function CalendarListItem({
                         >
                             <ActionMenu
                                 items={[
-                                    {
-                                        label: "Edit",
-                                        onClick: () => {
-                                            setMenuOpen(false);
-                                            onEdit?.();
+                                    ...(!isDefault ? [
+                                        {
+                                            label: "Edit",
+                                            onClick: () => {
+                                                setMenuOpen(false);
+                                                onEdit?.();
+                                            },
                                         },
-                                    },
+                                        {
+                                            label: "Delete",
+                                            onClick: () => {
+                                                setMenuOpen(false);
+                                                onDelete?.();
+                                            },
+                                        },
+                                    ] : []),
                                     {
-                                        label: "Delete",
+                                        label: "Share",
                                         onClick: () => {
                                             setMenuOpen(false);
-                                            onDelete?.();
+                                            onShare?.();
                                         },
                                     },
                                 ]}

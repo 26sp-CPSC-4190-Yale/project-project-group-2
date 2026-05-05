@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styles from "./CalendarLayout.module.css";
 import { SidebarWrapper} from "../sidebar/SidebarWrapper";
 import { CalendarViewLayout } from "../views/CalendarViewLayout";
@@ -23,12 +23,15 @@ interface CalendarLayoutProps {
 }
 
 export function CalendarLayout({
-    calendars,
+    calendars: initialCalendars,
     avatarUrl,
 }: CalendarLayoutProps) {
+    const [calendars, setCalendars] = useState<SidebarCalendar[]>(initialCalendars);
+    const [calendarRefreshKey, setCalendarRefreshKey] = useState(0);
     const [selectedCalendarId, setSelectedCalendarId] = useState<string | null>(
-        calendars.length > 0 ? calendars[0].id : null,
+        initialCalendars.length > 0 ? initialCalendars[0].id : null,
     );
+
     const [showCreateCalendar, setShowCreateCalendar] = useState(false);
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [showCreateGroup, setShowCreateGroup] = useState(false);
@@ -36,6 +39,19 @@ export function CalendarLayout({
     const [groupRefreshKey, setGroupRefreshKey] = useState(0);
     const [taskRefreshKey, setTaskRefreshKey] = useState(0);
     const [sharedEventsRefreshKey, setSharedEventsRefreshKey] = useState(0);
+
+    useEffect(() => {
+        if (calendarRefreshKey === 0) return;
+        fetch("/api/calendars")
+            .then((r) => r.json())
+            .then((data) => { if (data.data) setCalendars(data.data); })
+            .catch(() => {});
+    }, [calendarRefreshKey]);
+
+    const handleInvitationsChanged = useCallback(() => {
+        setSharedEventsRefreshKey((k) => k + 1);
+        setCalendarRefreshKey((k) => k + 1);
+    }, []);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [defaultSidebarOpen, setDefaultSidebarOpen] = useState(true);
     const [chatSidebarOpen, setChatSidebarOpen] = useState(false);
@@ -48,7 +64,7 @@ export function CalendarLayout({
             <Header
                 page="home"
                 avatarUrl={avatarUrl}
-                onInvitationsChanged={() => setSharedEventsRefreshKey((k) => k + 1)}
+                onInvitationsChanged={handleInvitationsChanged}
             />
             <div className={styles.main}>
                 <div className={`${styles.sidebarWrapper} ${sidebarCollapsed ? styles.sidebarCollapsed : ""}`}>
@@ -174,6 +190,7 @@ export function CalendarLayout({
                     onClose={() => {
                         setShowCreateCalendar(false);
                         setEditingCalendar(null);
+                        setCalendarRefreshKey((k) => k + 1);
                     }}
                 />
             )}
