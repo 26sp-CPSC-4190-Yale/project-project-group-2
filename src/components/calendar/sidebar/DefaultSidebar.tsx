@@ -79,6 +79,7 @@ export function DefaultSidebar({
     const [selectedGroupIds, setSelectedGroupIds] = useState<Set<string>>(new Set());
     const [deleteCalendar, setDeleteCalendar] = useState<SidebarCalendar | null>(null);
     const [shareCalendar, setShareCalendar] = useState<SidebarCalendar | null>(null);
+    const [showAllTasks, setShowAllTasks] = useState(false);
     const taskCalendarId = calendars.find((c) => c.title === taskCalendarTitle)?.id;
     const [deleteTask, setDeleteTask] = useState<SidebarTask | null>(null);
     const [deleteGroup, setDeleteGroup] = useState<SidebarGroup | null>(null);
@@ -149,17 +150,20 @@ export function DefaultSidebar({
 
     const filteredTasks = tasks
         .filter((task) => {
-            if (!task.dueAt) {
-                return false;
-            }
+            if (task.completed) return false;
+            if (!task.dueAt) return false;
 
             const due = new Date(task.dueAt);
 
-            return due >= now && due <= sevenDaysFromNow;
+            return due <= sevenDaysFromNow;
         })
         .sort((a, b) => {
             return new Date(a.dueAt!).getTime() - new Date(b.dueAt!).getTime();
         });
+
+    const allTasks = [...tasks].sort((a, b) =>
+        new Date(a.dueAt!).getTime() - new Date(b.dueAt!).getTime(),
+    );
 
     function isDueSoon(dueAt?: string) {
         if (!dueAt) return false;
@@ -258,7 +262,7 @@ export function DefaultSidebar({
                 </div>
             </div>
             <div className={styles.taskList}>
-                {filteredTasks.map((task) => (
+                {(showAllTasks ? allTasks : filteredTasks).map((task) => (
                 <TaskListItem
                     key={task.id}
                     taskName={task.name}
@@ -271,21 +275,21 @@ export function DefaultSidebar({
                         console.log("edit task", task);
                         onOpenCreateTask?.(task);
                     }}
-
                     onDelete={() => {
                         setDeleteTask(task);
                     }}
                 />
                 ))}
-                {filteredTasks.length === 0 && (
+                {(showAllTasks ? allTasks : filteredTasks).length === 0 && (
                     <div className={styles.emptyState}>
-                        No upcoming tasks
+                        {showAllTasks ? "No tasks" : "No upcoming tasks"}
                     </div>
                 )}
             </div>
             <ButtonSecondary
-                label="View All Tasks"
+                label={showAllTasks ? "Collapse Completed Tasks" : "View All Tasks"}
                 width="14.5rem"
+                onClick={() => setShowAllTasks((v) => !v)}
             />
             {deleteCalendar && (
                 <DeleteCalendarModal
