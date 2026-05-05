@@ -7,8 +7,11 @@ import { rateLimit } from "@/lib/aiRateLimit";
 import {
   scheduleEventSchema, askClarificationSchema,
   type ScheduleEventArgs, type AskClarificationArgs,
+  ProposedTaskArgs,
+  proposedTaskSchema,
 } from "@/lib/aiSchemas";
 import type { AiChatRequestBody, AiChatResponseBody } from "@/types";
+import { group } from "console";
 
 /**
  * Chat API — free-slot scheduling assistant.
@@ -74,6 +77,7 @@ export async function POST(req: NextRequest) {
     tools: [
       { type: "function", name: "schedule_event",   description: "Schedule an event into a specific free slot. Only call this after identifying a free block that fits.",  strict: true, parameters: scheduleEventSchema },
       { type: "function", name: "ask_clarification", description: "Ask the user for missing info (event name, desired date range, duration, etc.) before scheduling.", strict: true, parameters: askClarificationSchema },
+      { type: "function", name: "propose_task", description: "Propose a task with a due date.", strict: true, parameters: proposedTaskSchema},
     ],
     tool_choice: "auto",
   }, { timeout: OPENAI_TIMEOUT_MS });
@@ -135,6 +139,34 @@ async function handleToolCall(
       },
     };
   }
+  if (item.name === "propose_task") {
+    const a = args as ProposedTaskArgs;
+    const calendar = ctx.calendars.find((c) => c.id === a.calendarId);
+    if (!calendar) return { kind: "error", message: "The assistant referenced an unknown calendar." };
+
+    const group = a.groupId
+      ? calendar.groups.find((g) => g.id === a.groupId)
+      : calendar.groups.find((g) => g.isDefault);
+    if (!group) return { kind: "error", message: `No matching group found in ${calendar.title}.` };
+
+    return {
+      kind: "proposal",
+      proposalKind: "task",
+      data: {
+        calendarId: calendar.id,
+        groupId: group.id,
+        name: a.name,
+        dueAt: a.dueAtISO,
+        allDay: a.allDay,
+        notes: a.notes ?? undefined,
+        location: a.location ?? undefined,
+        link: a.link ?? undefined,
+        remindBefore: a.remindBeforeMinutes ?? undefined,
+        displayCalendarTitle: calendar.title,
+        displayGroupName: group.name,
+      },
+    };
+  }
 
   return { kind: "error", message: `Unknown tool: ${item.name}` };
 }
@@ -163,12 +195,13 @@ function buildSystemPrompt(args: {
   });
 
   return [
-    "You are a scheduling assistant. Your only job is to find free time slots in the user's calendar and schedule events into them.",
+    "You are a scheduling assistant. Your only two jobs are to find free time slots in the user's calendar and schedule events into them, and schedule tasks.",
     `Current datetime: ${args.now}. User timezone: ${args.timezone}.`,
     `The user is viewing calendar: ${args.selectedCalendarId ?? "(none)"}.`,
     "",
     "RULES:",
-    "- Default schedulable window: 9am–5pm in the user's timezone.",
+    "- If the user describes a task, call propose_task. Otherwise, call schedule_event.",
+    "- Default schedulable window: 9am–9pm in the user's timezone.",
     "- Default event duration: 1 hour if the user does not specify.",
     "- If the user specifies off-limit times (e.g. 'no meetings before 10am'), respect those for the entire conversation.",
     "- Pick the FIRST available slot that fits the requested duration within the requested date range.",
