@@ -2,41 +2,6 @@
 
 // Chat Reponses API: function-tool argument schemas (Responses API)
 
-export interface ProposedEventArgs {
-    name: string;
-    startAtISO: string;
-    endAtISO: string | null;
-    allDay: boolean;
-    calendarId: string;
-    groupId: string | null;
-    description: string | null;
-    location: string | null;
-    link: string | null;
-    remindBeforeMinutes: number | null;
-  }
-  
-  export const proposedEventSchema = {
-    type: "object",
-    additionalProperties: false,
-    properties: {
-      name:                { type: "string", description: "event name" },
-      startAtISO:          { type: "string", description: "ISO 8601 datetime in the user's timezone" },
-      endAtISO:            { type: ["string", "null"] },
-      allDay:              { type: "boolean" },
-      calendarId:          { type: "string", description: "ID listed in the system prompt" },
-      groupId:             { type: ["string", "null"], description: "Null means use the calendar's default group" },
-      description:         { type: ["string", "null"] },
-      location:            { type: ["string", "null"] },
-      link:                { type: ["string", "null"] },
-      remindBeforeMinutes: { type: ["integer", "null"] },
-    },
-    required: [
-      "name", "startAtISO", "endAtISO", "allDay",
-      "calendarId", "groupId", "description",
-      "location", "link", "remindBeforeMinutes",
-    ],
-  } as const;
-  
   export interface ProposedTaskArgs {
     name: string;
     dueAtISO: string;

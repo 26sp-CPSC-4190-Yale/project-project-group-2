@@ -50,14 +50,18 @@ export function DropDownSecondary({
     };
 
     return (
-        <div className={styles.wrapper} ref={wrapperRef} style={{ width }}>
+        <div 
+            className={styles.wrapper} 
+            ref={wrapperRef} 
+            style={{ width }}
+            onClick={() => setOpen((prev) => !prev)}
+        >
             <div className={styles.bar}>
                 <span className={styles.barText}>{selected}</span>
                 <img
                     src="/DropDownSecondaryChevron.png"
                     alt=""
                     className={`${styles.chevron} ${open ? styles.chevronOpen : ""}`}
-                    onClick={() => setOpen((prev) => !prev)}
                 />
             </div>
             {open && (

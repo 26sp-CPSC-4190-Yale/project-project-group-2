@@ -72,15 +72,12 @@ export function DefaultSidebar({
     groupRefreshKey = 0,
     taskRefreshKey = 0,
 }: DefaultSidebarProps) {
-    const defaultCalTitle = calendars.find((c) => c.id === selectedCalendarId)?.title ?? "";
-    const [taskCalendarTitle, setTaskCalendarTitle] = useState(defaultCalTitle);
     const [tasks, setTasks] = useState<SidebarTask[]>([]);
     const [groups, setGroups] = useState<SidebarGroup[]>([]);
     const [selectedGroupIds, setSelectedGroupIds] = useState<Set<string>>(new Set());
     const [deleteCalendar, setDeleteCalendar] = useState<SidebarCalendar | null>(null);
     const [shareCalendar, setShareCalendar] = useState<SidebarCalendar | null>(null);
     const [showAllTasks, setShowAllTasks] = useState(false);
-    const taskCalendarId = calendars.find((c) => c.title === taskCalendarTitle)?.id;
     const [deleteTask, setDeleteTask] = useState<SidebarTask | null>(null);
     const [deleteGroup, setDeleteGroup] = useState<SidebarGroup | null>(null);
 

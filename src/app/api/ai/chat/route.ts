@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { jsonError, jsonSuccess } from "@/lib/api";
@@ -11,7 +11,6 @@ import {
   proposedTaskSchema,
 } from "@/lib/aiSchemas";
 import type { AiChatRequestBody, AiChatResponseBody } from "@/types";
-import { group } from "console";
 
 /**
  * Chat API — free-slot scheduling assistant.
