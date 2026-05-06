@@ -1,0 +1,36 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-start;
+  height: 8rem;
+  width: 100%;
+}
+
+.profileWrapper {
+  position: absolute;
+  top: 1.625rem;
+  right: 1.3rem;
+}
+
+.logoWrapper{
+    left: 2.87rem;
+    top: 1.13rem;
+    position: absolute;
+}
+
+.files {
+  position: absolute;
+  top: 2.25rem;
+  right: 5.5rem;
+  height: 1.75rem;
+  width: 1.75rem;
+  color: #6C3ECC;
+  cursor: pointer;
+}
+
+.bellWrapper {
+  position: absolute;
+  top: 2.25rem;
+  right: 8.5rem;
+}

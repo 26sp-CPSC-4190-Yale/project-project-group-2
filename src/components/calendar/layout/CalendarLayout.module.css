@@ -1,0 +1,100 @@
+.container{
+    height: 100vh;
+    min-height: 100vh;
+    padding: 0rem 1.3rem 1.3rem;
+    background: #FAF9FF;
+    display: flex;
+    flex-direction: column;
+}
+
+.main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 1.75rem;
+}
+
+.sidebarWrapper {
+    position: relative;
+    width: 17rem;
+    height: 100%;
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+}
+
+.sidebarWrapper.sidebarCollapsed {
+    width: 2.625rem;
+}
+
+.sidebarContent {
+    height: 100%;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.15s ease;
+}
+
+.sidebarCollapsed .sidebarContent {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.defaultToggle {
+    position: absolute;
+    top: 3rem;
+    right: -0.65rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #6C3ECC;
+    cursor: pointer;
+    z-index: 2;
+    transition: background-color 0.15s ease, transform 0.15s ease, right 0.15s ease;
+}
+
+.chatToggle {
+    position: absolute;
+    top: 4.75rem;
+    right: -0.65rem;
+    width: 1.5rem;
+    height: 1.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #6C3ECC;
+    cursor: pointer;
+    z-index: 2;
+    transition: background-color 0.15s ease, transform 0.15s ease, right 0.15s ease;
+}
+
+.defaultToggle:hover {
+    transform: scale(1.05);
+}
+
+.sidebarCollapsed .defaultToggle:hover {
+    transform: scale(1.05) rotate(180deg);
+}
+
+.sidebarCollapsed .defaultToggle {
+    right: -0.875rem;
+    transform: rotate(180deg);
+}
+
+.chatToggle:hover {
+    transform: scale(1.05);
+}
+
+.sidebarCollapsed .chatToggle:hover {
+    transform: scale(1.05);
+}
+
+/* .sidebarCollapsed .chatToggle {
+    right: -0.875rem;
+    transform: rotate(180deg);
+} */

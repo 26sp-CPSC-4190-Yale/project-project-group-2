@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  googleId  String?  @unique
+  email     String   @unique
+  password  String?
+  name      String
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  calendars Calendar[]
+  tasks     Task[]
+  uploadedFiles UploadedFile[]
+  sentInvitations     EventInvitation[]    @relation("SentInvitations")
+  receivedInvitations EventInvitation[]    @relation("ReceivedInvitations")
+  sharedEvents        SharedEvent[]        @relation("SharedEvents")
+  sentCalendarInvitations     CalendarInvitation[] @relation("SentCalendarInvitations")
+  receivedCalendarInvitations CalendarInvitation[] @relation("ReceivedCalendarInvitations")
+}
+
+model Calendar {
+  id          String   @id @default(cuid())
+  title       String   @default("Calendar")
+  color       String   @default("none")
+  description String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  groups Group[]
+  files  UploadedFile[]
+  calendarInvitations CalendarInvitation[]
+}
+
+model Group {
+  id    String  @id @default(cuid())
+  name  String  @default("Group")
+  notes String?
+  color String  @default("none")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDefault Boolean @default(false)
+
+  calendarId String
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  events Event[]
+  tasks  Task[]
+  sharedEvents SharedEvent[]
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  name        String    @default("New Event")
+  startAt     DateTime
+  endAt       DateTime?
+  allDay      Boolean   @default(true)
+  link        String?
+  description String?
+  notes       String?
+  location    String?
+  remindBefore Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  tasks Task[]
+  invitations  EventInvitation[]
+  sharedEvents SharedEvent[]
+}
+
+model Task {
+  id           String   @id @default(cuid())
+  name         String
+  dueAt        DateTime
+  allDay       Boolean  @default(true)
+  completed    Boolean  @default(false)
+  notes        String?
+  remindBefore Int?
+  link         String?
+  location     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  eventId String?
+  event   Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model UploadedFile {
+  id          String    @id @default(cuid())
+  name        String
+  storagePath String    @unique
+  userId      String
+  calendarId  String?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  calendar    Calendar? @relation(fields: [calendarId], references: [id], onDelete: SetNull)
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model EventInvitation {
+  id        String           @id @default(cuid())
+  status    InvitationStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  eventId     String
+  event       Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  senderId    String
+  sender      User   @relation("SentInvitations", fields: [senderId], references: [id], onDelete: Cascade)
+
+  recipientId String
+  recipient   User   @relation("ReceivedInvitations", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, recipientId])
+}
+
+model CalendarInvitation {
+  id        String           @id @default(cuid())
+  status    InvitationStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  calendarId  String
+  calendar    Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  senderId    String
+  sender      User     @relation("SentCalendarInvitations", fields: [senderId], references: [id], onDelete: Cascade)
+
+  recipientId String
+  recipient   User     @relation("ReceivedCalendarInvitations", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@unique([calendarId, recipientId])
+}
+
+model SharedEvent {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation("SharedEvents", fields: [userId], references: [id], onDelete: Cascade)
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+}

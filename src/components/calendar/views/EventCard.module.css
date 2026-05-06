@@ -1,0 +1,64 @@
+.bar {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    background-color: var(--cal-color, #6c3ecc);
+    border-radius: 0.25rem;
+    padding: 0.2rem 0.4rem;
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 10;
+    transition: opacity 0.15s ease;
+}
+
+.bar:hover {
+    opacity: 0.85;
+}
+
+.barName {
+    color: #fff;
+    font-family: var(--font-dm-sans);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.barTime {
+    color: rgba(255, 255, 255, 0.8);
+    font-family: var(--font-dm-sans);
+    font-size: 0.6rem;
+    font-weight: 400;
+}
+
+.compact {
+    background-color: var(--cal-color, #6c3ecc);
+    border-radius: 0.2rem;
+    padding: 0.05rem 0.3rem;
+    margin-top: 0.15rem;
+    cursor: pointer;
+    overflow: hidden;
+    transition: opacity 0.15s ease;
+}
+
+.compact:hover {
+    opacity: 0.85;
+}
+
+.compactName {
+    color: #fff;
+    font-family: var(--font-dm-sans);
+    font-size: 0.6rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.shared {
+    background-color: color-mix(in srgb, var(--cal-color, #6c3ecc) 60%, white);
+    border-left: 3px solid var(--cal-color, #6c3ecc);
+}

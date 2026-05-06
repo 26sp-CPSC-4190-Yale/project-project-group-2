@@ -1,0 +1,131 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 1rem;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 23rem;
+    height: 41rem;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    background: #fff;
+    overflow: hidden;
+}
+
+.heading {
+    color: #6c3ecc;
+    font-family: var(--font-dm-serif-display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    margin-bottom: 1.25rem;
+}
+
+.sectionsContainer {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex-shrink: 0;
+    margin-bottom: 0.75rem;
+}
+
+.sectionHeading {
+    color: #6c3ecc;
+    font-family: var(--font-dm-sans);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    margin: 0 0 0.3rem;
+}
+
+.list {
+    overflow-y: auto;
+    min-height: 0;
+    box-sizing: border-box;
+    padding: 0.375rem 0.825rem 0.375rem 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    border-radius: 0.75rem;
+    scrollbar-width: thin;
+    scrollbar-color: #d9cffb transparent;
+    scrollbar-gutter: stable;
+}
+
+.list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.list::-webkit-scrollbar-thumb {
+    background: #d9cffb;
+    border-radius: 4px;
+}
+
+.list::-webkit-scrollbar-thumb:hover {
+    background: #b9a8e8;
+}
+
+.row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem 0.625rem;
+    font-family: var(--font-dm-sans);
+    font-size: 0.8125rem;
+    border: 2px solid #A697C5;
+    border-radius: 0.375rem;
+    background: #faf9ff;
+}
+
+.row input[type="checkbox"] {
+    margin-top: 0.2rem;
+}
+
+.rowBody {
+    flex: 1;
+    min-width: 0;
+}
+
+.rowName {
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.rowDate {
+    font-size: 0.75rem;
+    color: #777;
+    margin-top: 0.125rem;
+}
+
+.lowConf {
+    font-size: 0.6875rem;
+    color: #a67c00;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    width: 100%;
+}

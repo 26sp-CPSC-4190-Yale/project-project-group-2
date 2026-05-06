@@ -1,0 +1,28 @@
+.introText {
+    margin-top: 22rem;
+    margin-bottom: 1rem;
+    color: #000;
+    font-family: var(--font-dm-serif-display);
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.active {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    width: 100%;
+    align-items: stretch;
+    gap: 0.4rem;
+}
+
+.inputRow {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+    flex: 0 0 auto;
+}

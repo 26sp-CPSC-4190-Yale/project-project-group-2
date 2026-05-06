@@ -1,0 +1,65 @@
+{
+  "name": "project-project-group-2",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 4000",
+    "dev:https": "next dev -p 4000 --experimental-https",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.6.0",
+    "@prisma/client": "^7.7.0",
+    "@supabase/supabase-js": "^2.93.3",
+    "jose": "^6.2.2",
+    "multer": "^2.1.1",
+    "next": "^16.2.1",
+    "openai": "^6.34.0",
+    "playwright": "^1.59.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-pdf": "^10.4.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^20.19.30",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.5",
+    "dotenv": "^17.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.4",
+    "jsdom": "^29.1.1",
+    "msw": "^2.13.5",
+    "prisma": "^7.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.5",
+    "vitest-mock-extended": "^4.0.0"
+  },
+  "description": "To install all packages required for this project, run the install script:",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/26sp-CPSC-4190-Yale/project-project-group-2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/26sp-CPSC-4190-Yale/project-project-group-2/issues"
+  },
+  "homepage": "https://github.com/26sp-CPSC-4190-Yale/project-project-group-2#readme"
+}

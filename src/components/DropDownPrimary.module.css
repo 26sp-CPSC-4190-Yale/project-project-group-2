@@ -1,0 +1,70 @@
+.wrapper {
+    position: relative;
+}
+
+.bar {
+    display: flex;
+    align-items: center;
+    height: 1.6rem;
+    border-radius: 0.375rem;
+    background-color: #6c3ecc;
+    padding: 0 0.5rem;
+    cursor: default;
+}
+
+.barText {
+    flex: 1;
+    min-width: 0;
+    color: white;
+    font-family: var(--font-dm-sans);
+    font-size: 0.94775rem;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chevron {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.4rem;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+}
+
+.menu {
+    position: absolute;
+    top: calc(1.6rem + 0.5rem);
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0.25rem;
+    border-radius: 0.375rem;
+    background-color: #6c3ecc;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 50;
+}
+
+.menuItem {
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.25rem;
+    color: white;
+    font-family: var(--font-dm-sans);
+    font-size: 0.94775rem;
+    font-weight: 400;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.15s ease;
+}
+
+.menuItem:hover {
+    background-color: #8258d4;
+}

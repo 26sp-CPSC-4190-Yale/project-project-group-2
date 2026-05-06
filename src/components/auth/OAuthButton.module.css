@@ -1,0 +1,33 @@
+.button {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    width: 23.2rem;
+    height: 2.9rem;
+    border-radius: 0.5rem;
+    border: 1px solid #6c3ecc;
+    background: #fff;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.button:hover {
+    transform: scale(1.01);
+}
+
+.text {
+    color: #000;
+    font-family: var(--font-dm-sans);
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.image {
+    position: relative;
+    /* top: 0rem; */
+    right: 0.5rem;
+    height: 1.25rem;
+    width: 1.25rem;
+}

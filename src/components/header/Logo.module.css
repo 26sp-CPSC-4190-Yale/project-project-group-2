@@ -1,0 +1,8 @@
+.container{
+    color: #000;
+    font-family: var(--font-dm-serif-display);
+    font-size: 3rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
