@@ -8,10 +8,10 @@ if (!process.env.OPENAI_API_KEY) {
 export const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /** Model used by Chat Reponses API. */
-export const CHAT_MODEL = process.env.OPENAI_CHAT_MODEL ?? "gpt-5-mini";
+export const CHAT_MODEL = process.env.OPENAI_CHAT_MODEL ?? "gpt-5.4-mini";
 
 /** Model used by PDF Extraction API. */
-export const EXTRACT_MODEL = process.env.OPENAI_EXTRACT_MODEL ?? "gpt-5-mini";
+export const EXTRACT_MODEL = process.env.OPENAI_EXTRACT_MODEL ?? "gpt-5.4-mini";
 
 /** Timeout for single OpenAI request in ms. */
 export const OPENAI_TIMEOUT_MS = 120_000;
