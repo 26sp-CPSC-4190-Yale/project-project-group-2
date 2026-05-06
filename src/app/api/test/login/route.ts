@@ -42,6 +42,22 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     },
   });
 
+  const calendarCount = await prisma.calendar.count({
+    where: { userId: user.id },
+  });
+  if (calendarCount === 0) {
+    const calendar = await prisma.calendar.create({
+      data: { title: "My Calendar", userId: user.id, isDefault: true },
+    });
+    await prisma.group.create({
+      data: {
+        calendarId: calendar.id,
+        name: "Default Group",
+        isDefault: true,
+      },
+    });
+  }
+
   const token = await createSessionToken(user.id);
   const response = jsonSuccess({ id: user.id });
   response.cookies.set(SESSION_COOKIE_NAME, token, sessionCookieOptions);

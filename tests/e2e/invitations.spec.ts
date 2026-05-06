@@ -54,7 +54,7 @@ test.describe("Invitations (smoke)", () => {
     await page.getByText("Study session").first().click();
     await page.getByRole("button", { name: /Share/i }).click();
 
-    await page.getByPlaceholder(/email/i).fill("friend@example.com");
+    await page.getByLabel(/Recipient Email/i).fill("friend@example.com");
     await page.getByRole("button", { name: /Send|Invite|Share/i }).last().click();
 
     await expect.poll(() => postBody).not.toBeNull();

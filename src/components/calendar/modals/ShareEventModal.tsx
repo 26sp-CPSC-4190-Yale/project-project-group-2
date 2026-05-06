@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import styles from "./ShareEventModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
@@ -24,6 +24,7 @@ export function ShareEventModal({
 }: ShareEventModalProps) {
     const [email, setEmail] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const emailInputId = useId();
 
     const handleSubmit = async () => {
         if (submitting) return;
@@ -64,8 +65,11 @@ export function ShareEventModal({
                     another user by entering their email address.
                 </p>
 
-                <label className={styles.label}>Recipient Email</label>
+                <label className={styles.label} htmlFor={emailInputId}>
+                    Recipient Email
+                </label>
                 <input
+                    id={emailInputId}
                     className={styles.input}
                     type="email"
                     placeholder="user@example.com"

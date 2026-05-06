@@ -21,9 +21,9 @@ test.describe("Files (smoke)", () => {
       return route.fallback();
     });
 
-    // PdfThumbnail calls this — return a fake signed URL to satisfy the fetch.
+    // This smoke test does not cover PDF rendering, so use the placeholder path.
     await page.route("**/api/files/f-1/open", (route) =>
-      route.fulfill(jsonData({ url: "about:blank" })),
+      route.fulfill(jsonData({ url: null })),
     );
 
     let deleteHit = false;
@@ -47,6 +47,7 @@ test.describe("Files (smoke)", () => {
     await page.getByRole("button", { name: /Delete/i }).last().click();
 
     await expect.poll(() => deleteHit).toBe(true);
-    await expect(page.getByText("Syllabus.pdf")).not.toBeVisible();
+    await expect(page.getByRole("heading", { name: "Delete File" })).not.toBeVisible();
+    await expect(page.getByText("Syllabus.pdf")).toHaveCount(0);
   });
 });

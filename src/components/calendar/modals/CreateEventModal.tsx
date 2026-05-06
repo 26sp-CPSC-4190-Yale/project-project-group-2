@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./CreateEventModal.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
@@ -41,6 +41,7 @@ export function CreateEventModal({
     const [location, setLocation] = useState("");
     const [remindBefore, setRemindBefore] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const formId = useId();
     const router = useRouter();
 
     useEffect(() => {
@@ -111,8 +112,11 @@ export function CreateEventModal({
             <div className={styles.card} onClick={(e) => e.stopPropagation()}>
                 <h2 className={styles.heading}>New Event</h2>
 
-                <label className={styles.label}>Name</label>
+                <label className={styles.label} htmlFor={`${formId}-name`}>
+                    Name
+                </label>
                 <input
+                    id={`${formId}-name`}
                     className={styles.input}
                     type="text"
                     placeholder="New Event"
@@ -143,8 +147,11 @@ export function CreateEventModal({
 
                 <div className={styles.row}>
                     <div className={styles.column}>
-                        <label className={styles.label}>Start Date</label>
+                        <label className={styles.label} htmlFor={`${formId}-start-date`}>
+                            Start Date
+                        </label>
                         <input
+                            id={`${formId}-start-date`}
                             className={styles.input}
                             type="date"
                             value={startDate}
@@ -153,8 +160,11 @@ export function CreateEventModal({
                     </div>
                     {!allDay && (
                         <div className={styles.column}>
-                            <label className={styles.label}>Start Time</label>
+                            <label className={styles.label} htmlFor={`${formId}-start-time`}>
+                                Start Time
+                            </label>
                             <input
+                                id={`${formId}-start-time`}
                                 className={styles.input}
                                 type="time"
                                 value={startTime}
@@ -166,8 +176,11 @@ export function CreateEventModal({
 
                 <div className={styles.row}>
                     <div className={styles.column}>
-                        <label className={styles.label}>End Date</label>
+                        <label className={styles.label} htmlFor={`${formId}-end-date`}>
+                            End Date
+                        </label>
                         <input
+                            id={`${formId}-end-date`}
                             className={styles.input}
                             type="date"
                             value={endDate}
@@ -176,8 +189,11 @@ export function CreateEventModal({
                     </div>
                     {!allDay && (
                         <div className={styles.column}>
-                            <label className={styles.label}>End Time</label>
+                            <label className={styles.label} htmlFor={`${formId}-end-time`}>
+                                End Time
+                            </label>
                             <input
+                                id={`${formId}-end-time`}
                                 className={styles.input}
                                 type="time"
                                 value={endTime}
@@ -187,8 +203,11 @@ export function CreateEventModal({
                     )}
                 </div>
 
-                <label className={styles.label}>Description</label>
+                <label className={styles.label} htmlFor={`${formId}-description`}>
+                    Description
+                </label>
                 <textarea
+                    id={`${formId}-description`}
                     className={styles.textarea}
                     placeholder="Optional"
                     value={description}
@@ -196,8 +215,11 @@ export function CreateEventModal({
                     rows={2}
                 />
 
-                <label className={styles.label}>Notes</label>
+                <label className={styles.label} htmlFor={`${formId}-notes`}>
+                    Notes
+                </label>
                 <textarea
+                    id={`${formId}-notes`}
                     className={styles.textarea}
                     placeholder="Optional"
                     value={notes}
@@ -205,9 +227,12 @@ export function CreateEventModal({
                     rows={2}
                 />
 
-                <label className={styles.label}>Remind Before</label>
+                <label className={styles.label} htmlFor={`${formId}-remind-before`}>
+                    Remind Before
+                </label>
                 <div className={styles.remindRow}>
                     <input
+                        id={`${formId}-remind-before`}
                         className={styles.remindInput}
                         type="number"
                         min="0"
@@ -218,8 +243,11 @@ export function CreateEventModal({
                     <span className={styles.remindUnit}>minutes</span>
                 </div>
 
-                <label className={styles.label}>Link</label>
+                <label className={styles.label} htmlFor={`${formId}-link`}>
+                    Link
+                </label>
                 <input
+                    id={`${formId}-link`}
                     className={styles.input}
                     type="url"
                     placeholder="Optional"
@@ -227,8 +255,11 @@ export function CreateEventModal({
                     onChange={(e) => setLink(e.target.value)}
                 />
 
-                <label className={styles.label}>Location</label>
+                <label className={styles.label} htmlFor={`${formId}-location`}>
+                    Location
+                </label>
                 <input
+                    id={`${formId}-location`}
                     className={styles.input}
                     type="text"
                     placeholder="Optional"
