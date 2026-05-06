@@ -27,7 +27,11 @@ export function buildNextRequest({
     }
   }
 
-  const init: RequestInit & { duplex?: "half" } = { method };
+  type NextRequestInit = NonNullable<ConstructorParameters<typeof NextRequest>[1]> & {
+    duplex?: "half";
+  };
+  
+  const init: NextRequestInit = { method };
 
   if (body !== undefined) {
     if (body instanceof FormData) {

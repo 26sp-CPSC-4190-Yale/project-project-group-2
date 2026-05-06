@@ -1,3 +1,7 @@
+/**
+ * @component
+ */
+
 "use client";
 
 import styles from "./DeleteTaskModal.module.css";

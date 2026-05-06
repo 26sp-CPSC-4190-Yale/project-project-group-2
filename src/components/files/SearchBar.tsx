@@ -1,3 +1,7 @@
+/**
+ * @component
+ */
+
 import styles from "./SearchBar.module.css";
 
 interface SearchBarProps {

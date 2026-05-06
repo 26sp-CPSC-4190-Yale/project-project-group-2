@@ -1,3 +1,7 @@
+/**
+ * @component
+ */
+
 import styles from "./ButtonDanger.module.css";
 
 interface ButtonDangerProps {

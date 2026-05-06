@@ -1,3 +1,7 @@
+/**
+ * @component
+ */
+
 import { ReactNode, useState } from "react";
 import styles from "./HoverSvg.module.css";
 
