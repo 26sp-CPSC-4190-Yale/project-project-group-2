@@ -201,7 +201,7 @@ function buildSystemPrompt(args: {
     "",
     "RULES:",
     "- If the user describes a task, call propose_task. Otherwise, call schedule_event.",
-    "- Default schedulable window: 9am–9pm in the user's timezone.",
+    "- Default schedulable window: 6am–11pm in the user's timezone.",
     "- Default event duration: 1 hour if the user does not specify.",
     "- If the user specifies off-limit times (e.g. 'no meetings before 10am'), respect those for the entire conversation.",
     "- Pick the FIRST available slot that fits the requested duration within the requested date range.",

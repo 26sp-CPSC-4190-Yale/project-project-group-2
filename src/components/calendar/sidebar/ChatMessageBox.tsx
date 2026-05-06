@@ -8,7 +8,7 @@
 
 import { useEffect, useRef } from "react";
 import styles from "./ChatMessageBox.module.css";
-import type { ChatItem, ProposalStatus } from "./chatTypes";
+import type { ChatItem, ProposalStatus } from "./types";
 import { ProposalCard } from "./ProposalCard";
 
 interface ChatMessageBoxProps {

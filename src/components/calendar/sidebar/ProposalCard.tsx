@@ -12,7 +12,7 @@ import styles from "./ProposalCard.module.css";
 import { ButtonPrimary } from "@/components/ButtonPrimary";
 import { ButtonSecondary } from "@/components/ButtonSecondary";
 import { formatItemDate } from "@/lib/formatDate";
-import type { ChatProposalItem, ProposalStatus } from "./chatTypes";
+import type { ChatProposalItem, ProposalStatus } from "./types";
 
 interface ProposalCardProps {
     item: ChatProposalItem;

@@ -13,7 +13,8 @@ import { ChatMessageBox } from "./ChatMessageBox";
 import { NewChatButton } from "./NewChatButton";
 import styles from "./ChatSidebar.module.css";
 import type { AiChatRequestBody, AiChatResponseBody } from "@/types";
-import type { ChatItem, ProposalStatus } from "./chatTypes";
+import type { ChatItem, ChatProposalItem, ProposalStatus } from "./types";
+import { formatItemDate } from "@/lib/formatDate";
 
 const STORAGE_KEY = "ai-chat:thread:v1";
 const ERROR_TEXT = "Something went wrong, try again.";
@@ -44,8 +45,7 @@ export function ChatSidebar({
 
     // Persist whenever the thread has content. We only WRITE here, never
     // remove — clearing is handled explicitly by handleNewChat and by the
-    // chat-toggle handler in CalendarLayout. That keeps this effect free of
-    // ordering concerns vs. the hydration effect above.
+    // chat-toggle handler in CalendarLayout. 
     useEffect(() => {
         if (messages.length === 0) return;
         try {
@@ -176,20 +176,36 @@ function loadFromStorage(): ChatItem[] {
         if (!raw) return [];
         const parsed = JSON.parse(raw) as { messages?: ChatItem[] };
         if (!Array.isArray(parsed.messages)) return [];
-        // Defensive: drop any in-flight thinking placeholders that may have been
-        // persisted accidentally if the page was reloaded mid-request.
         return parsed.messages.filter((m) => m.kind !== "thinking");
     } catch {
         return [];
     }
 }
 
+function proposalToText(m: ChatProposalItem): string {
+    const isEvent = m.proposalKind === "event";
+    const name = m.data.name ?? "(untitled)";
+    const when = isEvent
+        ? formatItemDate(m.data.startAt, m.data.endAt ?? null, m.data.allDay ?? false)
+        : formatItemDate(m.data.dueAt, null, m.data.allDay ?? false);
+    const where = `${m.data.displayCalendarTitle} · ${m.data.displayGroupName}`;
+    const kind = isEvent ? "event" : "task";
+
+    if (m.status === "added")
+        return `I scheduled the ${kind} "${name}" (${when}) in ${where}.`;
+    if (m.status === "cancelled")
+        return `The proposal for "${name}" was cancelled.`;
+    return `I proposed the ${kind} "${name}" (${when}) in ${where} — awaiting confirmation.`;
+}
+
 function messagesForApi(items: ChatItem[]): AiChatRequestBody["messages"] {
     return items
-        .filter((m): m is { kind: "user" | "assistant"; text: string } =>
-            m.kind === "user" || m.kind === "assistant",
-        )
-        .map((m) => ({ role: m.kind, content: m.text }));
+        .flatMap((m): AiChatRequestBody["messages"] => {
+            if (m.kind === "user") return [{ role: "user", content: m.text }];
+            if (m.kind === "assistant") return [{ role: "assistant", content: m.text }];
+            if (m.kind === "proposal") return [{ role: "assistant", content: proposalToText(m) }];
+            return [];
+        });
 }
 
 function responseToChatItem(res: AiChatResponseBody): ChatItem {
